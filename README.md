@@ -4,7 +4,7 @@ This is a template for CA400 projects.
 
 ## 1. Create your repo
 
-One person from your project team should clone this repo, then add other teammates as project members on GitLab.
+One person from your project team should fork this repo, then add other teammates as project members on GitLab.
 
 ## 2. Name your repo appropriately
 
