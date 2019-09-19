@@ -87,4 +87,4 @@
 
 > Example: Here's how you can include images in markdown documents...
 
-![cat](./res/cat.png "Picture of a cat.")
+![cat](./res/cat.png "Picture of a cat." | width=300)
