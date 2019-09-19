@@ -83,4 +83,8 @@
 
 > *Student 2 should complete this section.*
 
+##
 
+> Example: Here's how you can include images in markdown documents...
+
+![cat](./res/cat.png "Picture of a cat.")
