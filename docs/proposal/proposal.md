@@ -83,7 +83,7 @@
 
 > *Student 2 should complete this section.*
 
-##
+## Example
 
 > Example: Here's how you can include images in markdown documents...
 
