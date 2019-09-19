@@ -87,4 +87,9 @@
 
 > Example: Here's how you can include images in markdown documents...
 
-![cat](./res/cat.png "Picture of a cat." width=300)
+<!-- Basically, just use HTML! -->
+
+<p align="center">
+  <img src="./res/cat.png" width="300px">
+</p>
+
