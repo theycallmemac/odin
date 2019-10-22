@@ -79,8 +79,6 @@ Explained previously, Odin packages will be written in their corresponding langu
 
 The web interface of Odin will be made using Node.js as the backend, AngularJS as the frontend framework, MongoDB for storing information and ExpressJS as the web server.
 
-^^ we should explain the purpose for all of these
-
 The possibility of distributing Odin across multiple machines can be achieved through the use of etcd or consul, which both implement the Raft consensus algorithm.
 
 ### Hardware
