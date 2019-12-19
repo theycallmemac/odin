@@ -1,8 +1,7 @@
-package main
+package parser
 
 import (
     "fmt"
-    "os"
     "strings"
 )
 
@@ -71,13 +70,12 @@ func getCronMonth(values map[string]string, currentDom string, key string) (stri
     return result, currentDom
 }
 
-func main() {
+func Execute(filePath string) {
     dowValues := getDowMap()
     domValues := getDomMap()
     monValues := getMonMap()
     var formattedRules [][]string
-    filename := os.Args[1]
-    yaml := getYaml(filename)
+    yaml := getYaml(filePath)
 
     if isScheduleValid(yaml) {
         for _, rule := range splitOnKeyword(yaml, "and") {
