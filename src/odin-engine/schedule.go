@@ -1,7 +1,7 @@
 package main
 
 import (
-        "odin/src/odin-engine/parser"
+        "odin/src/odin-engine/scheduler"
         "io/ioutil"
         "net/http"
 	"github.com/go-chi/chi"
@@ -17,6 +17,6 @@ func (rs scheduleResource) Routes() chi.Router {
 
 func (rs scheduleResource) Parse(w http.ResponseWriter, r *http.Request) {
         path, _ := ioutil.ReadAll(r.Body)
-        parser.Execute(string(path))
+        go parser.Execute(string(path))
 }
 
