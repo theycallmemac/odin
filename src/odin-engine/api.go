@@ -19,6 +19,7 @@ func main() {
 		w.Write([]byte("."))
 	})
 
+	r.Mount("/execute", executeResource{}.Routes())
 	r.Mount("/jobs", jobsResource{}.Routes())
 	r.Mount("/schedule", scheduleResource{}.Routes())
 

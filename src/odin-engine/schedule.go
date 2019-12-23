@@ -17,6 +17,6 @@ func (rs scheduleResource) Routes() chi.Router {
 
 func (rs scheduleResource) Parse(w http.ResponseWriter, r *http.Request) {
         path, _ := ioutil.ReadAll(r.Body)
-        go parser.Execute(string(path))
+        go scheduler.Execute(string(path))
 }
 
