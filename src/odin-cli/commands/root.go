@@ -2,13 +2,14 @@ package commands
 
 import (
     "fmt"
+    "context"
+    "log"
     "os"
 
-    "github.com/spf13/cobra"/*
+    "github.com/spf13/cobra"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/mongo/readpref"*/
 )
 
 
@@ -73,7 +74,6 @@ type NewJob struct {
 }
 
 
-/*
 // -------------------------- MONGO FUNCTIONS ----------------------- //
 // ------------------------------------------------------------------ //
 func getMongoClient() *mongo.Client {
@@ -98,11 +98,10 @@ func insertIntoMongo(client *mongo.Client, job NewJob) interface{} {
     return insertResult.InsertedID
 }
 
-func getJobByValue(client *mongo.Client, filter bson.M) Job {
+func getJobByValue(client *mongo.Client, filter bson.M) NewJob {
     var job NewJob
     collection := client.Database("myDatabase").Collection("myCollection")
     documentReturned := collection.FindOne(context.TODO(), filter)
     documentReturned.Decode(&job)
     return job
 }
-*/

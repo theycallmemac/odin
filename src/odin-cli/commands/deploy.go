@@ -2,6 +2,7 @@ package commands
 
 import (
     "strings"
+    "context"
     "crypto/rand"
     "fmt"
     "os"
@@ -12,6 +13,7 @@ import (
 
     "github.com/spf13/cobra"
     "gopkg.in/yaml.v2"
+    "go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var DeployCmd = &cobra.Command{
@@ -34,12 +36,21 @@ func deployJob(cmd *cobra.Command, args []string) {
     byteArray := readJobFile(name)
     yaml := unmarsharlYaml(byteArray)
     id := generateId()
-    fmt.Println(id)
-    getScheduleString(name)
-    setupJobEnvironment(yaml, name, id)
-    // Create directory called /etc/odin/jobs/$id (check it doesnt already exist)
-    // If it does exist, gently tell the user
-    // If it doesn't exist, create the directory and place the relevant data into it
+    ss := getScheduleString(name)
+    jobPath := setupJobEnvironment(yaml, name, id)
+    if jobPath == "" {
+        os.Exit(2)
+    }
+    c := getMongoClient()
+    err := c.Ping(context.Background(), readpref.Primary())
+    if err != nil {
+	    log.Fatal("Couldn't connect to the database", err)
+    } else {
+	    log.Println("Connected!")
+    }
+    job := NewJob{ID: id, Name: yaml.Job.Name, Description: yaml.Job.Description, Language: yaml.Job.Language, File: jobPath + "/" + yaml.Job.File, ScheduleString: ss}
+    inserted := insertIntoMongo(c, job)
+    fmt.Println(inserted)
 }
 
 func readJobFile(name string) []byte {
@@ -78,23 +89,25 @@ func ensureDirectory(dir string) bool {
     return true
 }
 
-func getScheduleString(name string) {
+func getScheduleString(name string) string {
     dir, _ := os.Getwd()
-    code := makePostRequest("http://localhost:3939/schedule", strings.NewReader(dir + "/" + name))
-    fmt.Println(code)
+    absPath := dir + "/" + name
+    ss := makePostRequest("http://localhost:3939/schedule", strings.NewReader(absPath))
+    return ss
 }
 
-func makePostRequest(link string, data io.Reader) int {
+func makePostRequest(link string, data io.Reader) string {
     client := &http.Client{}
     req, _ := http.NewRequest("POST", link, data)
     response, clientErr := client.Do(req)
     if clientErr != nil {
         fmt.Println(clientErr)
     }
-    return response.StatusCode
+    bodyBytes, _ := ioutil.ReadAll(response.Body)
+    return string(bodyBytes)
 }
 
-func setupJobEnvironment(cfg Config, name string, id string) {
+func setupJobEnvironment(cfg Config, name string, id string) string {
     path := "/etc/odin/jobs/"
     jobPath := path + id
     if ensureDirectory(jobPath) {
@@ -104,10 +117,11 @@ func setupJobEnvironment(cfg Config, name string, id string) {
         input, err := ioutil.ReadFile(cfg.Job.File)
         if err != nil {
             fmt.Println(err)
-            return
+            return ""
         }
         ioutil.WriteFile(jobPath + "/" + cfg.Job.File, input, 0644)
         MarshalledCfg, _ := yaml.Marshal(cfg)
         ioutil.WriteFile(jobPath + "/" + name, MarshalledCfg, 0644)
     }
+    return jobPath
 }
