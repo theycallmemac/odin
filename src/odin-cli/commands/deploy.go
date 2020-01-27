@@ -1,10 +1,13 @@
 package commands
 
 import (
+    "strings"
     "crypto/rand"
     "fmt"
     "os"
     "log"
+    "net/http"
+    "io"
     "io/ioutil"
 
     "github.com/spf13/cobra"
@@ -31,6 +34,8 @@ func deployJob(cmd *cobra.Command, args []string) {
     byteArray := readJobFile(name)
     yaml := unmarsharlYaml(byteArray)
     id := generateId()
+    fmt.Println(id)
+    getScheduleString(name)
     setupJobEnvironment(yaml, name, id)
     // Create directory called /etc/odin/jobs/$id (check it doesnt already exist)
     // If it does exist, gently tell the user
@@ -71,6 +76,21 @@ func ensureDirectory(dir string) bool {
         return false
     }
     return true
+}
+
+func getScheduleString(name string) {
+    code := makePostRequest("http://localhost:3939/schedule", strings.NewReader(name))
+    fmt.Println(code)
+}
+
+func makePostRequest(link string, data io.Reader) int {
+    client := &http.Client{}
+    req, _ := http.NewRequest("POST", link, data)
+    response, clientErr := client.Do(req)
+    if clientErr != nil {
+        fmt.Println(clientErr)
+    }
+    return response.StatusCode
 }
 
 func setupJobEnvironment(cfg Config, name string, id string) {
