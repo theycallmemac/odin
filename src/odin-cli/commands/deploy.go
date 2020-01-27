@@ -79,7 +79,8 @@ func ensureDirectory(dir string) bool {
 }
 
 func getScheduleString(name string) {
-    code := makePostRequest("http://localhost:3939/schedule", strings.NewReader(name))
+    dir, _ := os.Getwd()
+    code := makePostRequest("http://localhost:3939/schedule", strings.NewReader(dir + "/" + name))
     fmt.Println(code)
 }
 
