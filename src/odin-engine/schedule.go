@@ -7,6 +7,15 @@ import (
 	"github.com/go-chi/chi"
 )
 
+
+type StringFormat struct {
+    Minute string
+    Hour string
+    Dom string
+    Mon string
+    Dow string
+}
+
 type scheduleResource struct{}
 
 func (rs scheduleResource) Routes() chi.Router {
@@ -17,6 +26,9 @@ func (rs scheduleResource) Routes() chi.Router {
 
 func (rs scheduleResource) Parse(w http.ResponseWriter, r *http.Request) {
         path, _ := ioutil.ReadAll(r.Body)
-        go scheduler.Execute(string(path))
+        strs := scheduler.Execute(string(path))
+        for _, str := range strs {
+            w.Write([]byte(str.Minute + " " + str.Hour + " " + str.Dom +  " " + str.Mon + " " + str.Dow + ","))
+        }
 }
 
