@@ -107,15 +107,16 @@ func getJobByValue(client *mongo.Client, filter bson.M) NewJob {
     return job
 }
 
-func getAllJobs(client *mongo.Client) {
+func getAllJobs(client *mongo.Client) []NewJob {
+    var jobs []NewJob
     collection := client.Database("myDatabase").Collection("myCollection")
     documents, _ := collection.Find(context.TODO(), bson.D{})
-    format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "STATUS", "SCHEDULE")
     for documents.Next(context.TODO()) {
 	var job NewJob
         documents.Decode(&job)
-	format(job.ID, job.Name, job.Description, job.Language, job.Status, job.Schedule)
+        jobs = append(jobs, job)
     }
+    return jobs
 }
 
 func format(id string, name, string, description string, status string, schedule string) {

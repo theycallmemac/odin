@@ -19,5 +19,9 @@ func init() {
 
 func listJob() {
     c := getMongoClient()
-    getAllJobs(c)
+    format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "STATUS", "SCHEDULE")
+    jobs := getAllJobs(c)
+    for _, job := range jobs {
+        format(job.ID, job.Name, job.Description, job.Language, job.Status, job.Schedule)
+    }
 }
