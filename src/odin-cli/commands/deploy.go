@@ -48,7 +48,7 @@ func deployJob(cmd *cobra.Command, args []string) {
     } else {
 	    log.Println("Connected!")
     }
-    job := NewJob{ID: id, Name: yaml.Job.Name, Description: yaml.Job.Description, Language: yaml.Job.Language, File: jobPath + "/" + yaml.Job.File, ScheduleString: ss}
+    job := NewJob{ID: id, Name: yaml.Job.Name, Description: yaml.Job.Description, Language: yaml.Job.Language, File: jobPath + "/" + yaml.Job.File, Status: "Running", Schedule: ss}
     inserted := insertIntoMongo(c, job)
     fmt.Println(inserted)
 }

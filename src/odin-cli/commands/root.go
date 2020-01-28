@@ -70,7 +70,8 @@ type NewJob struct {
     Description string `yaml:"description"`
     Language string `yaml:"language"`
     File string `yaml:"file"`
-    ScheduleString string `yaml:"schedulestring"`
+    Status string `yaml:"status"`
+    Schedule string `yaml:"schedule"`
 }
 
 
@@ -104,4 +105,19 @@ func getJobByValue(client *mongo.Client, filter bson.M) NewJob {
     documentReturned := collection.FindOne(context.TODO(), filter)
     documentReturned.Decode(&job)
     return job
+}
+
+func getAllJobs(client *mongo.Client) {
+    collection := client.Database("myDatabase").Collection("myCollection")
+    documents, _ := collection.Find(context.TODO(), bson.D{})
+    format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "STATUS", "SCHEDULE")
+    for documents.Next(context.TODO()) {
+	var job NewJob
+        documents.Decode(&job)
+	format(job.ID, job.Name, job.Description, job.Language, job.Status, job.Schedule)
+    }
+}
+
+func format(id string, name, string, description string, status string, schedule string) {
+    fmt.Printf("%-38s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
 }

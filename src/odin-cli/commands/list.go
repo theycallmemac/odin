@@ -1,7 +1,6 @@
 package commands
 
 import (
-    "fmt"
     "github.com/spf13/cobra"
 )
 
@@ -19,5 +18,6 @@ func init() {
 }
 
 func listJob() {
-    fmt.Println("list job")
+    c := getMongoClient()
+    getAllJobs(c)
 }
