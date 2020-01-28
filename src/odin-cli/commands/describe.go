@@ -2,7 +2,9 @@ package commands
 
 import (
     "fmt"
+
     "github.com/spf13/cobra"
+    "go.mongodb.org/mongo-driver/bson"
 )
 
 var DescribeCmd = &cobra.Command{
@@ -10,14 +12,19 @@ var DescribeCmd = &cobra.Command{
     Short: "describe a running Odin job",
     Long:  `This subcommand will describe a running Odin job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {
-            describeJob()
+            id, _:= cmd.Flags().GetString("id")
+            describeJob(id)
     },
 }
 
 func init() {
     RootCmd.AddCommand(DescribeCmd)
+    DescribeCmd.Flags().StringP("id", "i", "", "id (required)")
+    DescribeCmd.MarkFlagRequired("id")
 }
 
-func describeJob() {
-    fmt.Println("describe job")
+func describeJob(id string) {
+    c := getMongoClient()
+    job := getJobByValue(c, bson.M{"id": id})
+    fmt.Println(job.Name + " - " + job.Description)
 }
