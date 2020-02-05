@@ -4,8 +4,8 @@ var router = express.Router();
 
 const jwt = require('jsonwebtoken');
 const {OAuth2Client} = require('google-auth-library');
-const secret = process.env.JWTSECRET;
-const client = new OAuth2Client(process.env.CLIENT_ID);
+const secret = process.env.SECRET;
+const client = new OAuth2Client(process.env.CLIENTID);
 
 /* GET home page. */
 router.get('/auth', function(req, res, next) {
@@ -14,6 +14,7 @@ router.get('/auth', function(req, res, next) {
 
 // Verify JWT
 function verifyToken(token){
+    console.log(token, secret)
     return jwt.verify(token, secret);
 }
 
@@ -38,7 +39,7 @@ router.post('/login', function(req, res) {
         const payload = ticket.getPayload();
         const audience = payload['aud'];
 
-        if(audience != process.env.CLIENT_ID){
+        if(audience != process.env.CLIENTID){
             return false;
         } else {
             return true;
@@ -56,7 +57,7 @@ router.post('/login', function(req, res) {
         let user;
 
         function returnAuth(user) {
-            const retToken = jwt.sign({email: user.email, userid: user.userid}, secret, { expiresIn: "24h" });
+            const retToken = jwt.sign({email: user.email, userid: user.userid}, secret);
             return res.status(200).json({
             token: retToken,
             // set token expire time to 24h

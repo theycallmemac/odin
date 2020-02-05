@@ -10,7 +10,6 @@ describe('AppComponent', () => {
       imports: [ RouterTestingModule, HttpClientModule ],
       declarations: [
         AppComponent,
-        HeaderComponent
       ],
       providers: [
         RouterOutlet,
