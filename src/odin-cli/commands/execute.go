@@ -1,12 +1,11 @@
 package commands
 
 import (
+    "bytes"
     "fmt"
     "os"
     "log"
     "io/ioutil"
-    "net/http"
-    "strings"
     "github.com/spf13/cobra"
 )
 
@@ -29,9 +28,11 @@ func executeJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
     contents := readJobFileExecute(name)
     fmt.Println(string(contents))
-    resp, _ := http.NewRequest("POST", "localhost:3939/execute", strings.NewReader("/home/odin/go/src/odin/src/odin-cli/job.yml"))
+    resp := makePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte("/home/odin/go/src/odin/src/odin-cli/job.yml")))
     fmt.Println(resp)
+    fmt.Println("Executed successfully!")
 }
+
 func readJobFileExecute(name string) []byte {
     file, err := os.Open(name)
     if err != nil {

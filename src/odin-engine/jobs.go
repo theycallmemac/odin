@@ -1,12 +1,24 @@
 package main
 
 import (
+    "odin/src/odin-engine/jobs"
     "net/http"
-
+    "io/ioutil"
+    "go.mongodb.org/mongo-driver/bson"
     "github.com/go-chi/chi"
 )
 
 type jobsResource struct{}
+
+type NewJob struct {
+    ID string `yaml:"id"`
+    Name string `yaml:"name"`
+    Description string `yaml:"description"`
+    Language string `yaml:"language"`
+    File string `yaml:"file"`
+    Status string `yaml:"status"`
+    Schedule string `yaml:"schedule"`
+}
 
 func (rs jobsResource) Routes() chi.Router {
     r := chi.NewRouter()
@@ -15,7 +27,10 @@ func (rs jobsResource) Routes() chi.Router {
     r.Post("/", rs.Create)
     r.Put("/", rs.Delete)
 
-    r.Route("/{id}", func(r chi.Router) {
+    r.Route("/info", func(r chi.Router) {
+            r.Post("/description", rs.DescriptionByID)
+            r.Post("/status", rs.StatusByID)
+            r.Get("/status/all", rs.AllStatus)
             r.Put("/", rs.Update)
             r.Delete("/", rs.Delete)
     })
@@ -24,15 +39,37 @@ func (rs jobsResource) Routes() chi.Router {
 }
 
 func (rs jobsResource) List(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("get a list of jobs"))
+    jobList := jobs.GetAll(jobs.SetupClient())
+    w.Write([]byte(jobs.Format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "STATUS", "SCHEDULE")))
+    for _, job := range jobList {
+        w.Write([]byte(jobs.Format(job.ID, job.Name, job.Description, job.Language ,job.Status, job.Schedule)))
+    }
 }
 
 func (rs jobsResource) Create(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("create a job"))
+    d, _ := ioutil.ReadAll(r.Body)
+    inserted := jobs.InsertIntoMongo(jobs.SetupClient(), d)
+    b, _ := inserted.([]byte)
+    w.Write(b)
 }
 
-func (rs jobsResource) Get(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("get a job"))
+func (rs jobsResource) DescriptionByID(w http.ResponseWriter, r *http.Request) {
+    d, _ := ioutil.ReadAll(r.Body)
+    job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": string(d)})
+    w.Write([]byte(job.Name + " - " + job.Description + "\n"))
+}
+
+func (rs jobsResource) StatusByID(w http.ResponseWriter, r *http.Request) {
+    d, _ := ioutil.ReadAll(r.Body)
+    job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": string(d)})
+    w.Write([]byte(job.Name + " - " + job.Status + "\n"))
+}
+
+func (rs jobsResource) AllStatus(w http.ResponseWriter, r *http.Request) {
+    jobs := jobs.GetAll(jobs.SetupClient())
+    for _, job := range jobs {
+	w.Write([]byte(job.Name + " - " + job.Status + "\n"))
+    }
 }
 
 func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {

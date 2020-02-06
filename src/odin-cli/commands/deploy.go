@@ -1,19 +1,17 @@
 package commands
 
 import (
-    "strings"
-    "context"
     "crypto/rand"
     "fmt"
-    "os"
     "log"
-    "net/http"
-    "io"
+    "os"
     "io/ioutil"
+    "net/http"
+    "bytes"
+    "encoding/json"
 
     "github.com/spf13/cobra"
     "gopkg.in/yaml.v2"
-    "go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var DeployCmd = &cobra.Command{
@@ -31,26 +29,26 @@ func init() {
     DeployCmd.MarkFlagRequired("file")
 }
 
+
 func deployJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
-    byteArray := readJobFile(name)
-    yaml := unmarsharlYaml(byteArray)
+    yaml := unmarsharlYaml(readJobFile(name))
     id := generateId()
-    ss := getScheduleString(name)
     jobPath := setupJobEnvironment(yaml, name, id)
     if jobPath == "" {
         os.Exit(2)
     }
-    c := getMongoClient()
-    err := c.Ping(context.Background(), readpref.Primary())
-    if err != nil {
-	    log.Fatal("Couldn't connect to the database", err)
-    } else {
-	    log.Println("Connected!")
-    }
-    job := NewJob{ID: id, Name: yaml.Job.Name, Description: yaml.Job.Description, Language: yaml.Job.Language, File: jobPath + "/" + yaml.Job.File, Status: "Running", Schedule: ss}
-    inserted := insertIntoMongo(c, job)
-    fmt.Println(inserted)
+    var job NewJob
+    job.ID = id
+    job.Name = yaml.Job.Name
+    job.Description =  yaml.Job.Description
+    job.Language = yaml.Job.Language
+    job.File = jobPath + "/" + yaml.Job.File
+    job.Status = "Running"
+    job.Schedule =  getScheduleString(name)
+    jobJSON, _ := json.Marshal(job)
+    body := makePostRequest("http://localhost:3939/jobs", bytes.NewBuffer(jobJSON))
+    fmt.Println(body, "Deployed!")
 }
 
 func readJobFile(name string) []byte {
@@ -91,12 +89,12 @@ func ensureDirectory(dir string) bool {
 
 func getScheduleString(name string) string {
     dir, _ := os.Getwd()
-    absPath := dir + "/" + name
-    ss := makePostRequest("http://localhost:3939/schedule", strings.NewReader(absPath))
+    absPath := []byte(dir + "/" + name)
+    ss := makePostRequest("http://localhost:3939/schedule", bytes.NewBuffer(absPath))
     return ss
 }
 
-func makePostRequest(link string, data io.Reader) string {
+func makePostRequest(link string, data *bytes.Buffer) string {
     client := &http.Client{}
     req, _ := http.NewRequest("POST", link, data)
     response, clientErr := client.Do(req)

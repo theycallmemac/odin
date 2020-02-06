@@ -2,9 +2,10 @@ package commands
 
 import (
     "fmt"
+    "bytes"
+    //"io/ioutil"
 
     "github.com/spf13/cobra"
-    "go.mongodb.org/mongo-driver/bson"
 )
 
 var DescribeCmd = &cobra.Command{
@@ -24,7 +25,6 @@ func init() {
 }
 
 func describeJob(id string) {
-    c := getMongoClient()
-    job := getJobByValue(c, bson.M{"id": id})
-    fmt.Println(job.Name + " - " + job.Description)
+    response := makePostRequest("http://localhost:3939/jobs/info/description", bytes.NewBuffer([]byte(id)))
+    fmt.Println(response)
 }

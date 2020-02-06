@@ -1,6 +1,8 @@
 package commands
 
 import (
+    "fmt"
+    "io/ioutil"
     "github.com/spf13/cobra"
 )
 
@@ -18,10 +20,7 @@ func init() {
 }
 
 func listJob() {
-    c := getMongoClient()
-    format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "STATUS", "SCHEDULE")
-    jobs := getAllJobs(c)
-    for _, job := range jobs {
-        format(job.ID, job.Name, job.Description, job.Language, job.Status, job.Schedule)
-    }
+    response := makeGetRequest("http://localhost:3939/jobs")
+    body, _ := ioutil.ReadAll(response)
+    fmt.Println(string(body))
 }

@@ -2,9 +2,10 @@ package commands
 
 import (
     "fmt"
+    "bytes"
+    "io/ioutil"
 
     "github.com/spf13/cobra"
-    "go.mongodb.org/mongo-driver/bson"
 )
 
 var StatusCmd = &cobra.Command{
@@ -32,15 +33,12 @@ func init() {
 }
 
 func statusJob(id string) {
-    c := getMongoClient()
-    job := getJobByValue(c, bson.M{"id": id})
-    fmt.Println(job.Name + " - " + job.Status)
+    response := makePostRequest("http://localhost:3939/jobs/info/status", bytes.NewBuffer([]byte(id)))
+    fmt.Println(response)
 }
 
 func statusAll() {
-    c := getMongoClient()
-    jobs := getAllJobs(c)
-    for _, job := range jobs {
-        fmt.Println(job.Name + " - " + job.Status)
-    }
+    response := makeGetRequest("http://localhost:3939/jobs/info/status/all")
+    data, _ := ioutil.ReadAll(response)
+    fmt.Println(string(data))
 }

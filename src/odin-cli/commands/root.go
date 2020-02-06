@@ -2,14 +2,11 @@ package commands
 
 import (
     "fmt"
-    "context"
-    "log"
+    "io"
+    "net/http"
     "os"
 
     "github.com/spf13/cobra"
-    "go.mongodb.org/mongo-driver/mongo"
-    "go.mongodb.org/mongo-driver/mongo/options"
-    "go.mongodb.org/mongo-driver/bson"
 )
 
 
@@ -39,6 +36,19 @@ func fileExists(filename string) bool {
         return false
     }
     return !info.IsDir()
+}
+
+func makeGetRequest(link string) io.ReadCloser {
+    client := &http.Client{}
+    req, reqErr := http.NewRequest("GET", link, nil)
+    if reqErr != nil {
+        fmt.Println(reqErr)
+    }
+    res, respErr := client.Do(req)
+    if respErr != nil {
+        fmt.Println(respErr)
+    }
+    return res.Body
 }
 
 
@@ -75,50 +85,3 @@ type NewJob struct {
 }
 
 
-// -------------------------- MONGO FUNCTIONS ----------------------- //
-// ------------------------------------------------------------------ //
-func getMongoClient() *mongo.Client {
-    clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-    client, err := mongo.NewClient(clientOptions)
-    if err != nil {
-	log.Fatal(err)
-    }
-    err = client.Connect(context.Background())
-    if err != nil {
-	log.Fatal(err)
-    }
-    return client
-}
-
-func insertIntoMongo(client *mongo.Client, job NewJob) interface{} {
-    collection := client.Database("myDatabase").Collection("myCollection")
-    insertResult, err := collection.InsertOne(context.TODO(), job)
-    if err != nil {
-        log.Fatalln("Error on inserting new job", err)
-    }
-    return insertResult.InsertedID
-}
-
-func getJobByValue(client *mongo.Client, filter bson.M) NewJob {
-    var job NewJob
-    collection := client.Database("myDatabase").Collection("myCollection")
-    documentReturned := collection.FindOne(context.TODO(), filter)
-    documentReturned.Decode(&job)
-    return job
-}
-
-func getAllJobs(client *mongo.Client) []NewJob {
-    var jobs []NewJob
-    collection := client.Database("myDatabase").Collection("myCollection")
-    documents, _ := collection.Find(context.TODO(), bson.D{})
-    for documents.Next(context.TODO()) {
-	var job NewJob
-        documents.Decode(&job)
-        jobs = append(jobs, job)
-    }
-    return jobs
-}
-
-func format(id string, name, string, description string, status string, schedule string) {
-    fmt.Printf("%-38s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
-}

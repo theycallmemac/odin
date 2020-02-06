@@ -9,9 +9,8 @@ import (
 
 func TestDoesNotExist(t *testing.T) {
     cases := []struct {Name, A string; Expected bool} {
-        {"check if an existing file exists", "test1.yml", true},
-        {"check if a non-existing file exists", "test3.yml", false},
-        {"check if a non-existing file exists", "test4.yml", false},
+        {"check if an existing file exists", "testConfigs/prune_containers.yml", true},
+        {"check if a non-existing file exists", "testConfigs/test4.yml", false},
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("execute(%s) ", testCase.A), func(t *testing.T) {
@@ -25,10 +24,8 @@ func TestDoesNotExist(t *testing.T) {
 
 func TestExecute(t *testing.T) {
     cases := []struct {Name, A string; Expected bool} {
-        {"run an existing python file", "test1.yml", true},
-        {"run an existing node file", "test2.yml", true},
-        {"run a non-existing python file", "test3.yml", false},
-        {"run a non-existing python file", "test3.yml", false},
+        {"run an existing python file", "testConfigs/prune_containers.yml", true},
+        {"run an existing node file", "testConfigs/refresh_token.yml", true},
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("execute(%s) ", testCase.A), func(t *testing.T) {

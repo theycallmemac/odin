@@ -1,8 +1,9 @@
 package executor
 
 import (
-    "os"
+    "fmt"
     "os/exec"
+    "strings"
 )
 
 type Data struct {
@@ -10,18 +11,10 @@ type Data struct {
     error  error
 }
 
-
-func exists(name string) bool {
-    _, err := os.Stat(name)
-    if os.IsNotExist(err) {
-        return false
-    }
-    return err == nil
-}
-
 func runCommand(ch chan<- Data, language string, file string) {
     cmd := exec.Command(language, file)
     data, err := cmd.CombinedOutput()
+    fmt.Println(string(data))
     ch <- Data{
         error:  err,
         output: data,
@@ -31,15 +24,16 @@ func runCommand(ch chan<- Data, language string, file string) {
 func Execute(filename string) bool {
     if exists(filename) {
         channel := make(chan Data)
+        path := strings.Split(filename, "/")
+        basePath := strings.Join(path[:len(path)-1], "/")
         language, file := getYaml(filename)
-        dir, _ := os.Getwd()
-        go runCommand(channel, language, dir+"/"+file)
+        destFile := basePath + "/" + file
+        go runCommand(channel, language, destFile)
         res := <-channel
-        if res.error != nil {
-            return false
-        }
+        ReviewError(res.error, "bool")
         return true
     } else {
         return false
     }
 }
+

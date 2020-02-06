@@ -11,8 +11,8 @@ var f *os.File
 
 func TestGetYaml(t *testing.T) {
     cases := []struct {Name string; A string; Expected string} {
-        {"parse an empty yaml file", "testConfigs/empty.yml", ""},
-        {"parse a standard odin yaml file", "testConfigs/prune_containers.yml", "python3"},
+        {"parse an empty yaml file", "./testConfigs/empty.yml", ""},
+        {"parse a standard odin yaml file", "./testConfigs/prune_containers.yml", "python3"},
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("%v.get() ", testCase.A), func(t *testing.T) {
@@ -51,3 +51,4 @@ func TestParseYaml(t *testing.T) {
         })
     }
 }
+
