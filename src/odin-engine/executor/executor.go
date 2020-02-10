@@ -13,6 +13,7 @@ type Data struct {
 
 func runCommand(ch chan<- Data, language string, file string) {
     cmd := exec.Command(language, file)
+    // data, err output after job is finished running
     data, err := cmd.CombinedOutput()
     fmt.Println(string(data))
     ch <- Data{
