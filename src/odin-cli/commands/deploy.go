@@ -6,7 +6,6 @@ import (
     "log"
     "os"
     "io/ioutil"
-    "net/http"
     "bytes"
     "encoding/json"
 
@@ -92,17 +91,6 @@ func getScheduleString(name string) string {
     absPath := []byte(dir + "/" + name)
     ss := makePostRequest("http://localhost:3939/schedule", bytes.NewBuffer(absPath))
     return ss
-}
-
-func makePostRequest(link string, data *bytes.Buffer) string {
-    client := &http.Client{}
-    req, _ := http.NewRequest("POST", link, data)
-    response, clientErr := client.Do(req)
-    if clientErr != nil {
-        fmt.Println(clientErr)
-    }
-    bodyBytes, _ := ioutil.ReadAll(response.Body)
-    return string(bodyBytes)
 }
 
 func setupJobEnvironment(cfg Config, name string, id string) string {

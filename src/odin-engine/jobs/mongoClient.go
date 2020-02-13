@@ -71,6 +71,12 @@ func Format(id string, name, string, description string, status string, schedule
     return fmt.Sprintf("%-38s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
 }
 
+func DeleteJobByValue(client *mongo.Client, filter bson.M) int64 {
+    collection := client.Database("myDatabase").Collection("myCollection")
+    deleteResult, _:= collection.DeleteOne(context.TODO(), filter)
+    return deleteResult.DeletedCount
+}
+
 func SetupClient() *mongo.Client {
     c := getMongoClient()
     err := c.Ping(context.Background(), readpref.Primary())

@@ -1,8 +1,10 @@
 package commands
 
 import (
+    "bytes"
     "fmt"
     "io"
+    "io/ioutil"
     "net/http"
     "os"
 
@@ -51,6 +53,27 @@ func makeGetRequest(link string) io.ReadCloser {
     return res.Body
 }
 
+func makePostRequest(link string, data *bytes.Buffer) string {
+    client := &http.Client{}
+    req, _ := http.NewRequest("POST", link, data)
+    response, clientErr := client.Do(req)
+    if clientErr != nil {
+        fmt.Println(clientErr)
+    }
+    bodyBytes, _ := ioutil.ReadAll(response.Body)
+    return string(bodyBytes)
+}
+
+func makePutRequest(link string, data *bytes.Buffer) string {
+    client := &http.Client{}
+    req, _ := http.NewRequest("PUT", link, data)
+    response, clientErr := client.Do(req)
+    if clientErr != nil {
+        fmt.Println(clientErr)
+    }
+    bodyBytes, _ := ioutil.ReadAll(response.Body)
+    return string(bodyBytes)
+}
 
 
 // -------------------------- SHARED STRUCTS ------------------------ //

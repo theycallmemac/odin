@@ -76,6 +76,8 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rs jobsResource) Delete(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("delete a job"))
+    d, _ := ioutil.ReadAll(r.Body)
+    _ = jobs.DeleteJobByValue(jobs.SetupClient(), bson.M{"id": string(d)})
+    w.Write([]byte("Job removed!\n"))
 }
 
