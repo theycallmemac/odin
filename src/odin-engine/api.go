@@ -2,8 +2,7 @@ package main
 
 import (
 	"net/http"
-        "odin/src/odin-engine/jobs"
-
+    "./jobs"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )

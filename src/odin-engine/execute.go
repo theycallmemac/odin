@@ -1,7 +1,7 @@
 package main
 
 import (
-        "odin/src/odin-engine/executor"
+        "./executor"
         "io/ioutil"
         "net/http"
 	"github.com/go-chi/chi"
