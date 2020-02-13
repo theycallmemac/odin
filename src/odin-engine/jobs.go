@@ -1,7 +1,7 @@
 package main
 
 import (
-    "odin/src/odin-engine/jobs"
+    "./jobs"
     "net/http"
     "io/ioutil"
     "go.mongodb.org/mongo-driver/bson"

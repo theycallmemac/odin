@@ -1,9 +1,9 @@
 package main
 
 import (
-        "odin/src/odin-engine/scheduler"
-        "io/ioutil"
-        "net/http"
+    "./scheduler"
+    "io/ioutil"
+    "net/http"
 	"github.com/go-chi/chi"
 )
 

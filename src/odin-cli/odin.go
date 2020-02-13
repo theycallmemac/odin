@@ -1,6 +1,6 @@
 package main
 
-import "odin/src/odin-cli/commands"
+import "./commands"
 
 func main() {
     commands.Execute()
