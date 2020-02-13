@@ -22,19 +22,35 @@ func runCommand(ch chan<- Data, language string, file string) {
     }
 }
 
-func Execute(filename string) bool {
-    if exists(filename) {
-        channel := make(chan Data)
-        path := strings.Split(filename, "/")
-        basePath := strings.Join(path[:len(path)-1], "/")
-        language, file := getYaml(filename)
-        destFile := basePath + "/" + file
-        go runCommand(channel, language, destFile)
-        res := <-channel
-        ReviewError(res.error, "bool")
-        return true
-    } else {
-        return false
+func executeYaml(filename string) bool {
+    singleChannel := make(chan Data)
+    path := strings.Split(filename, "/")
+    basePath := strings.Join(path[:len(path)-1], "/")
+    language, file := getYaml(filename)
+    destFile := basePath + "/" + file
+    go runCommand(singleChannel, language, destFile)
+    res := <-singleChannel
+    ReviewError(res.error, "bool")
+    return true
+}
+
+func executeLang(contents string) bool {
+    contentList := strings.Split(contents, " ")
+    language, filename := contentList[0], contentList[1]
+    channel := make(chan Data)
+    go runCommand(channel, language, filename)
+    res := <-channel
+    ReviewError(res.error, "bool")
+    return true
+}
+
+func Execute(contents string, process int) bool {
+    switch process {
+        case 0:
+            return executeLang(contents)
+        case 1:
+            return executeYaml(contents)
     }
+    return false
 }
 

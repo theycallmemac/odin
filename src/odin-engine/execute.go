@@ -11,13 +11,19 @@ type executeResource struct{}
 
 func (rs executeResource) Routes() chi.Router {
 	r := chi.NewRouter()
-	r.Post("/", rs.Parse)
+	r.Post("/", rs.Executor)
+	r.Post("/yaml", rs.ExecuteYaml)
 	return r
 }
 
-func (rs executeResource) Parse(w http.ResponseWriter, r *http.Request) {
+func (rs executeResource) Executor(w http.ResponseWriter, r *http.Request) {
         path, err := ioutil.ReadAll(r.Body)
         executor.ReviewError(err, "bool")
-        go executor.Execute(string(path))
+        go executor.Execute(string(path), 0)
 }
 
+func (rs executeResource) ExecuteYaml(w http.ResponseWriter, r *http.Request) {
+        path, err := ioutil.ReadAll(r.Body)
+        executor.ReviewError(err, "bool")
+        go executor.Execute(string(path), 1)
+}

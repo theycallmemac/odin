@@ -28,7 +28,8 @@ func executeJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
     contents := readJobFileExecute(name)
     fmt.Println(string(contents))
-    resp := makePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte("/home/odin/go/src/odin/src/odin-cli/job.yml")))
+    dir, _ := os.Getwd()
+    resp := makePostRequest("http://localhost:3939/execute/yaml", bytes.NewBuffer([]byte(dir+"/"+name)))
     fmt.Println(resp)
     fmt.Println("Executed successfully!")
 }

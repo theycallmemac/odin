@@ -4,6 +4,7 @@ import (
     "context"
     "fmt"
     "log"
+    "os"
     "encoding/json"
 
     "go.mongodb.org/mongo-driver/mongo"
@@ -81,9 +82,7 @@ func SetupClient() *mongo.Client {
     c := getMongoClient()
     err := c.Ping(context.Background(), readpref.Primary())
     if err != nil {
-            log.Fatal("Couldn't connect to the database", err)
-    } else {
-            log.Println("Connected!")
+        os.Exit(2)
     }
     return c
 }
