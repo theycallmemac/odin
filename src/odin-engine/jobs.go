@@ -22,7 +22,6 @@ type NewJob struct {
 
 func (rs jobsResource) Routes() chi.Router {
     r := chi.NewRouter()
-
     r.Get("/", rs.List)
     r.Post("/", rs.Create)
     r.Put("/", rs.Delete)
@@ -79,3 +78,4 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
 func (rs jobsResource) Delete(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("delete a job"))
 }
+

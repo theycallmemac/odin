@@ -88,7 +88,12 @@ func Execute(filePath string) []StringFormat {
             sf.Dow = getCron(dowValues, key)
             sf.Dom = getCron(domValues, key)
             sf.Mon, sf.Dom = getCronMonth(monValues, sf.Dom, key)
-            sf.Hour, sf.Minute = splitOnKeyword(formattedRules[i][1], ":")[0], splitOnKeyword(formattedRules[i][1], ":")[1]
+            sf.Hour = splitOnKeyword(formattedRules[i][1], ":")[0]
+            if splitOnKeyword(formattedRules[i][1], ":")[1] == "00" {
+                sf.Minute = "0"
+            } else {
+                sf.Minute = splitOnKeyword(formattedRules[i][1], ":")[1]
+            }
             asf = append(asf, sf)
         }
     } else {
