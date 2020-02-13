@@ -1,22 +1,15 @@
 package scheduler
 
-import "strings"
+import (
+    "strings"
+)
 
+// this function is used to compare two strings
 func compare(a, b string) bool {
-    if len(a) != len(b) {
-        return false
-    }
-    for i := 0; i < len(a); i++ {
-        if a[i] == b[i] {
-            continue
-        }
-        if a[i] != b[i] {
-            return false
-        }
-    }
-    return true
+    return a == b
 }
 
+// this function is used to strip characters from string
 func stripChars(str, chars string) string {
     return strings.Map(func(r rune) rune {
         if strings.IndexRune(chars, r) < 0 {
@@ -26,6 +19,7 @@ func stripChars(str, chars string) string {
     }, str)
 }
 
+// this function is used to
 func splitOnKeyword(line string, delimiter string) []string {
     return strings.Split(trimEdges(line, "\t \n"), delimiter)
 }

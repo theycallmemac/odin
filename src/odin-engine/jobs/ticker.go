@@ -3,10 +3,11 @@ package jobs
 import (
     "bytes"
     "fmt"
-    "math/rand"
     "io/ioutil"
+    "math/rand"
     "net/http"
     "time"
+
     "github.com/gorhill/cronexpr"
 )
 
@@ -15,15 +16,21 @@ type Queue struct {
 }
 
 type Node struct {
+    ID string
     Lang string
     File string
     Schedule int
 }
 
-func doEvery(d time.Duration, f func(time.Time)) {
-    for x := range time.Tick(d) {
-        f(x)
+func makePostRequest(link string, data *bytes.Buffer) string {
+    client := &http.Client{}
+    req, _ := http.NewRequest("POST", link, data)
+    response, clientErr := client.Do(req)
+    if clientErr != nil {
+        fmt.Println(clientErr)
     }
+    bodyBytes, _ := ioutil.ReadAll(response.Body)
+    return string(bodyBytes)
 }
 
 func sortQueue(items []Node) []Node {
@@ -45,36 +52,33 @@ func sortQueue(items []Node) []Node {
     return items
 }
 
-func makePostRequest(link string, data *bytes.Buffer) string {
-    client := &http.Client{}
-    req, _ := http.NewRequest("POST", link, data)
-    response, clientErr := client.Do(req)
-    if clientErr != nil {
-        fmt.Println(clientErr)
+func checkHead(items []Node) {
+    if len(items) != 0 && items[0].Schedule <= 1 {
+        top := items[0]
+        resp := makePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.Lang + " " + top.File + " " + top.ID)))
+	fmt.Println("executed job", resp)
     }
-    bodyBytes, _ := ioutil.ReadAll(response.Body)
-    return string(bodyBytes)
 }
 
-func countdown(t time.Time) {
+func fillQueue(t time.Time) {
     var queue Queue
     var node Node
     jobs := GetAll(SetupClient())
     for _, j := range jobs {
-        node.Lang = j.Language
-        node.File = j.File
+        node.ID, node.Lang, node.File = j.ID, j.Language, j.File
         node.Schedule = int(cronexpr.MustParse(j.Schedule[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
         queue.Items = append(queue.Items, node)
     }
-
     queue.Items = sortQueue(queue.Items)
-    if len(queue.Items) != 0 && queue.Items[0].Schedule <= 1 {
-            top := queue.Items[0]
-            resp := makePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.Lang + " " + top.File)))
-	    fmt.Println("execute job", resp)
+    checkHead(queue.Items)
+}
+
+func doEvery(d time.Duration, f func(time.Time)) {
+    for x := range time.Tick(d) {
+        f(x)
     }
 }
 
 func StartTicker() {
-   doEvery(1000*time.Millisecond, countdown)
+   doEvery(1000*time.Millisecond, fillQueue)
 }

@@ -2,12 +2,14 @@ package main
 
 import (
     "./scheduler"
+
     "io/ioutil"
     "net/http"
-	"github.com/go-chi/chi"
+
+    "github.com/go-chi/chi"
 )
 
-
+// create StringFormat type to tbe used for accessing time information
 type StringFormat struct {
     Minute string
     Hour string
@@ -16,14 +18,20 @@ type StringFormat struct {
     Dow string
 }
 
+// create resource type to be used by the router
 type scheduleResource struct{}
 
+
 func (rs scheduleResource) Routes() chi.Router {
-	r := chi.NewRouter()
-	r.Post("/", rs.Parse)
-	return r
+    // establish new chi router
+    r := chi.NewRouter()
+
+    // define routes under the schedule endpoint
+    r.Post("/", rs.Parse)
+    return r
 }
 
+// this function is used to parse the request and return a cron time format
 func (rs scheduleResource) Parse(w http.ResponseWriter, r *http.Request) {
         path, _ := ioutil.ReadAll(r.Body)
         strs := scheduler.Execute(string(path))

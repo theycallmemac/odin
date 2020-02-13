@@ -94,21 +94,28 @@ func getScheduleString(name string) string {
     return ss
 }
 
+func makeDirectory(name string) {
+        os.MkdirAll(name, 0644)
+}
+
 func setupJobEnvironment(cfg Config, name string, id string) string {
-    path := "/etc/odin/jobs/"
-    jobPath := path + id
-    if ensureDirectory(jobPath) {
+    jobsPath := "/etc/odin/jobs/"
+    logsPath := "/etc/odin/logs/"
+    jobDir := jobsPath + id
+    logDir := logsPath + id 
+    if ensureDirectory(jobDir) {
         setupJobEnvironment(cfg, name, generateId())
     } else {
-        os.MkdirAll(jobPath, 0644)
+        makeDirectory(jobDir)
         input, err := ioutil.ReadFile(cfg.Job.File)
         if err != nil {
             fmt.Println(err)
             return ""
         }
-        ioutil.WriteFile(jobPath + "/" + cfg.Job.File, input, 0644)
+        ioutil.WriteFile(logDir, []byte(""), 0644)
+        ioutil.WriteFile(jobDir + "/" + cfg.Job.File, input, 0644)
         MarshalledCfg, _ := yaml.Marshal(cfg)
-        ioutil.WriteFile(jobPath + "/" + name, MarshalledCfg, 0644)
+        ioutil.WriteFile(jobDir + "/" + name, MarshalledCfg, 0644)
     }
-    return jobPath
+    return jobDir
 }

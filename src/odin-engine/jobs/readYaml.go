@@ -7,6 +7,7 @@ import (
     "gopkg.in/yaml.v2"
 )
 
+// create Config type to tbe used for accessing config information
 type Config struct {
     Provider struct {
         Name string `yaml:"name"`
@@ -21,11 +22,13 @@ type Config struct {
     } `yaml:"job"`
 }
 
+// this function is used to handle an error and exit upon doing so
 func processError(err error) {
     fmt.Println(err)
     os.Exit(2)
 }
 
+// this function is used to read a file and return it's contents
 func readFile(filename string) *os.File {
     file, err := os.Open(filename)
     if err != nil {
@@ -36,6 +39,7 @@ func readFile(filename string) *os.File {
     return file
 }
 
+// this function is used to parse a given YAML config
 func parseYaml(cfg *Config, file *os.File)  bool {
     decoder:= yaml.NewDecoder(file)
     err := decoder.Decode(cfg)
@@ -46,6 +50,7 @@ func parseYaml(cfg *Config, file *os.File)  bool {
     return true
 }
 
+// this function is used to return the YAML of a config
 func ToYaml(filename string, job NewJob) Config {
     var cfg Config
     yamlFile := readFile(filename)
