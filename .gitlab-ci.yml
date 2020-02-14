@@ -29,6 +29,10 @@ init:
     policy: pull-push
     key: ${CI_COMMIT_SHA}
     paths: ['src/webapp/client/node_modules']
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
 
 lint:nglint:
   stage: test
@@ -36,6 +40,10 @@ lint:nglint:
   allow_failure: true
   script:
     - ng lint
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
 
 frontend:test:
   stage: test
@@ -47,6 +55,10 @@ frontend:test:
   artifacts:
     paths:
       - src/webapp/client/coverage/
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
 
 frontend:build:
   stage: build
@@ -58,6 +70,10 @@ frontend:build:
     expire_in: 1 day
     paths:
       - src/webapp/client/$DIST_DIR
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
 
 backend:test:
   stage: test
@@ -72,6 +88,10 @@ backend:test:
     policy: pull-push
     key: ${CI_COMMIT_SHA}
     paths: ['src/webapp/server/node_modules']
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
 
 engine:test:
   image: golang:${GO_VERSION}
@@ -84,4 +104,8 @@ engine:test:
     - ln -s /go/src/$REPO/$GROUP /go/src/_/builds/$GROUP
     - go get -v -d ./...
     - go test -v -cover ./...
+  only:
+    refs:
+      - dev/master
+      
 
