@@ -1,0 +1,111 @@
+variables:
+  CLI_VERSION: 6.1.5
+  GO_VERSION: 1.13.7
+  DIST_DIR: dist/
+  REPO: gitlab.computing.dcu.ie
+  GROUP: mcdermj7
+  PROJECT: 2020-ca400-urbanam2-mcdermj7
+
+  
+stages:
+  - init
+  - test
+  - build
+
+cache:
+  key: ${CI_COMMIT_SHA}
+  paths:
+    - src/webapp/client/node_modules
+
+before_script:
+- cd src/webapp/client
+- "[ -d node_modules ] || npm ci"
+
+init:
+  stage: init
+  image: trion/ng-cli-karma:${CLI_VERSION}
+  script: ['']
+  cache:
+    policy: pull-push
+    key: ${CI_COMMIT_SHA}
+    paths: ['src/webapp/client/node_modules']
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
+
+lint:nglint:
+  stage: test
+  image: trion/ng-cli-karma:${CLI_VERSION}
+  allow_failure: true
+  script:
+    - ng lint
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
+
+frontend:test:
+  stage: test
+  image: trion/ng-cli-karma:${CLI_VERSION}
+  allow_failure: false
+  script:
+    - ./node_modules/@angular/cli/bin/ng test --code-coverage --progress false --watch false
+  coverage: '/Lines \W+: (\d+\.\d+)%.*/'
+  artifacts:
+    paths:
+      - src/webapp/client/coverage/
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
+
+frontend:build:
+  stage: build
+  image: trion/ng-cli-karma:${CLI_VERSION}
+  needs: ["frontend:test"]
+  script:
+    - ./node_modules/@angular/cli/bin/ng build --prod 
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - src/webapp/client/$DIST_DIR
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
+
+backend:test:
+  stage: test
+  before_script: ['']
+  image: trion/ng-cli-karma:${CLI_VERSION}
+  allow_failure: true
+  script:
+    - cd src/webapp/server
+    - npm install
+    - npm test
+  cache:
+    policy: pull-push
+    key: ${CI_COMMIT_SHA}
+    paths: ['src/webapp/server/node_modules']
+  only:
+    refs:
+      - webapp/*
+      - urbanam2/dev
+
+engine:test:
+  image: golang:${GO_VERSION}
+  stage: test
+  before_script: ['']
+  allow_failure: true
+  script:
+    - mkdir -p $GOPATH/src/$REPO/$GROUP /go/src/_/builds
+    - cp -r $CI_PROJECT_DIR /go/src/$REPO/$GROUP/$PROJECT
+    - ln -s /go/src/$REPO/$GROUP /go/src/_/builds/$GROUP
+    - go get -v -d ./...
+    - go test -v -cover ./...
+  only:
+    refs:
+      - dev/master
+      
+
