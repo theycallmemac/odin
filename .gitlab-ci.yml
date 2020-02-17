@@ -97,7 +97,6 @@ engine:test:
   image: golang:${GO_VERSION}
   stage: test
   before_script: ['']
-  allow_failure: true
   script:
     - mkdir -p $GOPATH/src/$REPO/$GROUP /go/src/_/builds
     - cp -r $CI_PROJECT_DIR /go/src/$REPO/$GROUP/$PROJECT
