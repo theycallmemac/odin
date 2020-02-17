@@ -1,12 +1,11 @@
 package main
 
 import (
-    "./executor"
-
     "io/ioutil"
     "net/http"
 
     "github.com/go-chi/chi"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/executor"
 )
 
 

@@ -1,12 +1,11 @@
 package main
 
 import (
-    "./jobs"
-
     "net/http"
 
     "github.com/go-chi/chi"
     "github.com/go-chi/chi/middleware"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/jobs"
 )
 
 func main() {

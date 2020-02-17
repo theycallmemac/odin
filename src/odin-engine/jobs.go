@@ -1,13 +1,12 @@
 package main
 
 import (
-    "./jobs"
-
     "io/ioutil"
     "net/http"
 
     "go.mongodb.org/mongo-driver/bson"
     "github.com/go-chi/chi"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/jobs"
 )
 
 
