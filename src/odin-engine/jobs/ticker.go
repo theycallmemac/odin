@@ -66,8 +66,10 @@ func fillQueue(t time.Time) {
     jobs := GetAll(SetupClient())
     for _, j := range jobs {
         node.ID, node.Lang, node.File = j.ID, j.Language, j.File
-        node.Schedule = int(cronexpr.MustParse(j.Schedule[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
-        queue.Items = append(queue.Items, node)
+        if len(j.Schedule) > 0 {
+            node.Schedule = int(cronexpr.MustParse(j.Schedule[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
+            queue.Items = append(queue.Items, node)
+        }
     }
     queue.Items = sortQueue(queue.Items)
     checkHead(queue.Items)
