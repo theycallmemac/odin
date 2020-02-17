@@ -5,21 +5,6 @@ import (
 	"testing"
 )
 
-func TestCompare(t *testing.T) {
-    cases := []struct {Name, A, B string; Expected bool} {
-	{"compare equal strings", "abc", "abc", true},
-	{"compare strings with a one missing character ","abcdefghijklmno", "abcdeghijklmno", false},
-	{"compare empty strings", "", "", true},
-	{"compare strings with multiple missing characters", "tuvwxyz", "txz", false},
-    }
-    for i, testCase := range cases {
-        t.Run(fmt.Sprintf(" %s == %s ", testCase.A, testCase.B), func(t *testing.T) {
-            actual := compare(testCase.A, testCase.B)
-	    if (actual != testCase.Expected) {t.Errorf("TestCompare %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
-        })
-    }
-}
-
 func TestStripChairs(t *testing.T) {
     cases := []struct {Name, A, B string; Expected string} {
 	{"strip on a single letter", "abcd", "d", "abc"},

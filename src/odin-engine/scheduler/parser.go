@@ -20,7 +20,7 @@ func isTimeValid(time string, matchMe string, results []string) ([]string, float
     var addOn float64 = 0
     timeSplit := splitOnKeyword(time, ":")
     for _, ts := range timeSplit {
-        if compare(ts, matchMe) {
+        if ts == matchMe {
             results = append(results, "0")
             addOn = 0.5
         }
@@ -41,7 +41,7 @@ func isScheduleValid(schedule string) bool {
                 results, addOn = isTimeValid(word, valid, results)
                 timeSplitAddOn += addOn
             } else {
-                if compare(valid, word) {
+                if valid == word {
                     results = append(results, "0")
                     break
                 }

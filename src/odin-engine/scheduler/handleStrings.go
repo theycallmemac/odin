@@ -4,11 +4,6 @@ import (
     "strings"
 )
 
-// this function is used to compare two strings
-func compare(a, b string) bool {
-    return a == b
-}
-
 // this function is used to strip characters from string
 func stripChars(str, chars string) string {
     return strings.Map(func(r rune) rune {
