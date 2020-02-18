@@ -28,22 +28,18 @@ func init() {
     DeployCmd.MarkFlagRequired("file")
 }
 
-
 func deployJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
     yaml := unmarsharlYaml(readJobFile(name))
     id := generateId()
-    jobPath := setupJobEnvironment(yaml, name, id)
-    if jobPath == "" {
-        os.Exit(2)
-    }
+    currentDir, _ := os.Getwd()
     var job NewJob
     job.ID = id
     job.Name = yaml.Job.Name
     job.Description =  yaml.Job.Description
     job.Language = yaml.Job.Language
-    job.File = jobPath + "/" + yaml.Job.File
-    fmt.Println(job.File)
+    job.File = currentDir + "/" + yaml.Job.File
+    fmt.Println(currentDir + "/" + yaml.Job.File)
     job.Status = "Running"
     job.Schedule =  getScheduleString(name)
     jobJSON, _ := json.Marshal(job)
@@ -98,24 +94,3 @@ func makeDirectory(name string) {
         os.MkdirAll(name, 0644)
 }
 
-func setupJobEnvironment(cfg Config, name string, id string) string {
-    jobsPath := "/etc/odin/jobs/"
-    logsPath := "/etc/odin/logs/"
-    jobDir := jobsPath + id
-    logDir := logsPath + id 
-    if ensureDirectory(jobDir) {
-        setupJobEnvironment(cfg, name, generateId())
-    } else {
-        makeDirectory(jobDir)
-        input, err := ioutil.ReadFile(cfg.Job.File)
-        if err != nil {
-            fmt.Println(err)
-            return ""
-        }
-        ioutil.WriteFile(logDir, []byte(""), 0644)
-        ioutil.WriteFile(jobDir + "/" + cfg.Job.File, input, 0644)
-        MarshalledCfg, _ := yaml.Marshal(cfg)
-        ioutil.WriteFile(jobDir + "/" + name, MarshalledCfg, 0644)
-    }
-    return jobDir
-}

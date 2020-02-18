@@ -13,15 +13,15 @@ var StatusCmd = &cobra.Command{
     Short: "return the status of an Odin job",
     Long:  `This subcommand will return the status of an Odin job`,
     Run: func(cmd *cobra.Command, args []string) {
-            all, _ := cmd.Flags().GetBool("all")
-            id, _:= cmd.Flags().GetString("id")
-            if all {
-                statusAll()
-            } else if id != "" {
-                statusJob(id)
-            } else {
-                cmd.Help()
-            }
+        all, _ := cmd.Flags().GetBool("all")
+        id, _:= cmd.Flags().GetString("id")
+        if all {
+            statusAll()
+        } else if id != "" {
+            statusJob(id)
+        } else {
+            cmd.Help()
+        }
     },
 }
 

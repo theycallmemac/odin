@@ -57,6 +57,7 @@ func (rs jobsResource) List(w http.ResponseWriter, r *http.Request) {
 // this function is used to create a new job
 func (rs jobsResource) Create(w http.ResponseWriter, r *http.Request) {
     d, _ := ioutil.ReadAll(r.Body)
+    jobs.SetupEnvironment(d)
     inserted := jobs.InsertIntoMongo(jobs.SetupClient(), d)
     b, _ := inserted.([]byte)
     w.Write(b)
