@@ -29,10 +29,10 @@ func SetupEnvironment(d []byte) {
         makeDirectory(jobsPath)
         makeDirectory(logsPath)
     }
-    if notDirectory(jobsPath + job.ID) && notDirectory(logsPath + job.ID) {
+    if notDirectory(jobsPath + job.ID) {
         makeDirectory(jobsPath + job.ID)
-        ioutil.WriteFile(jobsPath + job.ID + "/hello.py", []byte(""), 0644)
-        makeDirectory(logsPath + job.ID)
+        ioutil.WriteFile(jobsPath + job.ID + job.File, []byte(""), 0644)
+        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0644)
     }
     input, err := ioutil.ReadFile(job.File)
     if err != nil {
