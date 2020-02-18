@@ -1,8 +1,11 @@
 package main
 
 import (
+    "bytes"
     "io/ioutil"
     "net/http"
+    "os"
+    "strings"
 
     "go.mongodb.org/mongo-driver/bson"
     "github.com/go-chi/chi"
@@ -39,7 +42,6 @@ func (rs jobsResource) Routes() chi.Router {
             r.Post("/status", rs.StatusByID)
             r.Get("/status/all", rs.AllStatus)
             r.Put("/", rs.Update)
-            r.Delete("/", rs.Delete)
     })
 
     return r
@@ -87,7 +89,23 @@ func (rs jobsResource) AllStatus(w http.ResponseWriter, r *http.Request) {
 
 // this function is used to update a job
 func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("update a job"))
+    d, _ := ioutil.ReadAll(r.Body)
+    data := strings.Split(string(d), ",")
+    job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": data[0]})
+    if jobs.NotEmpty(data[1]) {
+        job.Name = data[1]
+    }
+    if jobs.NotEmpty(data[2]) {
+        job.Description = data[2]
+    }
+    if jobs.NotEmpty(data[3]) {
+        ioutil.WriteFile(".tmp.yml", []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: "+data[3] + "\n\n"), 0644)
+        resp := jobs.MakePostRequest("http://localhost:3939/schedule", bytes.NewBuffer([]byte(".tmp.yml")))
+        os.Remove(".tmp.yml")
+        job.Schedule = resp
+    }
+    _ = jobs.UpdateJobByValue(jobs.SetupClient(), job)
+    w.Write([]byte("updated job successfully\n"))
 }
 
 // this function is used to delete a job

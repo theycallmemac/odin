@@ -22,7 +22,7 @@ type Node struct {
     Schedule int
 }
 
-func makePostRequest(link string, data *bytes.Buffer) string {
+func MakePostRequest(link string, data *bytes.Buffer) string {
     client := &http.Client{}
     req, _ := http.NewRequest("POST", link, data)
     response, clientErr := client.Do(req)
@@ -55,7 +55,7 @@ func sortQueue(items []Node) []Node {
 func checkHead(items []Node) {
     if len(items) != 0 && items[0].Schedule <= 1 {
         top := items[0]
-        resp := makePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.Lang + " " + top.File + " " + top.ID)))
+        resp := MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.Lang + " " + top.File + " " + top.ID)))
 	fmt.Println("executed job", resp)
     }
 }

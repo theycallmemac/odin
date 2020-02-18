@@ -28,6 +28,15 @@ func processError(err error) {
     os.Exit(2)
 }
 
+
+// this function is used to check if a string is not empty
+func NotEmpty(s string) bool {
+    if s == "" {
+        return false
+    }
+    return true
+}
+
 // this function is used to read a file and return it's contents
 func readFile(filename string) *os.File {
     file, err := os.Open(filename)

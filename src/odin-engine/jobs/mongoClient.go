@@ -89,10 +89,18 @@ func Format(id string, name, string, description string, status string, schedule
     return fmt.Sprintf("%-38s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
 }
 
+// this function is used to modify a job in MongoDB
+func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
+    update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule,},}
+    collection := client.Database("myDatabase").Collection("myCollection")
+    updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
+    return updateResult.ModifiedCount
+}
+
 // this function is used to delete a job in MongoDB
 func DeleteJobByValue(client *mongo.Client, filter bson.M) int64 {
     collection := client.Database("myDatabase").Collection("myCollection")
-    deleteResult, _:= collection.DeleteOne(context.TODO(), filter)
+    deleteResult, _ := collection.DeleteOne(context.TODO(), filter)
     return deleteResult.DeletedCount
 }
 
