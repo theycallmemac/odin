@@ -50,9 +50,10 @@ func getMongoClient() *mongo.Client {
 }
 
 // this function is used to add information to the MongoDB instance
-func InsertIntoMongo(client *mongo.Client, d []byte) interface{} {
+func InsertIntoMongo(client *mongo.Client, d []byte, path string) interface{} {
     var job NewJob
     json.Unmarshal(d, &job)
+    job.File = path
     collection := client.Database("myDatabase").Collection("myCollection")
     insertResult, err := collection.InsertOne(context.TODO(), job)
     if err != nil {
