@@ -101,6 +101,12 @@ func Execute(filePath string) []StringFormat {
     yaml := getYaml(filePath)
 
     if isScheduleValid(yaml) {
+        if yaml == "every minute" {
+            var sf StringFormat
+            sf.Minute, sf.Hour, sf.Dom, sf.Mon, sf.Dow = "*","*","*","*","*"
+            stringFormat = append(stringFormat, sf)
+            return stringFormat
+        }
         // if the schedule is deemed valid, the string is split on the and & at keywords into rules
         for _, rule := range splitOnKeyword(yaml, "and") {
             formattedRules = append(formattedRules, splitOnKeyword(rule, "at"))
