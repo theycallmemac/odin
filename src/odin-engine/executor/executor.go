@@ -1,10 +1,12 @@
 package executor
 
 import (
-    "fmt"
-    "io/ioutil"
+    "io"
+    "os"
     "os/exec"
     "strings"
+
+    "github.com/sirupsen/logrus"
 )
 
 type Data struct {
@@ -16,9 +18,23 @@ func runCommand(ch chan<- Data, language string, file string, id string) {
     cmd := exec.Command(language, file)
     // data, err output after job is finished running
     data, err := cmd.CombinedOutput()
-    fmt.Println(string(data))
+    var logFile, _ = os.OpenFile("/etc/odin/logs/" + id, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+    logrus.SetOutput(io.MultiWriter(logFile, os.Stdout))
+    logrus.SetFormatter(&logrus.TextFormatter{})
     if id != "" {
-        ioutil.WriteFile("/etc/odin/logs/" + id, data, 0644)
+	logrus.WithFields(logrus.Fields{
+	    "id": id,
+	    "language": language,
+	    "file": file,
+        }).Info("executed")
+    }
+    if err != nil {
+        logrus.WithFields(logrus.Fields{
+	    "id": id,
+	    "language": language,
+	    "file": file,
+            "error": err,
+        }).Warn("failed")
     }
     ch <- Data{
         error:  err,
