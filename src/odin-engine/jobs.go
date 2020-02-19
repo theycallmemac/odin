@@ -56,7 +56,7 @@ func (rs jobsResource) List(w http.ResponseWriter, r *http.Request) {
     jobList := jobs.GetAll(jobs.SetupClient())
     w.Write([]byte(jobs.Format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "STATUS", "SCHEDULE")))
     for _, job := range jobList {
-        w.Write([]byte(jobs.Format(job.ID, job.Name, job.Description, job.Language ,job.Status, job.Schedule)))
+        w.Write([]byte(jobs.Format(job.ID, job.Name, job.Description, job.Language ,job.Status, job.Schedule[:len(job.Schedule)-1])))
     }
 }
 
