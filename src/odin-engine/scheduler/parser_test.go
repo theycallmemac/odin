@@ -39,7 +39,7 @@ func TestGetCron(t *testing.T) {
             {"read Dow values with correct key phrase", getDowMap(), "every Monday", "1"},
             {"read Dow values with correct key phrase", getDowMap(), "every Sunday", "7"},
             {"read Dow values with incorrect key phrase", getDowMap(), "every Mon", "*"},
-            {"read Dow values with everday key phrase", getDowMap(), "everyday", "000"},
+            {"read Dow values with everday key phrase", getDowMap(), "everyday", "*"},
             {"read Dom values with correct key phrase", getDomMap(), "every 4th", "4"},
             {"read Dom values with correct key phrase", getDomMap(), "every 21st", "21"},
             {"read Dom values with incorrect key phrase", getDomMap(), "every 32nd", "*"},

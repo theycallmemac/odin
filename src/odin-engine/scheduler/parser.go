@@ -67,7 +67,13 @@ func getCron(values map[string]string, key string) string {
 // this function is used to get the cron value for a month
 func getCronMonth(values map[string]string, currentDom string, key string) (string, string) {
     var result string
-    newKey := strings.Join(strings.Split(key, " ")[0:2]," ")
+    var newKey string
+    splitKey := strings.Split(key, " ")
+    if len(splitKey) == 1 {
+        newKey = splitKey[0]
+    } else {
+        newKey = strings.Join(splitKey[0:2]," ")
+    }
     if values[newKey] == "" {
         // if the value doesn't exist, we assume *
         result = "*"

@@ -7,7 +7,7 @@ func getValidKeywords() string {
 
 // this function is used return a mp of days to numeric values
 func getDowMap() map[string]string {
-    return map[string]string {"every Monday":"1","every Tuesday":"2","every Wednesday":"3","every Thursday":"4","every Friday":"5","every Saturday":"6","every Sunday":"7","everyday":"000",}
+    return map[string]string {"every Monday":"1","every Tuesday":"2","every Wednesday":"3","every Thursday":"4","every Friday":"5","every Saturday":"6","every Sunday":"7","everyday": "*",}
 }
 
 // this function is used to return a map of days of the month to numeric values
