@@ -53,7 +53,7 @@ func sortQueue(items []Node) []Node {
 }
 
 func checkHead(items []Node) {
-    if len(items) != 0 && items[0].Schedule <= 1 {
+    if len(items) != 0 && items[0].Schedule == 0 {
         top := items[0]
         resp := MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.Lang + " " + top.File + " " + top.ID)))
 	fmt.Println("executed job", resp)

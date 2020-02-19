@@ -44,6 +44,10 @@ func (rs jobsResource) Routes() chi.Router {
             r.Put("/", rs.Update)
     })
 
+    r.Route("/logs", func(r chi.Router) {
+        r.Post("/", rs.LogByID)
+    })
+
     return r
 }
 
@@ -113,5 +117,12 @@ func (rs jobsResource) Delete(w http.ResponseWriter, r *http.Request) {
     d, _ := ioutil.ReadAll(r.Body)
     _ = jobs.DeleteJobByValue(jobs.SetupClient(), bson.M{"id": string(d)})
     w.Write([]byte("Job removed!\n"))
+}
+
+// this function is used to retrieve the logs for a job
+func (rs jobsResource) LogByID(w http.ResponseWriter, r *http.Request) {
+    d, _ := ioutil.ReadAll(r.Body)
+    log, _ := ioutil.ReadFile("/etc/odin/logs/" + string(d))
+    w.Write([]byte("\n" + string(log) + "\n"))
 }
 
