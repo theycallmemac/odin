@@ -4,6 +4,8 @@ import (
     "encoding/json"
     "io/ioutil"
     "os"
+    "os/user"
+    "strconv"
     "strings"
 )
 
@@ -15,8 +17,16 @@ func notDirectory(dir string) bool {
 }
 
 func makeDirectory(name string) {
-    os.MkdirAll(name, 0644)
+    os.MkdirAll(name, 0654)
 }
+
+func ChownR(path string, uid, gid int) {
+    s := strings.Split(path, "/")
+   for i := len(s) - 1; i > 2; i-- {
+        os.Chown(strings.Join(s[:i], "/"), uid, gid)
+    }
+}
+
 
 func SetupEnvironment(d []byte) string {
     var job NewJob
@@ -36,14 +46,18 @@ func SetupEnvironment(d []byte) string {
     newFilePath := jobsPath + job.ID + "/" + job.File
     if notDirectory(jobsPath + job.ID) {
         makeDirectory(jobsPath + job.ID)
-        ioutil.WriteFile(newFilePath, []byte(""), 0644)
-        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0644)
+        group, _ := user.LookupGroup("odin")
+        gid, _ := strconv.Atoi(group.Gid)
+	ChownR(newFilePath, 0, gid)
+	ChownR(logsPath + job.ID, 0, gid)
+        ioutil.WriteFile(newFilePath, []byte(""), 0654)
+        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0766)
     }
     input, err := ioutil.ReadFile(originalFile)
     if err != nil {
         panic(err)
     }
-    ioutil.WriteFile(logsPath, []byte(""), 0644)
-    ioutil.WriteFile(newFilePath, input, 0644)
+    ioutil.WriteFile(logsPath, []byte(""), 0766)
+    ioutil.WriteFile(newFilePath, input, 0654)
     return newFilePath
 }

@@ -16,6 +16,8 @@ import (
 // create NewJob type to tbe used for accessing and storing job information
 type NewJob struct {
     ID string `yaml:"id"`
+    UID string `yaml:"uid"`
+    GID string `yaml:"gid"`
     Name string `yaml:"name"`
     Description string `yaml:"description"`
     Language string `yaml:"language"`

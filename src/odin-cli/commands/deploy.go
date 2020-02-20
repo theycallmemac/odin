@@ -1,13 +1,16 @@
 package commands
 
 import (
+    "bytes"
     "crypto/rand"
+    "encoding/json"
     "fmt"
+    "io/ioutil"
     "log"
     "os"
-    "io/ioutil"
-    "bytes"
-    "encoding/json"
+    "os/user"
+    "strconv"
+    "syscall"
 
     "github.com/spf13/cobra"
     "gopkg.in/yaml.v2"
@@ -35,6 +38,10 @@ func deployJob(cmd *cobra.Command, args []string) {
     currentDir, _ := os.Getwd()
     var job NewJob
     job.ID = id
+    job.UID = fmt.Sprint(syscall.Getuid())
+    group, _ := user.LookupGroup("odin")
+    gid, _ := strconv.Atoi(group.Gid)
+    job.GID = strconv.Itoa(gid)
     job.Name = yaml.Job.Name
     job.Description =  yaml.Job.Description
     job.Language = yaml.Job.Language

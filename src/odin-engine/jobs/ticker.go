@@ -17,6 +17,8 @@ type Queue struct {
 
 type Node struct {
     ID string
+    UID string
+    GID string
     Lang string
     File string
     Schedule int
@@ -55,7 +57,7 @@ func sortQueue(items []Node) []Node {
 func checkHead(items []Node) {
     if len(items) != 0 && items[0].Schedule == 0 {
         top := items[0]
-        resp := MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.Lang + " " + top.File + " " + top.ID)))
+        resp := MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.UID + " " + top.GID + " " + top.Lang + " " + top.File + " " + top.ID)))
 	fmt.Println("executed job", resp)
     }
 }
@@ -65,7 +67,7 @@ func fillQueue(t time.Time) {
     var node Node
     jobs := GetAll(SetupClient())
     for _, j := range jobs {
-        node.ID, node.Lang, node.File = j.ID, j.Language, j.File
+        node.ID, node.UID, node.GID, node.Lang, node.File = j.ID, j.UID, j.GID, j.Language, j.File
         if len(j.Schedule) > 0 {
             node.Schedule = int(cronexpr.MustParse(j.Schedule[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
             queue.Items = append(queue.Items, node)

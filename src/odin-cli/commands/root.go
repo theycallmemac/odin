@@ -99,6 +99,8 @@ type JobType struct {
 
 type NewJob struct {
     ID string `yaml:"id"`
+    UID string `yaml:"uid"`
+    GID string `yaml:"gid"`
     Name string `yaml:"name"`
     Description string `yaml:"description"`
     Language string `yaml:"language"`

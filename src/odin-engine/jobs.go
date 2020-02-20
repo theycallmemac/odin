@@ -16,6 +16,8 @@ import (
 // create NewJob type to tbe used for accessing job information
 type NewJob struct {
     ID string `yaml:"id"`
+    UID string `yaml:"uid"`
+    GID string `yaml:"gid"`
     Name string `yaml:"name"`
     Description string `yaml:"description"`
     Language string `yaml:"language"`
@@ -103,7 +105,7 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
         job.Description = data[2]
     }
     if jobs.NotEmpty(data[3]) {
-        ioutil.WriteFile(".tmp.yml", []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: "+data[3] + "\n\n"), 0644)
+        ioutil.WriteFile(".tmp.yml", []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: "+data[3] + "\n\n"), 0654)
         resp := jobs.MakePostRequest("http://localhost:3939/schedule", bytes.NewBuffer([]byte(".tmp.yml")))
         os.Remove(".tmp.yml")
         job.Schedule = resp
