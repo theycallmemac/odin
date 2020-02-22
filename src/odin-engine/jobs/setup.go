@@ -10,6 +10,8 @@ import (
 )
 
 // this function is used to check whether or not a directory exists
+// parameters: dir (a string of the directory path to check)
+// returns: boolean (true if it exists, false otherwise)
 func notDirectory(dir string) bool {
     if  _, err := os.Stat(dir); os.IsNotExist(err) {
         return true
@@ -18,11 +20,15 @@ func notDirectory(dir string) bool {
 }
 
 // this function is used to create a new directory
+// parameters: name (a string of the directory path to create)
+// returns: nil
 func makeDirectory(name string) {
     os.MkdirAll(name, 0654)
 }
 
 // this function is used to recursively change the owner of each subdir under /etc
+// parameters: path (a string of the directory path to chown), uid (an int used to set the owner uid), gid (an int used to set the owner gid)
+// returns: nil
 func ChownR(path string, uid, gid int) {
     s := strings.Split(path, "/")
    for i := len(s) - 1; i > 2; i-- {
@@ -31,6 +37,8 @@ func ChownR(path string, uid, gid int) {
 }
 
 // this function is used to kickstart the process for setting up the correct directories and files used by odin
+// parameters: d (a byte array containing marshaled JSON)
+// returns: string (the path to the newly created file)
 func SetupEnvironment(d []byte) string {
     var job NewJob
     err := json.Unmarshal(d, &job)

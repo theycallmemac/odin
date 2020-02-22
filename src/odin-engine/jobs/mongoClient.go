@@ -26,8 +26,9 @@ type NewJob struct {
     Schedule string `yaml:"schedule"`
 }
 
-// this function is used to set up a MongoDB client
-// this set up is tested with a ping command
+// this function is used to set up a MongoDB client and test it with a ping command
+// parameters: nil
+// returns: *mogno.Client (a client)
 func SetupClient() *mongo.Client {
     c := getMongoClient()
     err := c.Ping(context.Background(), readpref.Primary())
@@ -38,6 +39,8 @@ func SetupClient() *mongo.Client {
 }
 
 // this function is used to get a MongoDB Client and set it's options
+// parameters: none
+// returns: *mogno.Client (a client)
 func getMongoClient() *mongo.Client {
     clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
     client, err := mongo.NewClient(clientOptions)
@@ -52,6 +55,8 @@ func getMongoClient() *mongo.Client {
 }
 
 // this function is used to add information to the MongoDB instance
+// parameters: client (a *mongo.Client), d (a byte array containing marshaled JSON), and path (a string to set as the new job.File)
+// returns: interface{} (an interface on the insertion results)
 func InsertIntoMongo(client *mongo.Client, d []byte, path string) interface{} {
     var job NewJob
     json.Unmarshal(d, &job)
@@ -64,8 +69,9 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string) interface{} {
     return insertResult.InsertedID
 }
 
-// this function is used to return a job in MongoDB 
-// this is done by filtering on a certain value pertaining to that job
+// this function is used to return a job in MongoDB by filtering on a certain value pertaining to that job
+// parameters: client (a *mongo.Client), filter (a bson encoding of a job id)
+// returns: NewJob (the fetched job)
 func GetJobByValue(client *mongo.Client, filter bson.M) NewJob {
     var job NewJob
     collection := client.Database("myDatabase").Collection("myCollection")
@@ -75,6 +81,8 @@ func GetJobByValue(client *mongo.Client, filter bson.M) NewJob {
 }
 
 // this function is used to return all jobs in MongoDB
+// parameters: client (a *mongo.Client)
+// returns: []NewJob (all jobs in the Mongo instance)
 func GetAll(client *mongo.Client) []NewJob {
     var jobs []NewJob
     collection := client.Database("myDatabase").Collection("myCollection")
@@ -88,11 +96,15 @@ func GetAll(client *mongo.Client) []NewJob {
 }
 
 // this function is used to format the output of MongoDB contents
+// parameters: id, name, description, status, schedule (five strings corresponding to individual job data)
+// returns: string (a space formatted string used for display)
 func Format(id string, name, string, description string, status string, schedule string) string {
     return fmt.Sprintf("%-38s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
 }
 
 // this function is used to modify a job in MongoDB
+// parameters: client (a *mongo.Client), job (a NewJob structure)
+// returns: int64 (value of the number of entries modified)
 func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
     update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule,},}
     collection := client.Database("myDatabase").Collection("myCollection")
@@ -101,6 +113,8 @@ func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
 }
 
 // this function is used to delete a job in MongoDB
+// parameters: parameters: client (a *mongo.Client), filter (a bson encoding of a job id)
+// returns: int64 (value of the number of entries deleted)
 func DeleteJobByValue(client *mongo.Client, filter bson.M) int64 {
     collection := client.Database("myDatabase").Collection("myCollection")
     deleteResult, _ := collection.DeleteOne(context.TODO(), filter)

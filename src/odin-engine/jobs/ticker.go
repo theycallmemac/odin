@@ -25,6 +25,8 @@ type Node struct {
 }
 
 // this function is used to make a post request to a given url
+// parameters: link (a string of the link to make a request to), data (a buffer to pass to the post request) 
+// returns: string (the result of a POST to the provided link with the given data)
 func MakePostRequest(link string, data *bytes.Buffer) string {
     client := &http.Client{}
     req, _ := http.NewRequest("POST", link, data)
@@ -36,8 +38,9 @@ func MakePostRequest(link string, data *bytes.Buffer) string {
     return string(bodyBytes)
 }
 
-// this function is used to sort an array of nodes
-// this is in implementation of quicksort which benefits from being a goroutine
+// this function is used to sort an array of nodes using an implementation of recursive quicksort which acts as a goroutine
+// parameters: items (an array of jobs in the queue), done (a channel to signify when the routine has finished)
+// returns: nil
 func sortQueue(items []Node, done chan int) {
     if len(items) < 2 {
         done <- 1
@@ -64,6 +67,8 @@ func sortQueue(items []Node, done chan int) {
 }
 
 // this function is used to check if the head fo the queue is in an execution state
+// parameters: items (a map of ints to arrays of jobs)
+// returns: nil
 func checkHead(items map[int][]Node) {
     if value, ok := items[0]; ok {
         for _, job := range value {
@@ -73,6 +78,8 @@ func checkHead(items map[int][]Node) {
     }
 }
 // this function is used to group jobs by the number of seconds until execution
+// parameters: items (an array of jobs)
+// returns: map[int][]Node (a map of the seconds until each job execute to the jobs scheduled to execute then)
 func groupItems(items []Node) map[int][]Node {
     output := make(map[int][]Node)
     for _, item := range items {
@@ -82,27 +89,35 @@ func groupItems(items []Node) map[int][]Node {
 }
 
 // this function is used to convert the cron time string into seconds
-func cronToSeconds(cronTime string) {
-    return int(cronexpr.MustParse(cronTime[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
+// parameters: cronTime (a string of the cron time string format for a job's execution)
+// returns: int (the time until a job executes in seconds)
+func cronToSeconds(cronTime string) int {
+    return int(cronexpr.MustParse(cronTime[:len(cronTime)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
 }
 
 // this function is used to populate the queue, calling sorting and grouping methods before checking the head
+// parameters: t (the time interval betwen each execution of the fillQueue function)
+// returns: nil
 func fillQueue(t time.Time) {
     var queue Queue
     var node Node
     jobs := GetAll(SetupClient())
     for _, j := range jobs {
         node.ID, node.UID, node.GID, node.Lang, node.File = j.ID, j.UID, j.GID, j.Language, j.File
-        node.Schedule = cronToSeconds(j.Schedule)
-        queue.Items = append(queue.Items, node)
-        channel := make(chan int)
-        go sortQueue(queue.Items, channel)
-        <-channel
+        if len(j.Schedule) > 0 {
+            node.Schedule = cronToSeconds(j.Schedule)
+            queue.Items = append(queue.Items, node)
+            channel := make(chan int)
+            go sortQueue(queue.Items, channel)
+            <-channel
+        }
     }
     go checkHead(groupItems(queue.Items))
 }
 
 // this function is used to execute the fillQueue function every second
+// parameters: d (the duration between execution of fillQueue), f (the function to execute - in this case it's fillQueue)
+// returns: nil
 func doEvery(d time.Duration, f func(time.Time)) {
     for x := range time.Tick(d) {
         go f(x)
@@ -110,6 +125,8 @@ func doEvery(d time.Duration, f func(time.Time)) {
 }
 
 // this function starts the countdown process, specifying the paramaters of execution for doEvery
+// parameters: nil
+// returns: nil
 func StartTicker() {
    go doEvery(1000*time.Millisecond, fillQueue)
 }
