@@ -11,10 +11,6 @@ import (
     "github.com/gorhill/cronexpr"
 )
 
-type GroupedQueue struct {
-    Items [][]Node
-}
-
 type Queue struct {
     Items []Node
 }
