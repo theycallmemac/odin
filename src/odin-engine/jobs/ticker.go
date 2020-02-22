@@ -11,6 +11,10 @@ import (
     "github.com/gorhill/cronexpr"
 )
 
+type GroupedQueue struct {
+    Items [][]Node
+}
+
 type Queue struct {
     Items []Node
 }
@@ -54,12 +58,21 @@ func sortQueue(items []Node) []Node {
     return items
 }
 
-func checkHead(items []Node) {
-    if len(items) != 0 && items[0].Schedule == 0 {
-        top := items[0]
-        resp := MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(top.UID + " " + top.GID + " " + top.Lang + " " + top.File + " " + top.ID)))
-	fmt.Println("executed job", resp)
+func checkHead(items map[int][]Node) {
+    if value, ok := items[0]; ok {
+        for _, job := range value {
+            go MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(job.UID + " " + job.GID + " " + job.Lang + " " + job.File + " " + job.ID)))
+            fmt.Println("executed job")
+        }
     }
+}
+
+func groupItems(items []Node) map[int][]Node {
+    output := make(map[int][]Node)
+    for _, item := range items {
+        output[item.Schedule] = append(output[item.Schedule], item)
+    }
+    return output
 }
 
 func fillQueue(t time.Time) {
@@ -71,18 +84,18 @@ func fillQueue(t time.Time) {
         if len(j.Schedule) > 0 {
             node.Schedule = int(cronexpr.MustParse(j.Schedule[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
             queue.Items = append(queue.Items, node)
+            queue.Items = sortQueue(queue.Items)
         }
     }
-    queue.Items = sortQueue(queue.Items)
-    checkHead(queue.Items)
+    go checkHead(groupItems(queue.Items))
 }
 
 func doEvery(d time.Duration, f func(time.Time)) {
     for x := range time.Tick(d) {
-        f(x)
+        go f(x)
     }
 }
 
 func StartTicker() {
-   doEvery(1000*time.Millisecond, fillQueue)
+   go doEvery(1000*time.Millisecond, fillQueue)
 }
