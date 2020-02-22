@@ -20,7 +20,10 @@ func TestSortQueue(t *testing.T) {
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("%v.get() ", testCase.A), func(t *testing.T) {
-                actual := sortQueue(testCase.A)
+                actual := testCase.A
+                channel := make(chan int)
+                go sortQueue(actual, channel)
+                <-channel
                 for inc, _ := range unsorted.Items {
                     if (actual[inc].Schedule) != testCase.Expected[inc].Schedule {t.Errorf("TestGetYaml %d failed - expected: '%v' got: '%v'", i+1, actual[inc].Schedule, testCase.Expected[inc].Schedule)}
                 }

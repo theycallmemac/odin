@@ -39,11 +39,13 @@ func MakePostRequest(link string, data *bytes.Buffer) string {
     return string(bodyBytes)
 }
 
-func sortQueue(items []Node) []Node {
+
+func sortQueue(items []Node, done chan int) {
     if len(items) < 2 {
-        return items
+        done <- 1
+        return
     }
-    left, right := 0, len(items)-1
+    left, right := 0, len(items) - 1
     pivot := rand.Int() % len(items)
     items[pivot], items[right] = items[right], items[pivot]
     for i, _ := range items {
@@ -53,9 +55,14 @@ func sortQueue(items []Node) []Node {
         }
     }
     items[left], items[right] = items[right], items[left]
-    sortQueue(items[:left])
-    sortQueue(items[left+1:])
-    return items
+    childChan := make(chan int)
+    go sortQueue(items[:left], childChan)
+    go sortQueue(items[left+1:], childChan)
+    for i := 0; i < 2; i++ {
+        <-childChan
+    }
+    done <- 1
+    return
 }
 
 func checkHead(items map[int][]Node) {
@@ -84,7 +91,9 @@ func fillQueue(t time.Time) {
         if len(j.Schedule) > 0 {
             node.Schedule = int(cronexpr.MustParse(j.Schedule[:len(j.Schedule)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
             queue.Items = append(queue.Items, node)
-            queue.Items = sortQueue(queue.Items)
+            channel := make(chan int)
+            go sortQueue(queue.Items, channel)
+	    <-channel
         }
     }
     go checkHead(groupItems(queue.Items))
