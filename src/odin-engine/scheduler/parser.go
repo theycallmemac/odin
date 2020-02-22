@@ -14,8 +14,9 @@ type StringFormat struct {
     Dow string
 }
 
-// this function is used to judge the validity of the time in a schedule
-// this is done by returning an array of 0's for each matching segment
+// this function is used to judge the validity of the time in a schedule by returning an array of 0's for each matching segment
+// parameters: time (the time to be checked), matchMe (a time to match against), results (an array of 0's)
+// returns: results (resultant array of strings), addOn (an offset to be returned and used)
 func isTimeValid(time string, matchMe string, results []string) ([]string, float64) {
     var addOn float64 = 0
     timeSplit := splitOnKeyword(time, ":")
@@ -29,7 +30,8 @@ func isTimeValid(time string, matchMe string, results []string) ([]string, float
 }
 
 // this function is used to judge the validity of a schedule
-// this is done by comparing the length of the results array and the inital range of words combined with an addOn
+// parameters: schedule (the schedule to be checked)
+// returns: boolean (true indicating the schedule is valid, false if otherwise)
 func isScheduleValid(schedule string) bool {
     var results []string
     var timeSplitAddOn float64 = 0
@@ -52,6 +54,8 @@ func isScheduleValid(schedule string) bool {
 }
 
 // this function is used to get the cron values for the day of the week and the day of the month
+// parameters: values (a map of odin formatted time strings to number valued string), key (a string - value to use as an index for the map)
+// returns: string (the value of the map at the given key)
 func getCron(values map[string]string, key string) string {
     var result string
     if values[key] == "" {
@@ -65,6 +69,8 @@ func getCron(values map[string]string, key string) string {
 }
 
 // this function is used to get the cron value for a month
+// parameters: values (a map of odin formatted time strings to number valued string), currentDom (the current value for dom), key (a string - value to use as an index for the map)
+// returns: two strings (the result of the month cron value and the value of currentDom)
 func getCronMonth(values map[string]string, currentDom string, key string) (string, string) {
     var result string
     var newKey string
@@ -89,6 +95,8 @@ func getCronMonth(values map[string]string, currentDom string, key string) (stri
 }
 
 // this function is used to start the scheduler
+// parameters: filePath (a string containing the path to a file)
+// returns: []StringFormat (an array of cron string formats)
 func Execute(filePath string) []StringFormat {
     var stringFormat []StringFormat
     // day of week, day of month and month of the year values are returned from functions in keywords.go
