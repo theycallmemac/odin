@@ -9,6 +9,7 @@ import (
     "strings"
 )
 
+// this function is used to check whether or not a directory exists
 func notDirectory(dir string) bool {
     if  _, err := os.Stat(dir); os.IsNotExist(err) {
         return true
@@ -16,10 +17,12 @@ func notDirectory(dir string) bool {
     return false
 }
 
+// this function is used to create a new directory
 func makeDirectory(name string) {
     os.MkdirAll(name, 0654)
 }
 
+// this function is used to recursively change the owner of each subdir under /etc
 func ChownR(path string, uid, gid int) {
     s := strings.Split(path, "/")
    for i := len(s) - 1; i > 2; i-- {
@@ -27,7 +30,7 @@ func ChownR(path string, uid, gid int) {
     }
 }
 
-
+// this function is used to kickstart the process for setting up the correct directories and files used by odin
 func SetupEnvironment(d []byte) string {
     var job NewJob
     err := json.Unmarshal(d, &job)
