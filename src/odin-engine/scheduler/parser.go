@@ -109,9 +109,14 @@ func Execute(filePath string) []StringFormat {
     yaml := getYaml(filePath)
 
     if isScheduleValid(yaml) {
+        var sf StringFormat
         if yaml == "every minute" {
-            var sf StringFormat
             sf.Minute, sf.Hour, sf.Dom, sf.Mon, sf.Dow = "*","*","*","*","*"
+            stringFormat = append(stringFormat, sf)
+            return stringFormat
+        }
+        if yaml == "every hour" {
+            sf.Minute, sf.Hour, sf.Dom, sf.Mon, sf.Dow = "0","*","*","*","*"
             stringFormat = append(stringFormat, sf)
             return stringFormat
         }
@@ -121,7 +126,6 @@ func Execute(filePath string) []StringFormat {
         }
         // the rules are iterated over and converted into the representative cron values
         for i, _ := range formattedRules {
-            var sf StringFormat
             key := trimEdges(formattedRules[i][0], "\t \n")
             sf.Dow = getCron(dowValues, key)
             sf.Dom = getCron(domValues, key)
