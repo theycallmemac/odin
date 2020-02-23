@@ -6,6 +6,8 @@ import (
     "io/ioutil"
     "math/rand"
     "net/http"
+    "sort"
+    "strings"
     "time"
 
     "github.com/gorhill/cronexpr"
@@ -21,7 +23,7 @@ type Node struct {
     GID string
     Lang string
     File string
-    Schedule int
+    Schedule []int
 }
 
 // this function is used to make a post request to a given url
@@ -50,7 +52,7 @@ func sortQueue(items []Node, done chan int) {
     pivot := rand.Int() % len(items)
     items[pivot], items[right] = items[right], items[pivot]
     for i, _ := range items {
-        if items[i].Schedule < items[right].Schedule {
+        if items[i].Schedule[0] < items[right].Schedule[0] {
             items[left], items[i] = items[i], items[left]
             left++
         }
@@ -83,16 +85,26 @@ func checkHead(items map[int][]Node) {
 func groupItems(items []Node) map[int][]Node {
     output := make(map[int][]Node)
     for _, item := range items {
-        output[item.Schedule] = append(output[item.Schedule], item)
+        for i := 0; i < len(item.Schedule); i++ {
+            if len(string(item.Schedule[i])) != 0 {
+                output[item.Schedule[i]] = append(output[item.Schedule[i]], item)
+            }
+        }
     }
     return output
 }
 
 // this function is used to convert the cron time string into seconds
 // parameters: cronTime (a string of the cron time string format for a job's execution)
-// returns: int (the time until a job executes in seconds)
-func cronToSeconds(cronTime string) int {
-    return int(cronexpr.MustParse(cronTime[:len(cronTime)-1]).Next(time.Now()).Sub(time.Now()).Seconds())
+// returns: []int (an arry of times until a job executes in seconds)
+func cronToSeconds(cronTime string) []int {
+    var times []int
+    expressions := strings.Split(cronTime, ",")
+    for i := 0; i < len(expressions) - 1; i++ {
+        times = append(times, int(cronexpr.MustParse(expressions[i]).Next(time.Now()).Sub(time.Now()).Seconds()))
+    }
+    sort.Ints(times)
+    return times
 }
 
 // this function is used to populate the queue, calling sorting and grouping methods before checking the head
