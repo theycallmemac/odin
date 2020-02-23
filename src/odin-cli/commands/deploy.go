@@ -16,6 +16,7 @@ import (
     "gopkg.in/yaml.v2"
 )
 
+// define the DeployCmd's metadata and run operation
 var DeployCmd = &cobra.Command{
     Use:   "deploy",
     Short: "deploy a job created by user",
@@ -25,12 +26,18 @@ var DeployCmd = &cobra.Command{
     },
 }
 
+// add DeployCmd and it's respective flags
+// parameters: nil
+// returns: nil
 func init() {
     RootCmd.AddCommand(DeployCmd)
     DeployCmd.Flags().StringP("file", "f", "", "file (required)")
     DeployCmd.MarkFlagRequired("file")
 }
 
+// this function is called as the run operation for the DeployCmd
+// parameters: cmd (the definition of *cmd.Command), args (an array of strings passed to the command)
+// returns: nil
 func deployJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
     yaml := unmarsharlYaml(readJobFile(name))
@@ -53,6 +60,9 @@ func deployJob(cmd *cobra.Command, args []string) {
     fmt.Println(body, "Deployed!")
 }
 
+// this function is used to read a file
+// parameters: name (a string containing the path to a file)
+// returns: []byte (an array of bytes containing the contents of the file)
 func readJobFile(name string) []byte {
     file, err := os.Open(name)
     if err != nil {
@@ -63,6 +73,9 @@ func readJobFile(name string) []byte {
     return bytes
 }
 
+// this function is used to unmarshal YAML
+// parameters: byteArray (an array of bytes representing the contents of a file)
+// returns: Config (a struct form of the YAML)
 func unmarsharlYaml(byteArray []byte) Config {
    var cfg Config
     err := yaml.Unmarshal([]byte(byteArray), &cfg)
@@ -72,6 +85,9 @@ func unmarsharlYaml(byteArray []byte) Config {
     return cfg
 }
 
+// this function is used to generate a unqiue id
+// parameters: nil
+// returns: string (the generated id)
 func generateId() string {
     b := make([]byte, 16)
     _, err := rand.Read(b)
@@ -82,6 +98,9 @@ func generateId() string {
     return id
 }
 
+// this function is used to check if a directory exists
+// parameters: dir (a string containing the path to the checked directory)
+// returns: boolean (true is no error in checking the existence of the directory, false if otherwise)
 func ensureDirectory(dir string) bool {
     if  _, err := os.Stat(dir); os.IsNotExist(err) {
         return false
@@ -89,14 +108,13 @@ func ensureDirectory(dir string) bool {
     return true
 }
 
+// this function is used to get the schedule string using the path to the file
+// parameters: name (a string containing the path to a file)
+// returns: ss (the generated schedule string)
 func getScheduleString(name string) string {
     dir, _ := os.Getwd()
     absPath := []byte(dir + "/" + name)
     ss := makePostRequest("http://localhost:3939/schedule", bytes.NewBuffer(absPath))
     return ss
-}
-
-func makeDirectory(name string) {
-        os.MkdirAll(name, 0644)
 }
 
