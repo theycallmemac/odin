@@ -27,12 +27,12 @@ func (rs executeResource) Routes() chi.Router {
 func (rs executeResource) Executor(w http.ResponseWriter, r *http.Request) {
     path, err := ioutil.ReadAll(r.Body)
     executor.ReviewError(err, "bool")
-    go executor.Execute(string(path), 0)
+    go executor.Execute(path, 0)
 }
 
 // this function is used to execute a job passed to the command line tool
 func (rs executeResource) ExecuteYaml(w http.ResponseWriter, r *http.Request) {
     path, err := ioutil.ReadAll(r.Body)
     executor.ReviewError(err, "bool")
-    go executor.Execute(string(path), 1)
+    go executor.Execute(path, 1)
 }

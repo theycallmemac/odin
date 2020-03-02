@@ -2,6 +2,7 @@ package jobs
 
 import (
     "bytes"
+    "encoding/json"
     "fmt"
     "io/ioutil"
     "math/rand"
@@ -72,11 +73,9 @@ func sortQueue(items []Node, done chan int) {
 // parameters: items (a map of ints to arrays of jobs)
 // returns: nil
 func checkHead(items map[int][]Node) {
-    if value, ok := items[0]; ok {
-        for _, job := range value {
-            go MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer([]byte(job.UID + " " + job.GID + " " + job.Lang + " " + job.File + " " + job.ID)))
-            fmt.Println("executed job")
-        }
+    if _, ok := items[0]; ok {
+        items, _ := json.Marshal(items[0])
+        go MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer(items))
     }
 }
 // this function is used to group jobs by the number of seconds until execution
