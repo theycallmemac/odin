@@ -66,9 +66,8 @@ func (rs jobsResource) List(w http.ResponseWriter, r *http.Request) {
 func (rs jobsResource) Create(w http.ResponseWriter, r *http.Request) {
     d, _ := ioutil.ReadAll(r.Body)
     path := jobs.SetupEnvironment(d)
-    inserted := jobs.InsertIntoMongo(jobs.SetupClient(), d, path)
-    b, _ := inserted.([]byte)
-    w.Write(b)
+    status := jobs.InsertIntoMongo(jobs.SetupClient(), d, path)
+    w.Write([]byte(status))
 }
 
 // this function is used to show a job's description

@@ -57,16 +57,20 @@ func getMongoClient() *mongo.Client {
 // this function is used to add information to the MongoDB instance
 // parameters: client (a *mongo.Client), d (a byte array containing marshaled JSON), and path (a string to set as the new job.File)
 // returns: interface{} (an interface on the insertion results)
-func InsertIntoMongo(client *mongo.Client, d []byte, path string) interface{} {
+func InsertIntoMongo(client *mongo.Client, d []byte, path string) string {
     var job NewJob
     json.Unmarshal(d, &job)
     job.File = path
-    collection := client.Database("myDatabase").Collection("myCollection")
-    insertResult, err := collection.InsertOne(context.TODO(), job)
-    if err != nil {
-        log.Fatalln("Error on inserting new job", err)
+    if string(GetJobByValue(client, bson.M{"id": string(job.ID)}).ID) == string(job.ID) {
+        return "Job already exists!"
+    } else {
+        collection := client.Database("myDatabase").Collection("myCollection")
+        _, err := collection.InsertOne(context.TODO(), job)
+        if err != nil {
+            log.Fatalln("Error on inserting new job", err)
+        }
+        return "Job deployed successfully!"
     }
-    return insertResult.InsertedID
 }
 
 // this function is used to return a job in MongoDB by filtering on a certain value pertaining to that job

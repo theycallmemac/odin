@@ -110,6 +110,7 @@ type ProviderType struct {
 
 // create JobType type to tbe used for accessing job information in the config
 type JobType struct {
+    ID string `yaml:"id"`
     Name string `yaml:"name"`
     Description string `yaml:"description"`
     Language string `yaml:"language"`

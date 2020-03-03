@@ -2,7 +2,6 @@ package commands
 
 import (
     "bytes"
-    "crypto/rand"
     "encoding/json"
     "fmt"
     "io/ioutil"
@@ -41,10 +40,9 @@ func init() {
 func deployJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
     yaml := unmarsharlYaml(readJobFile(name))
-    id := generateId()
     currentDir, _ := os.Getwd()
     var job NewJob
-    job.ID = id
+    job.ID = yaml.Job.ID
     job.UID = fmt.Sprint(syscall.Getuid())
     group, _ := user.LookupGroup("odin")
     gid, _ := strconv.Atoi(group.Gid)
@@ -57,7 +55,7 @@ func deployJob(cmd *cobra.Command, args []string) {
     job.Schedule =  getScheduleString(name)
     jobJSON, _ := json.Marshal(job)
     body := makePostRequest("http://localhost:3939/jobs", bytes.NewBuffer(jobJSON))
-    fmt.Println(body, "Deployed!")
+    fmt.Println(body)
 }
 
 // this function is used to read a file
@@ -83,19 +81,6 @@ func unmarsharlYaml(byteArray []byte) Config {
         log.Fatalf("error: %v", err)
     }
     return cfg
-}
-
-// this function is used to generate a unqiue id
-// parameters: nil
-// returns: string (the generated id)
-func generateId() string {
-    b := make([]byte, 16)
-    _, err := rand.Read(b)
-    if err != nil {
-        log.Fatal(err)
-    }
-    id := fmt.Sprintf("%x%x%x%x%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-    return id
 }
 
 // this function is used to check if a directory exists
