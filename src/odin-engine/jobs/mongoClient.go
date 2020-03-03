@@ -103,7 +103,7 @@ func GetAll(client *mongo.Client) []NewJob {
 // parameters: id, name, description, status, schedule (five strings corresponding to individual job data)
 // returns: string (a space formatted string used for display)
 func Format(id string, name, string, description string, status string, schedule string) string {
-    return fmt.Sprintf("%-38s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
+    return fmt.Sprintf("%-20s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
 }
 
 // this function is used to modify a job in MongoDB
