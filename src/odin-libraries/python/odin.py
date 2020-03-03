@@ -1,20 +1,17 @@
 from os import environ
 from ruamel.yaml import YAML
-import odin_logger as logger
-
-ENV_CONFIG = 'ODIN_EXEC_ENV' in environ
+from odin_logger import OdinLogger as logger
 
 class Odin:
+    def __init__(self, config="job.yml"):
+        data = YAML().load(open(config,"r").read())
+        self.id = data["job"]["id"]
 
-    def __init__(self, config_file="odin_job.yml"):
-        data = YAML().load(open(config_file,"r").read())
-        self.id = data['id']
-        self.run = data['run']
-
+    def condition(self, desc, expr):
+        logger.log("condition", desc, expr, self.id)
+        return expr
     def watch(self, desc, value):
-        if ENV_CONFIG:
-            logger.log('watch', desc, value, self.id, self.run)
+        logger.log("watch", desc, value, self.id)
 
     def result(self, desc, status):
-        if ENV_CONFIG:
-            logger.log('result', desc, status, self.id, self.run)
+        logger.log("result", desc, status, self.id)
