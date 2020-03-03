@@ -4,7 +4,7 @@ var router = express.Router();
 
 const jwt = require('jsonwebtoken');
 const {OAuth2Client} = require('google-auth-library');
-const secret = process.env.SECRET;
+const secret = "GEBQi33zH5sZ1ENNXbKZQlnN";
 const client = new OAuth2Client(process.env.CLIENTID);
 
 /* GET home page. */
@@ -14,24 +14,23 @@ router.get('/auth', function(req, res, next) {
 
 // Verify JWT
 function verifyToken(token){
-    console.log(token, secret)
     return jwt.verify(token, secret);
 }
 
-// Return a users account information
+// Return users account information
 router.post('/user', function(req, res) {
     let token = req.body.token;
-    // Verify Google OAuth Token
+    // Verify Google OAuth Token 
     let verifiedToken = verifyToken(token);
 
-    User.findOne({userId:verifiedToken.userId}, function(err, user) {
-    if (err) { return res.status(400).json({message:"Error finding user"}) }
-    else { return res.status(200).json({email: user.email, name: user.fullname, photo: user.photo}) }
+    User.findOne({userid:verifiedToken.userid}, function(err, user) {
+    if (err) { return res.status(400).json({message: "User not found"}) }
+    else {return res.status(200).json({email: user.email, name: user.fullname, photo: user.photo})}
     });
 })
 
 
-// Log the user in or create an account then log in
+// Log the user in, if user account does not exist in DB, create account and authenticate
 router.post('/login', function(req, res) {
     // Verify Google OAuth Token
     async function verify(token) {
@@ -60,7 +59,7 @@ router.post('/login', function(req, res) {
             const retToken = jwt.sign({email: user.email, userid: user.userid}, secret);
             return res.status(200).json({
             token: retToken,
-            // set token expire time to 24h
+            // set token expiry time to 24h
             expiresIn: 86400,
             userid: user.userid
             });
@@ -69,9 +68,9 @@ router.post('/login', function(req, res) {
         User.findOne({email: email},function(err,doc){
             if(err) { return res.status(500).json({message:'error occured'}) }
             else {
-            // user found, return token
+            // user found in DB, return token
             if(doc) { returnAuth(doc) }
-            // user not found, create new user
+            // user not found, add new user record to DB
             else {
                 var record = new User({
                 userid: userid,
@@ -82,7 +81,7 @@ router.post('/login', function(req, res) {
                 });
 
                 record.save( (err,user) => {
-                if(err){ return res.status(500).json({message: 'db error while saving'}) } 
+                if(err){ return res.status(500).json({message: 'DB error while saving'}) } 
                 else { returnAuth(user) }
                 });
             }
