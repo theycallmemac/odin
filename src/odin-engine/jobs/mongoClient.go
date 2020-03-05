@@ -6,11 +6,14 @@ import (
     "fmt"
     "log"
     "os"
+    "os/user"
 
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo/readpref"
+
+    "gopkg.in/yaml.v2"
 )
 
 // create NewJob type to tbe used for accessing and storing job information
@@ -24,6 +27,35 @@ type NewJob struct {
     File string `yaml:"file"`
     Status string `yaml:"status"`
     Schedule string `yaml:"schedule"`
+}
+
+// create OdinConfig type to be used for accessing config information
+type OdinConfig struct {
+    Odin OdinType `yaml:"odin"`
+    Mongo MongoType `yaml:"mongo"`
+}
+
+// create OdinType type to be used for accessing odin information in the engine config
+type OdinType struct {
+    Master string `yaml:"master"`
+    Port string `yaml:"port"`
+}
+
+// create ProviderType type to be used for accessing mongo information in the engine config
+type MongoType struct {
+    Address string `yaml:"address"`
+}
+
+// this function is used to unmarshal YAML
+// parameters: byteArray (an array of bytes representing the contents of a file)
+// returns: Config (a struct form of the YAML)
+func unmarsharlYaml(byteArray []byte) OdinConfig {
+    var cfg OdinConfig
+    err := yaml.Unmarshal([]byte(byteArray), &cfg)
+    if err != nil {
+        log.Fatalf("error: %v", err)
+    }
+    return cfg
 }
 
 // this function is used to set up a MongoDB client and test it with a ping command
@@ -42,7 +74,8 @@ func SetupClient() *mongo.Client {
 // parameters: none
 // returns: *mogno.Client (a client)
 func getMongoClient() *mongo.Client {
-    clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+    usr, _ := user.Current()
+    clientOptions := options.Client().ApplyURI(unmarsharlYaml(readConfigFile(usr.HomeDir + "/odin-config.yml")).Mongo.Address)
     client, err := mongo.NewClient(clientOptions)
     if err != nil {
         log.Fatal(err)

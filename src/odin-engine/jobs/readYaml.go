@@ -2,6 +2,8 @@ package jobs
 
 import (
     "fmt"
+    "log"
+    "io/ioutil"
     "os"
 
     "gopkg.in/yaml.v2"
@@ -52,6 +54,19 @@ func readFile(filename string) *os.File {
         return tmp
     }
     return file
+}
+
+// this function is used to read a file
+// parameters: name (a string containing the path to a file)
+// returns: []byte (an array of bytes containing the contents of the file)
+func readConfigFile(name string) []byte {
+    file, err := os.Open(name)
+    if err != nil {
+        log.Fatal(err)
+    }
+    bytes, err := ioutil.ReadAll(file)
+    defer file.Close()
+    return bytes
 }
 
 // this function is used to parse a given YAML config
