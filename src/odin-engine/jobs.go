@@ -110,7 +110,7 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
         job.Schedule = resp
     }
     _ = jobs.UpdateJobByValue(jobs.SetupClient(), job)
-    w.Write([]byte("updated job successfully\n"))
+    w.Write([]byte("Updated job " +  data[0] + " successfully\n"))
 }
 
 // this function is used to delete a job

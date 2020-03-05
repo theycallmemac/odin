@@ -37,6 +37,10 @@ func init() {
 // parameters: id (a string of the required id), name (a string to change the job name), desc (a string to change the job description), schedule (a string to change the job schedule)
 // returns: nil
 func modifyJob(id string, name string, desc string, schedule string) {
-    response := makePutRequest("http://localhost:3939/jobs/info/", bytes.NewBuffer([]byte(id + "," + name + "," + desc + "," + schedule)))
-    fmt.Println("modify job", response)
+    if id != "" && name == "" && desc == "" && schedule == "" {
+        fmt.Println("Please specify which field you want to modify fo job " + id + "\n")
+    } else {
+        response := makePutRequest("http://localhost:3939/jobs/info/", bytes.NewBuffer([]byte(id + "," + name + "," + desc + "," + schedule)))
+        fmt.Println(response)
+    }
 }
