@@ -95,14 +95,14 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string) string {
     json.Unmarshal(d, &job)
     job.File = path
     if string(GetJobByValue(client, bson.M{"id": string(job.ID)}).ID) == string(job.ID) {
-        return "Job already exists!"
+        return "Job with ID: " + job.ID + " already exists\n"
     } else {
         collection := client.Database("myDatabase").Collection("myCollection")
         _, err := collection.InsertOne(context.TODO(), job)
         if err != nil {
             log.Fatalln("Error on inserting new job", err)
         }
-        return "Job deployed successfully!"
+        return "Job: " + job.ID + " deployed successfully\n"
     }
 }
 
