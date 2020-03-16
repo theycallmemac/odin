@@ -9,7 +9,8 @@ class OdinLogger:
         db = client['odin']
         collection = db['observability']
         self.find_and_insert(collection, type, desc, value,  id)
-
+    
+    @staticmethod
     def find_and_insert(collection, type, desc, value, id):
         collection.update(
             {'id': str(id), 'desc':str(desc), 'type': str(type)},
@@ -20,4 +21,3 @@ class OdinLogger:
                 'id' : str(id),
             }}, upsert=True
         )
-
