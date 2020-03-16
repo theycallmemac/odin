@@ -35,7 +35,7 @@ func generateJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
     if strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml") {
         id := generateId()
-        data := []byte("provider:\n  name:'odin'\n  version:'1.0.0'\njob:\n  id:'" + id + "'\n  name:''\n  description:''\n  language:''\n  file:''\n  schedule:''\n\n")
+        data := []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  id: '" + id + "'\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: ''\n\n")
         err := ioutil.WriteFile(name, data, 0644)
         if err != nil {
             panic(err)
