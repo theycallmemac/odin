@@ -56,6 +56,14 @@ func unmarsharlYaml(byteArray []byte) OdinConfig {
     return cfg
 }
 
+// set Odin ENV variables to be used by running jobs via Odin SDK 
+func setOdinEnv(mongoDbUrl string) {
+    // tells SDK that job is running within an Odin Environment
+    os.Setenv("ODIN_EXEC_ENV", "True")
+    // Is read by Odin SDK to connect to logging DB
+    os.Setenv("ODIN_MONGODB", mongoDbUrl)
+}
+
 func main() {
     // restablish new chi router
     r := chi.NewRouter()
@@ -85,4 +93,7 @@ func main() {
 
     // listen and service on the provided host and port in ~/odin-config.yml
     http.ListenAndServe(config.Odin.Master + ":" + config.Odin.Port, r)
+    
+    // set Odin ENV variables to be used by running jobs via Odin SDK 
+    setOdinEnv(config.Mongo.Address)
 }

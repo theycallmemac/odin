@@ -181,4 +181,3 @@ func DeleteJobByValue(client *mongo.Client, filter bson.M) int64 {
     deleteResult, _ := collection.DeleteOne(context.TODO(), filter)
     return deleteResult.DeletedCount
 }
-
