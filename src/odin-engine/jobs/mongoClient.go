@@ -25,8 +25,15 @@ type NewJob struct {
     Description string `yaml:"description"`
     Language string `yaml:"language"`
     File string `yaml:"file"`
-    Status string `yaml:"status"`
+    Stats string `yaml:"stats"`
     Schedule string `yaml:"schedule"`
+}
+
+type JobStats struct {
+    ID string
+    Description string
+    Type string
+    Value string
 }
 
 // create OdinConfig type to be used for accessing config information
@@ -106,6 +113,23 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string) string {
     }
 }
 
+func GetJobStats(client *mongo.Client, id string) []JobStats {
+    var statMap map[string]string
+    var jobStats JobStats
+    var statsList []JobStats
+    collection := client.Database("odin").Collection("observability")
+    documents, _ := collection.Find(context.TODO(), bson.M{"id": id})
+    for documents.Next(context.TODO()) {
+        documents.Decode(&statMap)
+        jobStats.ID = statMap["id"]
+        jobStats.Description = statMap["desc"]
+        jobStats.Type = statMap["type"]
+        jobStats.Value = statMap["value"]
+        statsList = append(statsList, jobStats)
+    }
+    return statsList
+}
+
 // this function is used to return a job in MongoDB by filtering on a certain value pertaining to that job
 // parameters: client (a *mongo.Client), filter (a bson encoding of a job id)
 // returns: NewJob (the fetched job)
@@ -133,10 +157,10 @@ func GetAll(client *mongo.Client) []NewJob {
 }
 
 // this function is used to format the output of MongoDB contents
-// parameters: id, name, description, status, schedule (five strings corresponding to individual job data)
+// parameters: id, name, description, stats, schedule (five strings corresponding to individual job data)
 // returns: string (a space formatted string used for display)
-func Format(id string, name, string, description string, status string, schedule string) string {
-    return fmt.Sprintf("%-20s%-20s%-20s%-20s%-20s\n", id, name, description, status, schedule)
+func Format(id string, name, string, description string, schedule string) string {
+    return fmt.Sprintf("%-20s%-20s%-20s%-20s\n", id, name, description, schedule)
 }
 
 // this function is used to modify a job in MongoDB

@@ -51,7 +51,6 @@ func deployJob(cmd *cobra.Command, args []string) {
     job.Description =  yaml.Job.Description
     job.Language = yaml.Job.Language
     job.File = currentDir + "/" + yaml.Job.File
-    job.Status = "Running"
     job.Schedule =  getScheduleString(name)
     jobJSON, _ := json.Marshal(job)
     body := makePostRequest("http://localhost:3939/jobs", bytes.NewBuffer(jobJSON))

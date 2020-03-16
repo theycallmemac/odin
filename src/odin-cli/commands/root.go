@@ -127,7 +127,7 @@ type NewJob struct {
     Description string `yaml:"description"`
     Language string `yaml:"language"`
     File string `yaml:"file"`
-    Status string `yaml:"status"`
+    Stats string `yaml:"stats"`
     Schedule string `yaml:"schedule"`
 }
 
