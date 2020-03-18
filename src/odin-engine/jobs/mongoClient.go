@@ -175,9 +175,16 @@ func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
 
 // this function is used to delete a job in MongoDB
 // parameters: parameters: client (a *mongo.Client), filter (a bson encoding of a job id)
-// returns: int64 (value of the number of entries deleted)
-func DeleteJobByValue(client *mongo.Client, filter bson.M) int64 {
+// returns: bool (whether a job was deleted or not)
+func DeleteJobByValue(client *mongo.Client, filter bson.M) bool {
+    job := GetJobByValue(client, filter)
+    if job.ID == "" {
+        return false
+    }
     collection := client.Database("myDatabase").Collection("myCollection")
-    deleteResult, _ := collection.DeleteOne(context.TODO(), filter)
-    return deleteResult.DeletedCount
+    _, err := collection.DeleteOne(context.TODO(), filter)
+    if err != nil {
+        return false
+    }
+    return true
 }

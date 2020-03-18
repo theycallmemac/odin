@@ -110,8 +110,11 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
 // this function is used to delete a job
 func (rs jobsResource) Delete(w http.ResponseWriter, r *http.Request) {
     d, _ := ioutil.ReadAll(r.Body)
-    _ = jobs.DeleteJobByValue(jobs.SetupClient(), bson.M{"id": string(d)})
-    w.Write([]byte("Job removed!\n"))
+    if jobs.DeleteJobByValue(jobs.SetupClient(), bson.M{"id": string(d)}) {
+        w.Write([]byte("Job removed!\n"))
+    } else {
+        w.Write([]byte("Job with that ID does not exist!\n"))
+    }
 }
 
 // this function is used to retrieve the logs for a job
