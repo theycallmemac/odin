@@ -2,7 +2,8 @@ package commands
 
 import (
     "fmt"
-    "io/ioutil"
+    "bytes"
+    "os"
     "github.com/spf13/cobra"
 )
 
@@ -27,7 +28,6 @@ func init() {
 // parameters: nil
 // returns: nil
 func listJob() {
-    response := makeGetRequest("http://localhost:3939/jobs")
-    body, _ := ioutil.ReadAll(response)
-    fmt.Println(string(body))
+    response := makePostRequest("http://localhost:3939/jobs/list", bytes.NewBuffer([]byte(fmt.Sprintf("%d", os.Getuid()))))
+    fmt.Print(response)
 }

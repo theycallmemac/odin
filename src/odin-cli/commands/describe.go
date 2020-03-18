@@ -1,8 +1,9 @@
 package commands
 
 import (
-    "fmt"
     "bytes"
+    "fmt"
+    "os"
 
     "github.com/spf13/cobra"
 )
@@ -31,6 +32,6 @@ func init() {
 // parameters: id (a string of the required id)
 // returns: nil
 func describeJob(id string) {
-    response := makePostRequest("http://localhost:3939/jobs/info/description", bytes.NewBuffer([]byte(id)))
+    response := makePostRequest("http://localhost:3939/jobs/info/description", bytes.NewBuffer([]byte(id + " " + fmt.Sprintf("%d", os.Getuid()))))
     fmt.Println(response)
 }

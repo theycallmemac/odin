@@ -1,8 +1,10 @@
 package commands
 
 import (
-    "fmt"
     "bytes"
+    "fmt"
+    "os"
+    "syscall"
     "github.com/spf13/cobra"
 )
 
@@ -31,7 +33,12 @@ func init() {
 // returns: nil
 func logJob(id string) {
     if id != "" {
-        response := makePostRequest("http://localhost:3939/jobs/logs", bytes.NewBuffer([]byte(id)))
-        fmt.Println(response)
+        fileInfo, _ := os.Stat("/etc/odin/jobs/" + id)
+        if (os.Getgid() == int(fileInfo.Sys().(*syscall.Stat_t).Gid)) {
+            response := makePostRequest("http://localhost:3939/jobs/logs", bytes.NewBuffer([]byte(id)))
+            fmt.Println(response)
+        } else {
+            fmt.Println("Cannot access the logs for job " + id + "\n")
+        }
     }
 }
