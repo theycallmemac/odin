@@ -3,6 +3,7 @@ package commands
 import (
     "bytes"
     "fmt"
+    "os"
     "github.com/spf13/cobra"
 )
 
@@ -29,6 +30,6 @@ func init() {
 // parameters: id (a string of the required id)
 // returns: nil
 func removeJob(id string) {
-    response := makePutRequest("http://localhost:3939/jobs", bytes.NewBuffer([]byte(id)))
+    response := makePutRequest("http://localhost:3939/jobs", bytes.NewBuffer([]byte(id + " " + fmt.Sprintf("%d", os.Getuid()))))
     fmt.Println(response)
 }

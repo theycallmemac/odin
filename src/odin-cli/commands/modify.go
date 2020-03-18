@@ -1,8 +1,9 @@
 package commands
 
 import (
-    "fmt"
     "bytes"
+    "fmt"
+    "os"
 
     "github.com/spf13/cobra"
 )
@@ -38,9 +39,9 @@ func init() {
 // returns: nil
 func modifyJob(id string, name string, desc string, schedule string) {
     if id != "" && name == "" && desc == "" && schedule == "" {
-        fmt.Println("Please specify which field you want to modify fo job " + id + "\n")
+        fmt.Println("Please specify which field you want to modify in job " + id + "\n")
     } else {
-        response := makePutRequest("http://localhost:3939/jobs/info/", bytes.NewBuffer([]byte(id + "," + name + "," + desc + "," + schedule)))
+        response := makePutRequest("http://localhost:3939/jobs/info/", bytes.NewBuffer([]byte(id + " " + name + " " + desc + " " + schedule + " " + fmt.Sprintf("%d", os.Getuid()))))
         fmt.Println(response)
     }
 }

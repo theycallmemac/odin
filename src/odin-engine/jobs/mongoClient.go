@@ -29,6 +29,7 @@ type NewJob struct {
     Schedule string `yaml:"schedule"`
 }
 
+// create JobStats type to tbe used for accessing and storing job stats information
 type JobStats struct {
     ID string
     Description string
@@ -97,11 +98,11 @@ func getMongoClient() *mongo.Client {
 // this function is used to add information to the MongoDB instance
 // parameters: client (a *mongo.Client), d (a byte array containing marshaled JSON), and path (a string to set as the new job.File)
 // returns: interface{} (an interface on the insertion results)
-func InsertIntoMongo(client *mongo.Client, d []byte, path string) string {
+func InsertIntoMongo(client *mongo.Client, d []byte, path string, uid string) string {
     var job NewJob
     json.Unmarshal(d, &job)
     job.File = path
-    if string(GetJobByValue(client, bson.M{"id": string(job.ID)}).ID) == string(job.ID) {
+    if string(GetJobByValue(client, bson.M{"id": string(job.ID)}, uid).ID) == string(job.ID) {
         return "Job with ID: " + job.ID + " already exists\n"
     } else {
         collection := client.Database("myDatabase").Collection("myCollection")
@@ -113,6 +114,9 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string) string {
     }
 }
 
+// this function is used to retrieve the stats associated with each job from the MongoDB instance
+// paramters: parameters: client (a *mongo.Client), id (a string representation of a job's id)
+// retuns []JobStats (the colleciton of fetched job stats)
 func GetJobStats(client *mongo.Client, id string) []JobStats {
     var statMap map[string]string
     var jobStats JobStats
@@ -131,14 +135,35 @@ func GetJobStats(client *mongo.Client, id string) []JobStats {
 }
 
 // this function is used to return a job in MongoDB by filtering on a certain value pertaining to that job
-// parameters: client (a *mongo.Client), filter (a bson encoding of a job id)
+// parameters: client (a *mongo.Client), filter (a bson encoding of a job id), uid (a string of the user's ID)
 // returns: NewJob (the fetched job)
-func GetJobByValue(client *mongo.Client, filter bson.M) NewJob {
+func GetJobByValue(client *mongo.Client, filter bson.M, uid string) NewJob {
     var job NewJob
     collection := client.Database("myDatabase").Collection("myCollection")
     documentReturned := collection.FindOne(context.TODO(), filter)
     documentReturned.Decode(&job)
-    return job
+    if job.UID == uid {
+        return job
+    }
+    var tmp NewJob
+    return tmp
+}
+
+// this function is used to return a specific user's jobs from MongoDB
+// parameters: client (a *mongo.Client), uid (a string of that user's id)
+// returns: []NewJob (all jobs in the Mongo instance)
+func GetUserJobs(client *mongo.Client, uid string) []NewJob {
+    var jobs []NewJob
+    collection := client.Database("myDatabase").Collection("myCollection")
+    documents, _ := collection.Find(context.TODO(), bson.D{})
+    for documents.Next(context.TODO()) {
+        var job NewJob
+        documents.Decode(&job)
+        if job.UID == uid || uid == "0" {
+            jobs = append(jobs, job)
+        }
+    }
+    return jobs
 }
 
 // this function is used to return all jobs in MongoDB
@@ -174,11 +199,11 @@ func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
 }
 
 // this function is used to delete a job in MongoDB
-// parameters: parameters: client (a *mongo.Client), filter (a bson encoding of a job id)
+// parameters: parameters: client (a *mongo.Client), filter (a bson encoding of a job id), uid (a string of the user's ID)
 // returns: bool (whether a job was deleted or not)
-func DeleteJobByValue(client *mongo.Client, filter bson.M) bool {
-    job := GetJobByValue(client, filter)
-    if job.ID == "" {
+func DeleteJobByValue(client *mongo.Client, filter bson.M, uid string) bool {
+    job := GetJobByValue(client, filter, uid)
+    if job.ID == "" || job.UID != uid {
         return false
     }
     collection := client.Database("myDatabase").Collection("myCollection")
