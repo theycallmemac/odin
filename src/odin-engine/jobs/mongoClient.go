@@ -105,7 +105,7 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string, uid string) st
     if string(GetJobByValue(client, bson.M{"id": string(job.ID)}, uid).ID) == string(job.ID) {
         return "Job with ID: " + job.ID + " already exists\n"
     } else {
-        collection := client.Database("myDatabase").Collection("myCollection")
+        collection := client.Database("odin").Collection("jobs")
         _, err := collection.InsertOne(context.TODO(), job)
         if err != nil {
             log.Fatalln("Error on inserting new job", err)
@@ -139,7 +139,7 @@ func GetJobStats(client *mongo.Client, id string) []JobStats {
 // returns: NewJob (the fetched job)
 func GetJobByValue(client *mongo.Client, filter bson.M, uid string) NewJob {
     var job NewJob
-    collection := client.Database("myDatabase").Collection("myCollection")
+    collection := client.Database("odin").Collection("jobs")
     documentReturned := collection.FindOne(context.TODO(), filter)
     documentReturned.Decode(&job)
     if job.UID == uid {
@@ -154,7 +154,7 @@ func GetJobByValue(client *mongo.Client, filter bson.M, uid string) NewJob {
 // returns: []NewJob (all jobs in the Mongo instance)
 func GetUserJobs(client *mongo.Client, uid string) []NewJob {
     var jobs []NewJob
-    collection := client.Database("myDatabase").Collection("myCollection")
+    collection := client.Database("odin").Collection("jobs")
     documents, _ := collection.Find(context.TODO(), bson.D{})
     for documents.Next(context.TODO()) {
         var job NewJob
@@ -171,7 +171,7 @@ func GetUserJobs(client *mongo.Client, uid string) []NewJob {
 // returns: []NewJob (all jobs in the Mongo instance)
 func GetAll(client *mongo.Client) []NewJob {
     var jobs []NewJob
-    collection := client.Database("myDatabase").Collection("myCollection")
+    collection := client.Database("odin").Collection("jobs")
     documents, _ := collection.Find(context.TODO(), bson.D{})
     for documents.Next(context.TODO()) {
         var job NewJob
@@ -193,7 +193,7 @@ func Format(id string, name, string, description string, schedule string) string
 // returns: int64 (value of the number of entries modified)
 func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
     update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule,},}
-    collection := client.Database("myDatabase").Collection("myCollection")
+    collection := client.Database("odin").Collection("jobs")
     updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
     return updateResult.ModifiedCount
 }
@@ -206,7 +206,7 @@ func DeleteJobByValue(client *mongo.Client, filter bson.M, uid string) bool {
     if job.ID == "" || job.UID != uid {
         return false
     }
-    collection := client.Database("myDatabase").Collection("myCollection")
+    collection := client.Database("odin").Collection("jobs")
     _, err := collection.DeleteOne(context.TODO(), filter)
     if err != nil {
         return false

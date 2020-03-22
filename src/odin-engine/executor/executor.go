@@ -40,12 +40,12 @@ func runCommand(ch chan<- Data, uid uint32, gid uint32, language string, file st
         logrus.SetOutput(io.MultiWriter(logFile, os.Stdout))
         logrus.SetFormatter(&logrus.TextFormatter{})
         if id != "" {
-	    logrus.WithFields(logrus.Fields{
-	        "id": id,
-	        "uid": uid,
-	        "gid": gid,
-	        "language": language,
-	        "file": file,
+            logrus.WithFields(logrus.Fields{
+                "id": id,
+                "uid": uid,
+                "gid": gid,
+                "language": language,
+                "file": file,
             }).Info("executed")
         }
         if err != nil {
@@ -68,7 +68,7 @@ func runCommand(ch chan<- Data, uid uint32, gid uint32, language string, file st
 // this function is used to run a job like straight from the command line tool
 // parameters: filename (a string containing the path to the local file to execute)
 // returns: boolean (returns true if the file exists and is executed, false otherwise)
-func executeYaml(filename string) bool {
+func executeYaml(filename string, done chan bool) {
     if exists(filename) {
         singleChannel := make(chan Data)
         path := strings.Split(filename, "/")
@@ -81,16 +81,18 @@ func executeYaml(filename string) bool {
         go runCommand(singleChannel, uint32(uid), uint32(gid), language, destFile, "")
         res := <-singleChannel
         ReviewError(res.error, "bool")
-        return true
+        done<- true
+        return
     } else {
-        return false
+        done<- false
+        return
     }
 }
 
 // this function is used to execute a file in /etc/odin/$id
 // parameters: contentsJSON (byte array containing uid, gid, language and file information)
 // returns: boolean (returns true if the file exists and is executed)
-func executeLang(contentsJSON []byte) bool {
+func executeLang(contentsJSON []byte, done chan bool) {
     var jobs []JobNode
     json.Unmarshal(contentsJSON, &jobs)
     for _, job := range jobs {
@@ -103,19 +105,21 @@ func executeLang(contentsJSON []byte) bool {
             ReviewError(res.error, "bool")
         }(job)
     }
-    return true
+    done<- true
+    return
 }
 
 // this function is used to decide which of the executeLang and exectureYaml functions to use
 // parameters: contents (byte array containing uid, gid, language and file information), process (int used to decide the function to use in the code)
 // returns: boolean (returns true if one of the functions executes sucessfully, false otherwise)
 func Execute(contents []byte, process int) bool {
+    done := make(chan bool)
     switch process {
         case 0:
-            return executeLang(contents)
+            go executeLang(contents, done)
         case 1:
-            return executeYaml(string(contents))
+            go executeYaml(string(contents), done)
     }
-    return false
+    return <-done
 }
 
