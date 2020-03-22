@@ -27,6 +27,7 @@ type NewJob struct {
     File string `yaml:"file"`
     Stats string `yaml:"stats"`
     Schedule string `yaml:"schedule"`
+    Runs int
 }
 
 // create JobStats type to tbe used for accessing and storing job stats information
@@ -73,6 +74,7 @@ func SetupClient() *mongo.Client {
     c := getMongoClient()
     err := c.Ping(context.Background(), readpref.Primary())
     if err != nil {
+        fmt.Println("Cannot connect to MongoDB")
         os.Exit(2)
     }
     return c
@@ -102,6 +104,7 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string, uid string) st
     var job NewJob
     json.Unmarshal(d, &job)
     job.File = path
+    job.Runs = 0
     if string(GetJobByValue(client, bson.M{"id": string(job.ID)}, uid).ID) == string(job.ID) {
         return "Job with ID: " + job.ID + " already exists\n"
     } else {
@@ -192,7 +195,7 @@ func Format(id string, name, string, description string, schedule string) string
 // parameters: client (a *mongo.Client), job (a NewJob structure)
 // returns: int64 (value of the number of entries modified)
 func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
-    update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule,},}
+    update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule, "runs": job.Runs},}
     collection := client.Database("odin").Collection("jobs")
     updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
     return updateResult.ModifiedCount

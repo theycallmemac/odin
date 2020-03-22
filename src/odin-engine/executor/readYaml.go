@@ -36,11 +36,14 @@ func processError(err error) {
 func readFile(filename string) *os.File {
     file, err := os.Open(filename)
     if err != nil {
+        file.Close()
         processError(err)
         var tmp *os.File
         return tmp
     }
-    return file
+    contents := file
+    defer file.Close()
+    return contents
 }
 
 // this function is used to parse a given YAML config

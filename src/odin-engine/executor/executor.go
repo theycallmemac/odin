@@ -1,11 +1,15 @@
 package executor
 
 import (
+    "bytes"
     "encoding/json"
+    "fmt"
     "io"
+    "io/ioutil"
     "os"
     "os/exec"
     "os/user"
+    "net/http"
     "strings"
     "strconv"
     "syscall"
@@ -20,6 +24,7 @@ type JobNode struct {
     Lang string
     File string
     Schedule []int
+    Runs int
 }
 
 type Data struct {
@@ -27,14 +32,51 @@ type Data struct {
     error  error
 }
 
-// this function is used to run a job like a shell would run a command
-// parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id)
+// this function is used to make a put request to a given url
+// parameters: link (a string of the link to make a request to), data (a buffer to pass to the post request)
+// returns: string (the result of a PUT to the provided link with the given data)
+func makePutRequest(link string, data *bytes.Buffer) string {
+    client := &http.Client{}
+    req, _ := http.NewRequest("PUT", link, data)
+    response, clientErr := client.Do(req)
+    if clientErr != nil {
+        fmt.Println(clientErr)
+    }
+    bodyBytes, _ := ioutil.ReadAll(response.Body)
+    return string(bodyBytes)
+}
+
+// this function is used to run the batch loop to run all executions
+// parameters: jobs (an array of jobs)
 // returns: nil
-func runCommand(ch chan<- Data, uid uint32, gid uint32, language string, file string, id string) {
-    cmd := exec.Command(language, file)
-    cmd.SysProcAttr = &syscall.SysProcAttr{}
-    cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
-    data, err := cmd.CombinedOutput()
+func batchRun(jobs []JobNode) {
+    for _, job := range jobs {
+        uid, _ := strconv.ParseUint(job.UID, 10, 32)
+        gid, _ := strconv.ParseUint(job.GID, 10, 32)
+        go func(job JobNode, uid uint64, gid uint64) {
+            channel := make(chan Data)
+            go runCommand(channel, uint32(uid), uint32(gid), job.Lang, job.File, job.ID)
+        }(job, uid, gid)
+    }
+}
+
+// this function is used to update the run number for each job
+// parameters: jobs (an array of jobs)
+// returns: nil
+func updateRuns(jobs []JobNode) {
+    for _, job := range jobs {
+        uid, _ := strconv.ParseUint(job.UID, 10, 32)
+        go func(job JobNode, uid uint64) {
+            inc := job.Runs + 1
+            go makePutRequest("http://localhost:3939/jobs/info/runs", bytes.NewBuffer([]byte(job.ID + " " + strconv.Itoa(inc) + " " + job.UID)))
+        }(job, uid)
+    }
+}
+
+// this function is used to log information from an executed job
+// parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id), data (a byte array containing the data from execution), error (any exit status from the execution)
+// returns: nil
+func logger(ch chan<- Data, uid uint32, gid uint32, language string, file string, id string, data []byte, err error) {
     go func() {
         var logFile, _ = os.OpenFile("/etc/odin/logs/" + id, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
         logrus.SetOutput(io.MultiWriter(logFile, os.Stdout))
@@ -64,6 +106,19 @@ func runCommand(ch chan<- Data, uid uint32, gid uint32, language string, file st
         }
     }()
 }
+
+// this function is used to run a job like a shell would run a command
+// parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id)
+// returns: nil
+func runCommand(ch chan<- Data, uid uint32, gid uint32, language string, file string, id string) {
+    cmd := exec.Command(language, file)
+    cmd.SysProcAttr = &syscall.SysProcAttr{}
+    cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
+    data, err := cmd.CombinedOutput()
+    go logger(ch, uid, gid, language, file, id, data, err)
+}
+
+
 
 // this function is used to run a job like straight from the command line tool
 // parameters: filename (a string containing the path to the local file to execute)
@@ -95,16 +150,8 @@ func executeYaml(filename string, done chan bool) {
 func executeLang(contentsJSON []byte, done chan bool) {
     var jobs []JobNode
     json.Unmarshal(contentsJSON, &jobs)
-    for _, job := range jobs {
-        go func(job JobNode) {
-            channel := make(chan Data)
-            uid, _ := strconv.ParseUint(job.UID, 10, 32)
-            gid, _ := strconv.ParseUint(job.GID, 10, 32)
-            go runCommand(channel, uint32(uid), uint32(gid), job.Lang, job.File, job.ID)
-            res := <-channel
-            ReviewError(res.error, "bool")
-        }(job)
-    }
+    go batchRun(jobs)
+    go updateRuns(jobs)
     done<- true
     return
 }

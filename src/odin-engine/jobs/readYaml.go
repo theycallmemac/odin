@@ -49,11 +49,14 @@ func NotEmpty(s string) bool {
 func readFile(filename string) *os.File {
     file, err := os.Open(filename)
     if err != nil {
+        defer file.Close()
         processError(err)
         var tmp *os.File
         return tmp
     }
-    return file
+    contents := file
+    defer file.Close()
+    return contents
 }
 
 // this function is used to read a file
@@ -62,7 +65,9 @@ func readFile(filename string) *os.File {
 func readConfigFile(name string) []byte {
     file, err := os.Open(name)
     if err != nil {
+        defer file.Close()
         log.Fatal(err)
+        return []byte("")
     }
     bytes, err := ioutil.ReadAll(file)
     defer file.Close()

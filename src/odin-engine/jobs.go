@@ -5,6 +5,7 @@ import (
     "io/ioutil"
     "net/http"
     "os"
+    "strconv"
     "strings"
 
     "go.mongodb.org/mongo-driver/bson"
@@ -46,6 +47,7 @@ func (rs jobsResource) Routes() chi.Router {
     r.Route("/info", func(r chi.Router) {
         r.Post("/description", rs.DescriptionByID)
         r.Post("/stats", rs.StatsByID)
+        r.Put("/runs", rs.UpdateRuns)
         r.Put("/", rs.Update)
     })
 
@@ -113,6 +115,17 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
     }
     _ = jobs.UpdateJobByValue(jobs.SetupClient(), job)
     w.Write([]byte("Updated job " +  id + " successfully\n"))
+}
+
+// this function is used to update a job's run number
+func (rs jobsResource) UpdateRuns(w http.ResponseWriter, r *http.Request) {
+    d, _ := ioutil.ReadAll(r.Body)
+    args := strings.Split(string(d), " ")
+    id, runs, uid := args[0], args[1], args[2]
+    job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": id}, uid)
+    inc, _ := strconv.Atoi(runs)
+    job.Runs = job.Runs + inc
+    _ = jobs.UpdateJobByValue(jobs.SetupClient(), job)
 }
 
 // this function is used to delete a job
