@@ -1,28 +1,36 @@
 from os import environ
 from sys import exit
 from ruamel.yaml import YAML
+import json
 from odin_logger import OdinLogger as logger
 
-ENV_CONFIG = 'ODIN_EXEC_ENV' in environ
-MONGODB = environ.get('ODIN_MONGODB')
 
 class Odin:
-    def __init__(self, config="job.yml", mongodb=string(MONGODB)):
+    def __init__(self, config="job.yml", test=False):
         self.config = config
-        data = YAML().load(open(self.config,"r").read())
+        try: 
+            with open(self.config,"r") as config:
+                configR = config.read()
+            data = YAML().load(configR)
+        except Exception as e:
+            print(e)
         self.id = data["job"]["id"]
-        self.mongodb = mongodb
+
+        if 'ODIN_EXEC_ENV' in environ or test != False:
+            self.ENV_CONFIG = True
+        else:
+            self.ENV_CONFIG = False
 
     def condition(self, desc, expr):
-        if ENV_CONFIG:
-            logger.log("condition", desc, expr, self.id, self.mongodb)
+        if self.ENV_CONFIG:
+            logger.log("condition", desc, expr, self.id)
         return expr
     
     def watch(self, desc, value):
-        if ENV_CONFIG:
-            logger.log("watch", desc, value, self.id, self.mongodb)
+        if self.ENV_CONFIG:
+            logger.log("watch", desc, value, self.id)
 
     def result(self, desc, status):
-        if ENV_CONFIG:
-            logger.log("result", desc, status, self.id, self.mongodb)
+        if self.ENV_CONFIG:
+            logger.log("result", desc, status, self.id)
         exit(0)
