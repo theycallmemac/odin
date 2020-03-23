@@ -36,13 +36,12 @@ func processError(err error) {
 func readFile(filename string) *os.File {
     file, err := os.Open(filename)
     if err != nil {
-        file.Close()
+        defer file.Close()
         processError(err)
         var tmp *os.File
         return tmp
     }
     contents := file
-    defer file.Close()
     return contents
 }
 

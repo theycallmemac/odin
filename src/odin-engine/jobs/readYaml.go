@@ -32,7 +32,6 @@ func processError(err error) {
     os.Exit(2)
 }
 
-
 // this function is used to check if a string is not empty
 // parameters: s (a string to check)
 // returns: boolean (true if not empty, false if otherwise)
@@ -55,7 +54,6 @@ func readFile(filename string) *os.File {
         return tmp
     }
     contents := file
-    defer file.Close()
     return contents
 }
 
