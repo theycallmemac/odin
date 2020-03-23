@@ -2,7 +2,9 @@ package scheduler
 
 import (
     "fmt"
-	"testing"
+    "testing"
+
+    resources "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/resources"
 )
 
 func TestIsTimeValid(t *testing.T) {
@@ -23,8 +25,8 @@ func TestIsTimeValid(t *testing.T) {
 
 func TestIsScheduleValid(t *testing.T) {
     cases := []struct {Name, A string; Expected bool} {
-            {"read schedule with incorrect schedule string", getYaml("testConfigs/scrape_dcufm.yml"), false},
-            {"read schedule with correct schedule string", getYaml("testConfigs/prune_containers.yml"), true},
+            {"read schedule with incorrect schedule string", resources.SchedulerYaml("testConfigs/scrape_dcufm.yml"), false},
+            {"read schedule with correct schedule string", resources.SchedulerYaml("testConfigs/prune_containers.yml"), true},
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("isScheduleValid(%s) ", testCase.A), func(t *testing.T) {

@@ -1,60 +1,16 @@
 package main
 
 import (
-    "io/ioutil"
-    "log"
     "os"
     "os/user"
     "net/http"
 
     "github.com/go-chi/chi"
     "github.com/go-chi/chi/middleware"
+
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/jobs"
-
-    "gopkg.in/yaml.v2"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/resources"
 )
-
-// create OdinConfig type to be used for accessing config information
-type OdinConfig struct {
-    Odin OdinType `yaml:"odin"`
-    Mongo MongoType `yaml:"mongo"`
-}
-
-// create ProviderType type to be used for accessing odin information in the config
-type OdinType struct {
-    Master string `yaml:"master"`
-    Port string `yaml:"port"`
-}
-
-// create ProviderType type to be used for accessing mongo information in the config
-type MongoType struct {
-    Address string `yaml:"address"`
-}
-
-// this function is used to read a file
-// parameters: name (a string containing the path to a file)
-// returns: []byte (an array of bytes containing the contents of the file)
-func readFile(name string) []byte {
-    file, err := os.Open(name)
-    if err != nil {
-        log.Fatal(err)
-    }
-    bytes, err := ioutil.ReadAll(file)
-    defer file.Close()
-    return bytes
-}
-
-// this function is used to unmarshal YAML
-// parameters: byteArray (an array of bytes representing the contents of a file)
-// returns: Config (a struct form of the YAML)
-func unmarsharlYaml(byteArray []byte) OdinConfig {
-    var cfg OdinConfig
-    err := yaml.Unmarshal([]byte(byteArray), &cfg)
-    if err != nil {
-        log.Fatalf("error: %v", err)
-    }
-    return cfg
-}
 
 // set Odin ENV variables to be used by running jobs via Odin SDK 
 func setOdinEnv(mongoDbUrl string) {
@@ -76,7 +32,7 @@ func main() {
 
     // set the base endpoint to return nothing
     r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-            w.Write([]byte(""))
+        w.Write([]byte(""))
     })
 
     // define current odin-engine endpoints
@@ -86,14 +42,14 @@ func main() {
 
     // load the odin config yaml
     usr, _ := user.Current()
-    config := unmarsharlYaml(readFile(usr.HomeDir + "/odin-config.yml"))
+    config := resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
 
     // start the countdown timer for the execution until the first job
     go jobs.StartTicker()
 
     // listen and service on the provided host and port in ~/odin-config.yml
-    http.ListenAndServe(config.Odin.Master + ":" + config.Odin.Port, r)
-    
+    http.ListenAndServe(config.OdinVars.Master + ":" + config.OdinVars.Port, r)
+
     // set Odin ENV variables to be used by running jobs via Odin SDK 
     setOdinEnv(config.Mongo.Address)
 }

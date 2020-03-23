@@ -3,16 +3,10 @@ package scheduler
 import (
     "fmt"
     "strings"
-)
 
-// create StringFormat type to tbe used for accessing time information
-type StringFormat struct {
-    Minute string
-    Hour string
-    Dom string
-    Mon string
-    Dow string
-}
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/resources"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/types"
+)
 
 // this function is used to judge the validity of the time in a schedule by returning an array of 0's for each matching segment
 // parameters: time (the time to be checked), matchMe (a time to match against), results (an array of 0's)
@@ -97,8 +91,8 @@ func getCronMonth(values map[string]string, currentDom string, key string) (stri
 // this function is used to start the scheduler
 // parameters: filePath (a string containing the path to a file)
 // returns: []StringFormat (an array of cron string formats)
-func Execute(filePath string) []StringFormat {
-    var stringFormat []StringFormat
+func Execute(filePath string) []types.StringFormat {
+    var stringFormat []types.StringFormat
     // day of week, day of month and month of the year values are returned from functions in keywords.go
     dowValues := getDowMap()
     domValues := getDomMap()
@@ -106,10 +100,10 @@ func Execute(filePath string) []StringFormat {
 
     // initalize a 2-D string aray and get the yaml passed to the scheduler
     var formattedRules [][]string
-    yaml := getYaml(filePath)
+    yaml := resources.SchedulerYaml(filePath)
 
     if isScheduleValid(yaml) {
-        var sf StringFormat
+        var sf types.StringFormat
         if yaml == "every minute" {
             sf.Minute, sf.Hour, sf.Dom, sf.Mon, sf.Dow = "*","*","*","*","*"
             stringFormat = append(stringFormat, sf)

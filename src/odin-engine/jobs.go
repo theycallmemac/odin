@@ -10,22 +10,10 @@ import (
 
     "go.mongodb.org/mongo-driver/bson"
     "github.com/go-chi/chi"
+
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/jobs"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/resources"
 )
-
-
-// create NewJob type to tbe used for accessing job information
-type NewJob struct {
-    ID string `yaml:"id"`
-    UID string `yaml:"uid"`
-    GID string `yaml:"gid"`
-    Name string `yaml:"name"`
-    Description string `yaml:"description"`
-    Language string `yaml:"language"`
-    File string `yaml:"file"`
-    Stats string `yaml:"stats"`
-    Schedule string `yaml:"schedule"`
-}
 
 // create resource type to be used by the router
 type jobsResource struct{}
@@ -101,13 +89,13 @@ func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
     args := strings.Split(string(d), " ")
     id, name, description, schedule, uid := args[0], args[1], args[2], args[3], args[4]
     job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": id}, uid)
-    if jobs.NotEmpty(name) {
+    if resources.NotEmpty(name) {
         job.Name = name
     }
-    if jobs.NotEmpty(description) {
+    if resources.NotEmpty(description) {
         job.Description = description
     }
-    if jobs.NotEmpty(schedule) {
+    if resources.NotEmpty(schedule) {
         ioutil.WriteFile(".tmp.yml", []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: "+ schedule + "\n\n"), 0654)
         resp := jobs.MakePostRequest("http://localhost:3939/schedule", bytes.NewBuffer([]byte(".tmp.yml")))
         os.Remove(".tmp.yml")

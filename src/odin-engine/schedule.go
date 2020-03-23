@@ -8,18 +8,8 @@ import (
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/scheduler"
 )
 
-// create StringFormat type to tbe used for accessing time information
-type StringFormat struct {
-    Minute string
-    Hour string
-    Dom string
-    Mon string
-    Dow string
-}
-
 // create resource type to be used by the router
 type scheduleResource struct{}
-
 
 func (rs scheduleResource) Routes() chi.Router {
     // establish new chi router

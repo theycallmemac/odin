@@ -15,6 +15,8 @@ import (
     "syscall"
 
     "github.com/sirupsen/logrus"
+
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/resources"
 )
 
 type JobNode struct {
@@ -128,7 +130,7 @@ func executeYaml(filename string, done chan bool) {
         singleChannel := make(chan Data)
         path := strings.Split(filename, "/")
         basePath := strings.Join(path[:len(path)-1], "/")
-        language, file := getYaml(filename)
+        language, file := resources.ExecutorYaml(filename)
         destFile := basePath + "/" + file
         uid, _ := strconv.ParseUint("0", 10, 32)
         group, _ := user.LookupGroup("odin")
