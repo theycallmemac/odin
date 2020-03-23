@@ -12,6 +12,9 @@ class odinSdkTest(unittest.TestCase):
         mongodb = client['odin']
         self.collection = mongodb['observability']
 
+    def tearDown(self):
+        self.collection.delete_many({"id" : "test_id"})
+
     def testConditionNotOdinEnv(self):
         r = random.randint(100000, 999999)
         test_desc = 'test_desc' + str(r)
