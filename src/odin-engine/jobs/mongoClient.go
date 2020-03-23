@@ -13,10 +13,13 @@ import (
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo/readpref"
 
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/resources"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/types"
+
     "gopkg.in/yaml.v2"
 )
 
-// create NewJob type to tbe used for accessing and storing job information
+// create NewJob type to be used for accessing and storing job information
 type NewJob struct {
     ID string `yaml:"id"`
     UID string `yaml:"uid"`
@@ -30,7 +33,7 @@ type NewJob struct {
     Runs int
 }
 
-// create JobStats type to tbe used for accessing and storing job stats information
+// create JobStats type to be used for accessing and storing job stats information
 type JobStats struct {
     ID string
     Description string
@@ -38,28 +41,11 @@ type JobStats struct {
     Value string
 }
 
-// create OdinConfig type to be used for accessing config information
-type OdinConfig struct {
-    Odin OdinType `yaml:"odin"`
-    Mongo MongoType `yaml:"mongo"`
-}
-
-// create OdinType type to be used for accessing odin information in the engine config
-type OdinType struct {
-    Master string `yaml:"master"`
-    Port string `yaml:"port"`
-}
-
-// create ProviderType type to be used for accessing mongo information in the engine config
-type MongoType struct {
-    Address string `yaml:"address"`
-}
-
 // this function is used to unmarshal YAML
 // parameters: byteArray (an array of bytes representing the contents of a file)
 // returns: Config (a struct form of the YAML)
-func unmarsharlYaml(byteArray []byte) OdinConfig {
-    var cfg OdinConfig
+func unmarsharlYaml(byteArray []byte) types.EngineConfig {
+    var cfg types.EngineConfig
     err := yaml.Unmarshal([]byte(byteArray), &cfg)
     if err != nil {
         log.Fatalf("error: %v", err)
@@ -85,7 +71,7 @@ func SetupClient() *mongo.Client {
 // returns: *mogno.Client (a client)
 func getMongoClient() *mongo.Client {
     usr, _ := user.Current()
-    clientOptions := options.Client().ApplyURI(unmarsharlYaml(readConfigFile(usr.HomeDir + "/odin-config.yml")).Mongo.Address)
+    clientOptions := options.Client().ApplyURI(resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml")).Mongo.Address)
     client, err := mongo.NewClient(clientOptions)
     if err != nil {
         log.Fatal(err)
