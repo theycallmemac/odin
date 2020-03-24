@@ -113,7 +113,7 @@ pythonsdk:test:
   script:
     - export ODIN_MONGODB=$ODIN_MONGODB
     - cd src/odin-libraries/python
-    - pip install requirements.txt
+    - pip install -r requirements.txt
     - python odin_test.py
   only:
     refs:
