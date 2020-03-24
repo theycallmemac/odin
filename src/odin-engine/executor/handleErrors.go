@@ -23,9 +23,9 @@ func ProcessError(err error, errType string) bool {
         case "dir":
             return !os.IsNotExist(err)
     }
+    fmt.Println("false")
     return false
 }
-
 
 // this function is used to print out an error if it exists
 // parameters: err (an error to print), errType (the string given to ProcessError)
