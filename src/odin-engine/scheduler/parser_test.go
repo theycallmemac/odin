@@ -31,7 +31,7 @@ func TestIsScheduleValid(t *testing.T) {
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("isScheduleValid(%s) ", testCase.A), func(t *testing.T) {
             actual := isScheduleValid(testCase.A)
-            if (actual != testCase.Expected) {t.Errorf("TestIsTimeValid %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
+            if (actual != testCase.Expected) {t.Errorf("TestIsScheduleValid %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
         })
     }
 }
@@ -49,13 +49,14 @@ func TestGetCron(t *testing.T) {
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("getCron(%s) ", testCase.A), func(t *testing.T) {
             actual := getCron(testCase.A, testCase.B)
-            if (actual != testCase.Expected) {t.Errorf("TestIsTimeValid %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
+            if (actual != testCase.Expected) {t.Errorf("TestGetCron %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
         })
     }
 }
 
 func TestGetCronMonth(t *testing.T) {
     cases := []struct {Name string; A map[string]string; B, C  string; Expected string} {
+            {"read Mon values with correct key phrase", getMonMap(), "", "every", "*"},
             {"read Mon values with correct key phrase", getMonMap(), "", "every May", "5"},
             {"read Mon values with correct key phrase", getMonMap(), "*", "every February", "2"},
             {"read Mon values with incorrect key phrase", getMonMap(), "*", "every Nov", "*"},
@@ -64,7 +65,22 @@ func TestGetCronMonth(t *testing.T) {
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("getCronMonth(%s) ", testCase.A), func(t *testing.T) {
             actual, _ := getCronMonth(testCase.A, testCase.B, testCase.C)
-            if (actual != testCase.Expected) {t.Errorf("TestIsTimeValid %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
+            if (actual != testCase.Expected) {t.Errorf("TestGetCronMonth %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
+        })
+    }
+}
+
+func TestExecute(t *testing.T) {
+    cases := []struct {Name string; A string; Expected int} {
+            {"read config file with incorrect schedule", "testConfigs/scrape_dcufm.yml", 0},
+            {"read config file with correct two time schedule", "testConfigs/prune_containers.yml", 2},
+            {"read config file with 'every hour' schedule", "testConfigs/hour.yml", 1},
+            {"read config file with 'every minute' schedule", "testConfigs/minute.yml", 1},
+    }
+    for i, testCase := range cases {
+        t.Run(fmt.Sprintf("Execute(%s) ", testCase.A), func(t *testing.T) {
+            actual := len(Execute(testCase.A))
+            if (actual != testCase.Expected) {t.Errorf("TestExecute %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
         })
     }
 }
