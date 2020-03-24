@@ -58,7 +58,7 @@ export class AuthenticationService {
             });
     }
 
-    // Automatically authenticate the user if they return to the site but session not expired
+    // Automatically authenticate the user if they return to the site and session is not expired
     autoAuthUser() {
         const authInformation = this.getAuthenticationData();
         if (!authInformation) {
@@ -95,15 +95,15 @@ export class AuthenticationService {
     // Save authentication data to browser local storage
     private saveAuthenticationData(token: string, expirationDate: Date, id: string) {
         localStorage.setItem('token', token);
-        localStorage.setItem('expiration', expirationDate.toISOString());
         localStorage.setItem('uid', id);
+        localStorage.setItem('expiration', expirationDate.toISOString());
     }
 
     // Clear the users authentication data from browser local storage
     private clearAuthenticationData() {
         localStorage.removeItem('token');
-        localStorage.removeItem('expiration');
         localStorage.removeItem('uid');
+        localStorage.removeItem('expiration');
     }
 
     // Get the users authentication data from browser local storage
