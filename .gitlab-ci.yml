@@ -97,7 +97,6 @@ engine:test:
   image: golang:${GO_VERSION}
   stage: test
   before_script: ['']
-  allow_failure: true
   script:
     - mkdir -p $GOPATH/src/$REPO/$GROUP /go/src/_/builds
     - cp -r $CI_PROJECT_DIR /go/src/$REPO/$GROUP/$PROJECT
@@ -107,5 +106,17 @@ engine:test:
   only:
     refs:
       - dev/master
-      
+
+pythonsdk:test:
+  stage: test
+  before_script: ['']
+  script:
+    - export ODIN_MONGODB=$ODIN_MONGODB
+    - cd src/odin-libraries/python
+    - pip install -r requirements.txt
+    - python odin_test.py
+  only:
+    refs:
+      - dev/master
+      - odin-libraries/python
 
