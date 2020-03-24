@@ -107,4 +107,15 @@ engine:test:
     refs:
       - dev/master
       
+pythonsdk:test:
+  stage: test
+  before_script: ['']
+  script:
+    - export ODIN_MONGODB=$ODIN_MONGODB
+    - cd src/odin-libraries/python
+    - python odin_test.py
+  only:
+    refs:
+      - dev/master
+      - odin-libraries/python
 
