@@ -7,7 +7,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
-
+var jobsRouter = require('./routes/jobs');
 var mongoose = require('mongoose');
 
 var app = express();
@@ -41,8 +41,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// router setup
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/jobs', jobsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
