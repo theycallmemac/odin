@@ -2,7 +2,6 @@ package resources
 
 import (
     "io/ioutil"
-    "log"
     "os"
 
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/types"
@@ -33,7 +32,7 @@ func NotEmpty(s string) bool {
 func ReadFile(filename string) *os.File {
     file, err := os.Open(filename)
     if err != nil {
-        log.Fatal(err)
+        return nil
     }
     return file
 }
@@ -44,7 +43,7 @@ func ReadFile(filename string) *os.File {
 func ReadFileBytes(name string) []byte {
     file, err := os.Open(name)
     if err != nil {
-        log.Fatal(err)
+        return nil
     }
     bytes, err := ioutil.ReadAll(file)
     defer file.Close()
@@ -60,10 +59,7 @@ func ReadFileBytes(name string) []byte {
 // returns: Config (a struct form of the YAML)
 func UnmarsharlYaml(byteArray []byte) types.EngineConfig {
     var cfg types.EngineConfig
-    err := yaml.Unmarshal([]byte(byteArray), &cfg)
-    if err != nil {
-        log.Fatalf("error: %v", err)
-    }
+    yaml.Unmarshal([]byte(byteArray), &cfg)
     return cfg
 }
 
@@ -95,7 +91,7 @@ func ExecutorYaml(filename string) (string, string) {
 // parameters: cfg (a *Config to be decoded into), file, (am *os.File to build the decoder on)
 // returns: boolean (true if parseable, false if otherwise)
 func ParseYaml(cfg *types.JobConfig, file *os.File)  bool {
-    decoder:= yaml.NewDecoder(file)
+    decoder := yaml.NewDecoder(file)
     err := decoder.Decode(cfg)
     if err != nil {
         return false

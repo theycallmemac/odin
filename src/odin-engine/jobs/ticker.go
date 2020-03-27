@@ -72,11 +72,13 @@ func sortQueue(items []Node, done chan int) {
 // this function is used to check if the head fo the queue is in an execution state
 // parameters: items (a map of ints to arrays of jobs)
 // returns: nil
-func checkHead(items map[int][]Node) {
+func checkHead(items map[int][]Node) bool {
     if _, ok := items[0]; ok {
         items, _ := json.Marshal(items[0])
         go MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer(items))
+        return true
     }
+    return false
 }
 // this function is used to group jobs by the number of seconds until execution
 // parameters: items (an array of jobs)
@@ -106,13 +108,12 @@ func cronToSeconds(cronTime string) []int {
     return times
 }
 
-// this function is used to populate the queue, calling sorting and grouping methods before checking the head
-// parameters: t (the time interval betwen each execution of the fillQueue function)
-// returns: nil
-func fillQueue(t time.Time) {
+// this function is used to fill the queue, calling sorting and grouping methods before checking the head// parameters: t (the time interval betwen each execution of the fillQueue function)
+// parameters: jobs (an unsorted array of Jobs)
+// returns: []Node the sorted array of jobs
+func fillQueue(jobs []NewJob) []Node {
     var queue Queue
     var node Node
-    jobs := GetAll(SetupClient())
     for _, j := range jobs {
         node.ID, node.UID, node.GID, node.Lang, node.File = j.ID, j.UID, j.GID, j.Language, j.File
         if len(j.Schedule) > 0 {
@@ -124,6 +125,15 @@ func fillQueue(t time.Time) {
         }
     }
     go checkHead(groupItems(queue.Items))
+    return queue.Items
+}
+
+// this function is used to start the queueing process
+// parameters: t (the time interval betwen each execution of the fillQueue function)
+// returns: nil
+func startQueuing(t time.Time) {
+    jobs := GetAll(SetupClient())
+    fillQueue(jobs)
 }
 
 // this function is used to execute the fillQueue function every second
@@ -139,5 +149,5 @@ func doEvery(d time.Duration, f func(time.Time)) {
 // parameters: nil
 // returns: nil
 func StartTicker() {
-   go doEvery(1000*time.Millisecond, fillQueue)
+   go doEvery(1000*time.Millisecond, startQueuing)
 }

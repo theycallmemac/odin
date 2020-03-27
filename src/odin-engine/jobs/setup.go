@@ -21,19 +21,29 @@ func notDirectory(dir string) bool {
 
 // this function is used to create a new directory
 // parameters: name (a string of the directory path to create)
-// returns: nil
-func makeDirectory(name string) {
-    os.MkdirAll(name, 0654)
+// returns: bool
+func makeDirectory(name string) bool {
+    err := os.MkdirAll(name, 0654)
+    if err != nil {
+        if notDirectory(name) {
+            return false
+        }
+    }
+    return true
 }
 
 // this function is used to recursively change the owner of each subdir under /etc
 // parameters: path (a string of the directory path to chown), uid (an int used to set the owner uid), gid (an int used to set the owner gid)
-// returns: nil
-func ChownR(path string, uid, gid int) {
+// returns: bool
+func ChownR(path string, uid, gid int) bool {
     s := strings.Split(path, "/")
-   for i := len(s) - 1; i > 2; i-- {
-        os.Chown(strings.Join(s[:i], "/"), uid, gid)
+    for i := len(s) - 1; i > 2; i-- {
+        err := os.Chown(strings.Join(s[:i], "/"), uid, gid)
+        if err != nil {
+            return false
+        }
     }
+    return true
 }
 
 // this function is used to kickstart the process for setting up the correct directories and files used by odin
@@ -43,7 +53,7 @@ func SetupEnvironment(d []byte) string {
     var job NewJob
     err := json.Unmarshal(d, &job)
     if err != nil {
-        panic(err)
+        return ""
     }
     jobsPath := "/etc/odin/jobs/"
     logsPath := "/etc/odin/logs/"
@@ -66,7 +76,7 @@ func SetupEnvironment(d []byte) string {
     }
     input, err := ioutil.ReadFile(originalFile)
     if err != nil {
-        panic(err)
+        return ""
     }
     ioutil.WriteFile(logsPath, []byte(""), 0766)
     ioutil.WriteFile(newFilePath, input, 0654)
