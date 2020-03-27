@@ -6,7 +6,7 @@ import (
     "reflect"
     "testing"
 
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/internal/types"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/types"
 )
 
 var cfg types.JobConfig
