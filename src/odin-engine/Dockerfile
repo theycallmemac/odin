@@ -7,7 +7,7 @@ WORKDIR /go/src/odin/
 # Copy the local package files to the container's workspace
 ADD . .
 
-ADD configs/odin-config.yml /root/odin-config.yml
+ADD ./configs/odin-config.yml /root/odin-config.yml
 
 # Switch WORKDIR to the odin-engine directory
 WORKDIR /go/src/odin/cmd/odin-engine
