@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // router setup
 app.use('/', indexRouter);
-app.use('/auth', authRouter);
+app.use('/auth', authRouter.router);
 app.use('/jobs', jobsRouter);
 app.use('/observability', observabilityRouter);
 

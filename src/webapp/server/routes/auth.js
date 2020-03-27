@@ -7,10 +7,6 @@ const {OAuth2Client} = require('google-auth-library');
 const secret = "GEBQi33zH5sZ1ENNXbKZQlnN";
 const client = new OAuth2Client(process.env.CLIENTID);
 
-/* GET home page. */
-router.get('/auth', function(req, res, next) {
-    res.render('index', { title: 'Auth' });
-});
 
 // Verify JWT
 function verifyToken(token){
@@ -92,4 +88,4 @@ router.post('/login', function(req, res) {
 })
 
 
-module.exports = router;
+module.exports = {router, verifyToken};
