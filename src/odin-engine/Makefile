@@ -14,5 +14,7 @@ test:
 clean:
 	$(GO_CLEAN) -v ./...
 	rm -f $(NAME)
+	rm -r ./pkg/jobs/here
+	rm -r ./pkg/jobs/now
 run:
 	./$(NAME)
