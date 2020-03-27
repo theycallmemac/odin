@@ -12,13 +12,8 @@
       <span class="sidebar-nav-item">Dashboard</span>
     </a>
   </li>
-  <li id="link-account">
-    <a href="/dashboard/account"><fa-icon [icon]="faCog"></fa-icon>
-      <span class="sidebar-nav-item">Account</span>
-    </a>
-  </li>
   <li>
-    <a class="logout-button" href="#" data-no-instant=""><fa-icon [icon]="faPowerOff"></fa-icon>
+    <a class="logout-button" (click)="logout()" href="#" data-no-instant=""><fa-icon [icon]="faPowerOff"></fa-icon>
       <span class="sidebar-nav-item">Logout</span>
     </a>
   </li>

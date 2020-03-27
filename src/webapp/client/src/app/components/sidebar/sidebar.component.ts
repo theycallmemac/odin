@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faHome, faCog, faPowerOff  } from '@fortawesome/free-solid-svg-icons';
+import { AuthenticationService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'app-sidebar',
@@ -11,7 +13,9 @@ export class SidebarComponent implements OnInit {
   faCog;
   faPowerOff;
 
-  constructor() { }
+  constructor(
+    private authService : AuthenticationService
+  ) { }
 
   ngOnInit() {
     this.faHome = faHome;
@@ -19,4 +23,7 @@ export class SidebarComponent implements OnInit {
     this.faPowerOff = faPowerOff;
   }
 
+  logout() {
+    this.authService.logout()
+  }
 }
