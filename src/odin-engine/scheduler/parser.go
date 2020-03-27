@@ -72,7 +72,7 @@ func getCronMonth(values map[string]string, currentDom string, key string) (stri
     if len(splitKey) == 1 {
         newKey = splitKey[0]
     } else {
-        newKey = strings.Join(splitKey[0:2]," ")
+        newKey = strings.Join(splitKey[0:2], " ")
     }
     if values[newKey] == "" {
         // if the value doesn't exist, we assume *
