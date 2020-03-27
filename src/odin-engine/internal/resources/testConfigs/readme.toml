@@ -1,0 +1,189 @@
+# This is a TOML document. Boom.
+
+title = "TOML Example (v0.4.0)"
+
+#------------------------------ Comments ------------------------------
+
+# This is a full-line comment
+key = "value" # This is a comment at the end of a line
+
+#--------------------------- Key/Value Pair ---------------------------
+
+bare_key = "value"
+bare-key = "value"
+1234 = "value"
+
+"127.0.0.1" = "value"
+"character encoding" = "value"
+"ʎǝʞ" = "value"
+'key2' = "value"
+'quoted "value"' = "value"
+
+#------------------------------- String -------------------------------
+
+str = "I'm a string. \"You can quote me\". Name\tJos\u00E9\nLocation\tSF."
+
+str1 = """
+Roses are red
+Violets are blue"""
+
+str2 = "Roses are red\nViolets are blue"
+str3 = "Roses are red\r\nViolets are blue"
+
+str4 = "The quick brown fox jumps over the lazy dog."
+
+str5 = """
+The quick brown \
+  fox jumps over \
+    the lazy dog."""
+
+str6 = """\
+       The quick brown \
+       fox jumps over \
+       the lazy dog.\
+       """
+winpath  = 'C:\Users\nodejs\templates'
+winpath2 = '\\ServerX\admin$\system32\'
+quoted   = 'Tom "Dubs" Preston-Werner'
+regex    = '<\i\c*\s*>'
+
+regex2 = '''I [dw]on't need \d{2} apples'''
+lines  = '''
+The first newline is
+trimmed in raw strings.
+   All other whitespace
+   is preserved.
+'''
+
+#------------------------------ Integer ------------------------------
+
+# fractional
+flt1 = +1.0
+flt2 = 3.1415
+flt3 = -0.01
+
+# exponent
+flt4 = 5e+22
+flt5 = 1e6
+flt6 = -2E-2
+
+# both
+flt7 = 6.626e-34
+
+flt8 = 9_224_617.445_991_228_313
+
+#------------------------------ Boolean ------------------------------
+
+bool1 = true
+bool2 = false
+
+#------------------------------ Datetime ------------------------------
+
+date1 = 1979-05-27T07:32:00Z
+date2 = 1979-05-27T00:32:00-07:00
+date3 = 1979-05-27T00:32:00.999999-07:00
+date4 = 1979-05-27T07:32:00
+date5 = 1979-05-27T00:32:00.999999
+date6 = 1979-05-27
+
+#------------------------------- Array -------------------------------
+
+arr1 = [ 1, 2, 3 ]
+arr2 = [ "red", "yellow", "green" ]
+arr3 = [ [ 1, 2 ], [3, 4, 5] ]
+arr4 = [ "all", 'strings', """are the same""", '''type''']
+arr5 = [ [ 1, 2 ], ["a", "b", "c"] ]
+
+arr7 = [
+  1, 2, 3
+]
+
+arr8 = [
+  1,
+  2, # this is ok
+]
+
+#---------------------------- Inline Table ----------------------------
+
+name = { first = "Tom", last = "Preston-Werner" }
+
+points = [ { x = 1, y = 2, z = 3 },
+           { x = 7, y = 8, z = 9 },
+           { x = 2, y = 4, z = 8 } ]
+
+#------------------------------- Table -------------------------------
+
+[owner]
+name = "Tom Preston-Werner"
+organization = "GitHub"
+bio = "GitHub Cofounder & CEO\nLikes tater tots and beer."
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = "192.168.1.1"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = "10.0.0.1"
+  dc = "eqdc10"
+
+  [servers.beta]
+  ip = "10.0.0.2"
+  dc = "eqdc10"
+
+[clients]
+data = [ ["gamma", "delta"], [1, 2] ] # just an update to make sure parsers support it
+
+[a.b]
+c = 1
+
+[a]
+d = 2
+
+[dog."tater.man"]
+type = "pug"
+
+[table-1]
+key1 = "some string"
+key2 = 123
+
+[table-2]
+key1 = "another string"
+key2 = 456
+
+#-------------------------- Array of Tables --------------------------
+
+[[products]]
+name = "Hammer"
+sku = 738594937
+
+[[products]]
+
+[[products]]
+name = "Nail"
+sku = 284758393
+color = "gray"
+
+[[fruit]]
+  name = "apple"
+
+  [fruit.physical]
+    color = "red"
+    shape = "round"
+
+  [[fruit.variety]]
+    name = "red delicious"
+
+  [[fruit.variety]]
+    name = "granny smith"
+
+[[fruit]]
+  name = "banana"
+
+  [[fruit.variety]]
+    name = "plantain"

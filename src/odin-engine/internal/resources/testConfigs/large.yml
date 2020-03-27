@@ -1,0 +1,61 @@
+---
+# Dataset Stuff -------------------------------------------------
+#
+data_path: ~/data
+output_path: ~/output
+
+val_size: 10000
+train_chunk_size: 40000
+
+
+# Training Hyperparams --------------------------------------
+
+batch_size: 128
+num_epochs: 200
+validation_every: 1
+
+weight_decay: 0.0005
+
+learning_rate_schedule:
+    init: 0.1
+    final: 0.0001
+
+momentum_schedule:
+    0: 0.0
+    1: 0.5
+    2: 0.9
+
+layer_config:
+    0:
+        layer_type: InputLayer
+        input_shape: [128, 1, 91, 64] 
+
+    1:
+        layer_type: Conv2DLayer
+        n_filters: 64
+        filter_size: [8,59]
+        nonlinearity: rectifier
+        init_bias_value: 0.01
+
+    2:
+        layer_type: MaxPooling2DLayer
+        pool_size: [6,3] 
+        ignore_border: False
+
+    3:
+        layer_type: DenseLayer
+        n_outputs: 500
+        nonlinearity: rectifier
+        init_bias_value: 0.1
+        dropout: 0.5
+
+    4:
+        layer_type: DenseLayer
+        n_outputs: 2
+        nonlinearity: sigmoid
+        init_bias_value: 0.1
+        dropout: 0.0
+
+    5:
+        layer_type: OutputLayer
+

@@ -1,6 +1,0 @@
----
-odin:
-  master: "localhost"
-  port: "3939"
-mongo:
-  address: "mongod://localhost:27017"
