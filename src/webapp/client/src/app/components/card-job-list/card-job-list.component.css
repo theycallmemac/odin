@@ -41,17 +41,17 @@
     box-sizing: border-box;
 }
 
-/*The styles 'code' below is copied from bootstrap and is not original, but some minimal changes were made*/
+/* The styles below were copied from bootstrap, instead of importing the whole stylesheet and are not original "code", while some minimal changes were made */
 
 .w-100 {
     width: 100%!important;
 }
 
-.list-group-item.active {
+.active {
     z-index: 2;
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
+    color: #fff!important;
+    background-color: #007bff!important;
+    border-color: #007bff!important;
 }
 
 .list-group-item:first-child {
