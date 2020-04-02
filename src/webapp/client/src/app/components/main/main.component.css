@@ -57,12 +57,12 @@ a:-webkit-any-link {
     color: -webkit-link;
     cursor: pointer;
     text-decoration: none;
-    text-transform: lowercase;
     color: #6b6885;
     font-weight: 800;
     text-decoration: none;
     background-color: transparent;
     -webkit-text-decoration-skip: objects;
+    font-family: 'Roboto'!important;;;
 }
 
 .username>h4 {

@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
+import cronstrue from 'cronstrue';
+import { ChartsModule } from 'ng2-charts';
 
 
 
@@ -25,6 +27,9 @@ import { CardJobStatusComponent } from './components/card-job-status/card-job-st
 import { CardBlockTwoComponent } from './components/card-block-two/card-block-two.component';
 import { CardJobListComponent } from './components/card-job-list/card-job-list.component';
 import { CardJobMetricsComponent } from './components/card-job-metrics/card-job-metrics.component';
+import { MetricsLineChartComponent } from './components/metrics-line-chart/metrics-line-chart.component';
+import { CardJobValuesListComponent } from './components/card-job-values-list/card-job-values-list.component';
+import { AppConfig } from './config/api-config';
 
 
 export function getAuthServiceConfigs() {
@@ -32,7 +37,7 @@ export function getAuthServiceConfigs() {
     [
       {
         id: GoogleLoginProvider.PROVIDER_ID,
-        provider: new GoogleLoginProvider('806760707429-k9dkogbv6uh8t41bivm3d8ikt7ia2te3.apps.googleusercontent.com')
+        provider: new GoogleLoginProvider('150239218178-72l3odnt9e0ldo2dkpmqcj00sg6j2aun.apps.googleusercontent.com')
       }
     ]
   );
@@ -51,7 +56,9 @@ export function getAuthServiceConfigs() {
     CardJobStatusComponent,
     CardBlockTwoComponent,
     CardJobListComponent,
-    CardJobMetricsComponent
+    CardJobMetricsComponent,
+    MetricsLineChartComponent,
+    CardJobValuesListComponent
   ],
   imports: [
     SocialLoginModule,
@@ -59,7 +66,8 @@ export function getAuthServiceConfigs() {
     HttpModule,
     HttpClientModule,
     AppRoutingModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    ChartsModule
   ],
   providers: [{
     provide: AuthServiceConfig,
