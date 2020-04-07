@@ -22,29 +22,31 @@ func FindAndInsert(varType string, desc string, value string, id string) bool {
     update := bson.M{"$set": bson.M{"type": varType, "desc": desc, "value": value, "id": id,}}
     collection := client.Database("odin").Collection("observability")
     _, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
-    return err != nil
+    return err == nil
 }
 
 func SetupClient() *mongo.Client {
-    c := getMongoClient()
+    url, _ := os.LookupEnv("ODIN_MONGODB")
+    c := getMongoClient(url)
     err := c.Ping(context.Background(), readpref.Primary())
     if err != nil {
         fmt.Println("Cannot connect to MongoDB - check your MongoDB instance is running")
-        os.Exit(2)
+        return nil
     }
     return c
 }
 
-func getMongoClient() *mongo.Client {
-    url, _ := os.LookupEnv("ODIN_MONGODB")
+func getMongoClient(url string) *mongo.Client {
     clientOptions := options.Client().ApplyURI(url)
     client, err := mongo.NewClient(clientOptions)
     if err != nil {
         fmt.Println("Cannot connect to MongoDB - check your `ODIN_MONGODB` environment variable")
+        return nil
     }
     err = client.Connect(context.Background())
     if err != nil {
         fmt.Println("Cannot connect to MongoDB - check your `ODIN_MONGODB` environment variable")
+        return nil
     }
     return client
 }
