@@ -7,6 +7,7 @@
     "test": "mocha --exit"
   },
   "dependencies": {
+    "@types/socket.io": "^2.1.4",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "^6.2.0",
@@ -15,12 +16,13 @@
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
     "mongodb": "^3.1.13",
     "mongoose": "^5.4.6",
     "morgan": "~1.9.0",
     "openpgp": "^4.4.6",
     "randomstring": "^1.1.5",
-    "lodash": "^4.17.11"
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
