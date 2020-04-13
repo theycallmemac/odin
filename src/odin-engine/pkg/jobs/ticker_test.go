@@ -5,6 +5,8 @@ import (
     "reflect"
     "testing"
     "time"
+
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
 
 var unsorted Queue
@@ -44,13 +46,14 @@ func TestCheckHead(t *testing.T) {
     var mapItems0 = map[int][]Node {
         0: unsorted.Items,
     }
-    cases := []struct {Name string; A map[int][]Node; Expected bool} {
-        {"check head of map with no zero value", mapItems80, false},
-        {"check head of map with a zero value", mapItems0, true},
+    var f fsm.Store
+    cases := []struct {Name string; A map[int][]Node; B string; C fsm.Store; Expected bool} {
+        {"check head of map with no zero value", mapItems80, ":3939", f, false},
+        {"check head of map with a zero value", mapItems0, ":3939", f, true},
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("%v.get() ", testCase.A), func(t *testing.T) {
-            actual := checkHead(testCase.A)
+            actual := checkHead(testCase.A, testCase.B, testCase.C)
             if (actual != testCase.Expected) {t.Errorf("TestCheckHead %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
         })
     }
@@ -98,20 +101,3 @@ func TestCronToSeconds(t *testing.T) {
         })
     }
 }
-
-func TestFillQueue(t *testing.T) {
-    var filled []Node
-    node1 := NewJob{Schedule:"* * * * *,"}
-    node2 := NewJob{Schedule:"0 * * * *,"}
-    jobs = append(jobs, node1, node2)
-    cases := []struct {Name string; A []NewJob; Expected []Node} {
-        {"group array of sorted nodes", jobs, filled},
-    }
-    for i, testCase := range cases {
-        t.Run(fmt.Sprintf("%v.get() ", testCase.A), func(t *testing.T) {
-            actual := fillQueue(testCase.A)
-            if ((reflect.TypeOf(actual)) != reflect.TypeOf(testCase.Expected)) {t.Errorf("TestFillQueue %d failed - expected: '%v' got: '%v'", i+1, actual, testCase.Expected)}
-        })
-    }
-}
-
