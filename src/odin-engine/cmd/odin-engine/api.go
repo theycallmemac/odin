@@ -9,6 +9,7 @@ import (
     "github.com/go-chi/chi/middleware"
 
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/jobs"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
 
 // set Odin ENV variables to be used by running jobs via Odin SDK 
@@ -20,7 +21,19 @@ func setOdinEnv(mongoDbUrl string) {
     os.Setenv("ODIN_MONGODB", mongoDbUrl)
 }
 
-func Start(httpAddress string) {
+type Service struct {
+    addr  string
+    store fsm.Store
+}
+
+func newService(addr string, store fsm.Store) *Service {
+    return &Service{
+        addr:  addr,
+	store: store,
+    }
+}
+
+func (s *Service) Start() {
     // restablish new chi router
     r := chi.NewRouter()
 
@@ -38,11 +51,12 @@ func Start(httpAddress string) {
     // define current odin-engine endpoints
     r.Mount("/execute", executeResource{}.Routes())
     r.Mount("/jobs", jobsResource{}.Routes())
+    r.Mount("/join", joinResource{}.Routes(s))
     r.Mount("/schedule", scheduleResource{}.Routes())
 
     // start the countdown timer for the execution until the first job
-    go jobs.StartTicker()
+    go jobs.StartTicker(s.store, s.addr)
 
     // listen and service on the provided host and port in ~/odin-config.yml
-    http.ListenAndServe(httpAddress, r)
+    http.ListenAndServe(s.addr, r)
 }

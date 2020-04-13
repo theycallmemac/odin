@@ -19,6 +19,7 @@ type JobConfig struct {
     } `yaml:"provider"`
     Job struct {
         Name string `yaml:"name"`
+        ID string `yaml:"id"`
         Description string `yaml:"description"`
         Language string `yaml:"language"`
         File string `yaml:"file"`

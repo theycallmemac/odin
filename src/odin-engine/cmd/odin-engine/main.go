@@ -1,31 +1,38 @@
 package main
 
 import (
+    "bytes"
+    "encoding/json"
     "flag"
     "fmt"
     "log"
+    "net/http"
     "os"
     "os/user"
     "os/signal"
     "time"
 
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
 )
 
 const (
     DefaultRaftAddr = ":12000"
+    DefaultHttpAddr = ":3939"
     retainSnapshotCount = 2
     raftTimeout = 10 * time.Second
 )
 
 var (
+    httpAddr string
     raftAddr string
     joinAddr string
     nodeID   string
 )
 
 func init() {
-    flag.StringVar(&raftAddr, "raddr", DefaultRaftAddr, "Set Raft bind address")
+    flag.StringVar(&httpAddr, "http", DefaultHttpAddr, "Set Http bind address")
+    flag.StringVar(&raftAddr, "raft", DefaultRaftAddr, "Set Raft bind address")
     flag.StringVar(&joinAddr, "join", "", "Set join address, if any")
     flag.StringVar(&nodeID, "id", "", "Node ID")
 }
@@ -43,18 +50,26 @@ func main() {
     }
     os.MkdirAll(raftDir, 0700)
 
-    s := newStore()
+    s := fsm.NewStore()
     s.RaftDir = raftDir
     s.RaftBind = raftAddr
     if err := s.Open(joinAddr == "", nodeID); err != nil {
         log.Fatalf("%v", err)
     }
-    usr, _ := user.Current()
-    config := resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
 
-    Start(config.OdinVars.Master + ":" + config.OdinVars.Port)
-    setOdinEnv(config.Mongo.Address)
-
+    if httpAddr == "" {
+        usr, _ := user.Current()
+        config := resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
+        setOdinEnv(config.Mongo.Address)
+        httpAddr = config.OdinVars.Master + ":" + config.OdinVars.Port
+    }
+    service := newService(httpAddr, *s)
+    go service.Start()
+    if joinAddr != "" {
+	if err := join(joinAddr, raftAddr, nodeID); err != nil {
+		log.Fatalf("failed to join node at %s: %s", joinAddr, err.Error())
+	}
+    }
     log.Println("started successfully ...")
     terminate := make(chan os.Signal, 1)
     signal.Notify(terminate, os.Interrupt)
@@ -62,3 +77,16 @@ func main() {
     log.Println("exiting ...")
 }
 
+func join(joinAddr, raftAddr, nodeID string) error {
+	b, err := json.Marshal(map[string]string{"addr": raftAddr, "id": nodeID})
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(fmt.Sprintf("http://localhost%s/join", joinAddr), "application-type/json", bytes.NewReader(b))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
+}

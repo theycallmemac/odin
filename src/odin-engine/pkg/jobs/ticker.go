@@ -12,6 +12,8 @@ import (
     "time"
 
     "github.com/gorhill/cronexpr"
+
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
 
 type Queue struct {
@@ -72,14 +74,15 @@ func sortQueue(items []Node, done chan int) {
 // this function is used to check if the head fo the queue is in an execution state
 // parameters: items (a map of ints to arrays of jobs)
 // returns: nil
-func checkHead(items map[int][]Node) bool {
+func checkHead(items map[int][]Node, httpAddr string) bool {
     if _, ok := items[0]; ok {
         items, _ := json.Marshal(items[0])
-        go MakePostRequest("http://localhost:3939/execute", bytes.NewBuffer(items))
+        go MakePostRequest("http://localhost" + httpAddr + "/execute", bytes.NewBuffer(items))
         return true
     }
     return false
 }
+
 // this function is used to group jobs by the number of seconds until execution
 // parameters: items (an array of jobs)
 // returns: map[int][]Node (a map of the seconds until each job execute to the jobs scheduled to execute then)
@@ -111,7 +114,7 @@ func cronToSeconds(cronTime string) []int {
 // this function is used to fill the queue, calling sorting and grouping methods before checking the head// parameters: t (the time interval betwen each execution of the fillQueue function)
 // parameters: jobs (an unsorted array of Jobs)
 // returns: []Node the sorted array of jobs
-func fillQueue(jobs []NewJob) []Node {
+func fillQueue(jobs []NewJob, httpAddr string) []Node {
     var queue Queue
     var node Node
     for _, j := range jobs {
@@ -124,30 +127,38 @@ func fillQueue(jobs []NewJob) []Node {
             <-channel
         }
     }
-    go checkHead(groupItems(queue.Items))
+    go checkHead(groupItems(queue.Items), httpAddr)
     return queue.Items
 }
 
 // this function is used to start the queueing process
 // parameters: t (the time interval betwen each execution of the fillQueue function)
 // returns: nil
-func startQueuing(t time.Time) {
+func startQueuing(t time.Time, httpAddr string) {
     jobs := GetAll(SetupClient())
-    fillQueue(jobs)
+    fillQueue(jobs, httpAddr)
 }
 
 // this function is used to execute the fillQueue function every second
 // parameters: d (the duration between execution of fillQueue), f (the function to execute - in this case it's fillQueue)
 // returns: nil
-func doEvery(d time.Duration, f func(time.Time)) {
+func doEvery(d time.Duration, f func(time.Time, string), store fsm.Store, httpAddr string) {
+    count := 0
     for x := range time.Tick(d) {
-        go f(x)
+        peers := fsm.PeersList(store.Raft.Stats()["latest_configuration"])
+        mod := count % len(peers)
+        id := fsm.GetNumericalID(store.ServerID, peers)
+        fmt.Println(mod, id)
+        if mod == id {
+            go f(x, httpAddr)
+        }
+        count++
     }
 }
 
 // this function starts the countdown process, specifying the paramaters of execution for doEvery
 // parameters: nil
 // returns: nil
-func StartTicker() {
-   go doEvery(1000*time.Millisecond, startQueuing)
+func StartTicker(store fsm.Store, httpAddr string) {
+    go doEvery(1000*time.Millisecond, startQueuing, store, httpAddr)
 }
