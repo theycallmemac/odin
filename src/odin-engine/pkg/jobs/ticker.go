@@ -148,7 +148,6 @@ func doEvery(d time.Duration, f func(time.Time, string), store fsm.Store, httpAd
         peers := fsm.PeersList(store.Raft.Stats()["latest_configuration"])
         mod := count % len(peers)
         id := fsm.GetNumericalID(store.ServerID, peers)
-        fmt.Println(mod, id)
         if mod == id {
             go f(x, httpAddr)
         }
