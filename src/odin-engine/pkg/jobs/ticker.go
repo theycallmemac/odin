@@ -29,6 +29,19 @@ type Node struct {
     Schedule []int
 }
 
+
+type AltNode struct {
+    Items []byte
+    Store fsm.Store
+}
+
+func getModID(count int, store fsm.Store) (int, int) {
+    peers := fsm.PeersList(store.Raft.Stats()["latest_configuration"])
+    mod := count % len(peers)
+    id := fsm.GetNumericalID(store.ServerID, peers)
+    return id, mod
+}
+
 // this function is used to make a post request to a given url
 // parameters: link (a string of the link to make a request to), data (a buffer to pass to the post request) 
 // returns: string (the result of a POST to the provided link with the given data)
@@ -74,10 +87,14 @@ func sortQueue(items []Node, done chan int) {
 // this function is used to check if the head fo the queue is in an execution state
 // parameters: items (a map of ints to arrays of jobs)
 // returns: nil
-func checkHead(items map[int][]Node, httpAddr string) bool {
+func checkHead(items map[int][]Node, httpAddr string, store fsm.Store) bool {
     if _, ok := items[0]; ok {
+        var an AltNode
         items, _ := json.Marshal(items[0])
-        go MakePostRequest("http://localhost" + httpAddr + "/execute", bytes.NewBuffer(items))
+        an.Items = items
+        an.Store = store
+        buffer, _:= json.Marshal(an)
+        go MakePostRequest("http://localhost" + httpAddr + "/execute", bytes.NewBuffer(buffer))
         return true
     }
     return false
@@ -114,45 +131,40 @@ func cronToSeconds(cronTime string) []int {
 // this function is used to fill the queue, calling sorting and grouping methods before checking the head// parameters: t (the time interval betwen each execution of the fillQueue function)
 // parameters: jobs (an unsorted array of Jobs)
 // returns: []Node the sorted array of jobs
-func fillQueue(jobs []NewJob, httpAddr string) []Node {
+func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
     var queue Queue
     var node Node
-    for _, j := range jobs {
-        node.ID, node.UID, node.GID, node.Lang, node.File = j.ID, j.UID, j.GID, j.Language, j.File
-        if len(j.Schedule) > 0 {
-            node.Schedule = cronToSeconds(j.Schedule)
-            queue.Items = append(queue.Items, node)
-            channel := make(chan int)
-            go sortQueue(queue.Items, channel)
-            <-channel
+    for count, j := range jobs {
+        mod, id := getModID(count, store)
+        if mod == id {
+            node.ID, node.UID, node.GID, node.Lang, node.File = j.ID, j.UID, j.GID, j.Language, j.File
+            if len(j.Schedule) > 0 {
+                node.Schedule = cronToSeconds(j.Schedule)
+                queue.Items = append(queue.Items, node)
+                channel := make(chan int)
+                go sortQueue(queue.Items, channel)
+                <-channel
+            }
         }
     }
-    go checkHead(groupItems(queue.Items), httpAddr)
+    go checkHead(groupItems(queue.Items), httpAddr, store)
     return queue.Items
 }
 
 // this function is used to start the queueing process
 // parameters: t (the time interval betwen each execution of the fillQueue function)
 // returns: nil
-func startQueuing(t time.Time, httpAddr string) {
+func startQueuing(t time.Time, httpAddr string, store fsm.Store) {
     jobs := GetAll(SetupClient())
-    fillQueue(jobs, httpAddr)
+    fillQueue(jobs, httpAddr, store)
 }
 
 // this function is used to execute the fillQueue function every second
 // parameters: d (the duration between execution of fillQueue), f (the function to execute - in this case it's fillQueue)
 // returns: nil
-func doEvery(d time.Duration, f func(time.Time, string), store fsm.Store, httpAddr string) {
-    count := 0
+func doEvery(d time.Duration, f func(time.Time, string, fsm.Store), store fsm.Store, httpAddr string) {
     for x := range time.Tick(d) {
-        peers := fsm.PeersList(store.Raft.Stats()["latest_configuration"])
-        mod := count % len(peers)
-        id := fsm.GetNumericalID(store.ServerID, peers)
-        if mod == id {
-            go f(x, httpAddr)
-
-        }
-        count++
+        go f(x, httpAddr, store)
     }
 }
 

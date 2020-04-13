@@ -16,6 +16,7 @@ import (
 
     "github.com/sirupsen/logrus"
 
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
 )
 
@@ -53,9 +54,10 @@ func makePutRequest(link string, data *bytes.Buffer) string {
 // this function is used to run the batch loop to run all executions
 // parameters: jobs (an array of jobs)
 // returns: nil
-func (queue Queue) batchRun() {
+func (queue Queue) batchRun(store fsm.Store) {
     for _, job := range queue {
         go func(job JobNode) {
+            fmt.Println("executing", job.ID)
             channel := make(chan Data)
             go job.runCommand(channel)
         }(job)
@@ -150,10 +152,10 @@ func executeYaml(filename string, done chan bool) {
 // this function is used to execute a file in /etc/odin/$id
 // parameters: contentsJSON (byte array containing uid, gid, language and file information)
 // returns: boolean (returns true if the file exists and is executed)
-func executeLang(contentsJSON []byte, done chan bool, httpAddr string) {
+func executeLang(contentsJSON []byte, done chan bool, httpAddr string, store fsm.Store) {
     var queue Queue
     json.Unmarshal(contentsJSON, &queue)
-    go queue.batchRun()
+    go queue.batchRun(store)
     go queue.updateRuns(httpAddr)
     done<- true
     return
@@ -162,11 +164,11 @@ func executeLang(contentsJSON []byte, done chan bool, httpAddr string) {
 // this function is used to decide which of the executeLang and exectureYaml functions to use
 // parameters: contents (byte array containing uid, gid, language and file information), process (int used to decide the function to use in the code)
 // returns: boolean (returns true if one of the functions executes sucessfully, false otherwise)
-func Execute(contents []byte, process int, httpAddr string) bool {
+func Execute(contents []byte, process int, httpAddr string, store fsm.Store) bool {
     done := make(chan bool)
     switch process {
         case 0:
-            go executeLang(contents, done, httpAddr)
+            go executeLang(contents, done, httpAddr, store)
         case 1:
             go executeYaml(string(contents), done)
     }
