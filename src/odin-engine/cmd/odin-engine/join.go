@@ -9,6 +9,9 @@ import (
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
 
+
+// create resouce type to be used by the router
+// consists of a base http address and a store in the finite state machine
 type joinResource struct {
     addr string
     store fsm.Store
@@ -24,7 +27,7 @@ func (rs joinResource) Routes(s *Service) chi.Router {
     return r
 }
 
-// this function is used to create a new job
+// this function is used to join a node to an exisiting cluster
 func (rs joinResource) Join(w http.ResponseWriter, r *http.Request) {
 	m := map[string]string{}
         if err := json.NewDecoder(r.Body).Decode(&m); err != nil {

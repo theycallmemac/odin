@@ -8,7 +8,8 @@ import (
 
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
-
+// create resource type to be used by the router
+// consists of a base http address and a store in the finite state machine
 type leaveResource struct {
     addr string
     store fsm.Store
@@ -24,7 +25,7 @@ func (rs leaveResource) Routes(s *Service) chi.Router {
     return r
 }
 
-// this function is used to create a new job
+// this function is used to remove a node from a cluster
 func (rs leaveResource) Leave(w http.ResponseWriter, r *http.Request) {
     m := map[string]string{}
     if err := json.NewDecoder(r.Body).Decode(&m); err != nil {

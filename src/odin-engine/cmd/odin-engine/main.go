@@ -17,6 +17,8 @@ import (
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
 )
 
+
+// define constsant default values to be used by the engine
 const (
     DefaultRaftAddr = ":12000"
     DefaultHttpAddr = ":3939"
@@ -24,6 +26,7 @@ const (
     raftTimeout = 10 * time.Second
 )
 
+// define variables to be used in setting up the engine
 var (
     httpAddr string
     raftAddr string
@@ -31,6 +34,9 @@ var (
     nodeID   string
 )
 
+// this function is used to define options to be used when running the engine
+// parameters: nil
+// returns: nil
 func init() {
     flag.StringVar(&httpAddr, "http", DefaultHttpAddr, "Set Http bind address")
     flag.StringVar(&raftAddr, "raft", DefaultRaftAddr, "Set Raft bind address")
@@ -38,6 +44,10 @@ func init() {
     flag.StringVar(&nodeID, "id", "", "Node ID")
 }
 
+
+// this function is used to setup the odin-engine as a single node cluster, as well as allowing for further nodes to joining it. This is all done with the use of flags when initially running the engine.
+// parameters: nil
+// returns: nil
 func main() {
     flag.Parse()
     if flag.NArg() == 0 {
@@ -79,6 +89,10 @@ func main() {
     log.Println("exiting ...")
 }
 
+
+// this function is used to make a POST request to join a new node to the cluster
+// parameters: joinAddr (an address string used to join the cluster), raftAddr (an address string used to be identified by Raft), nodeID (a string used to signify the node by ID)
+// returns: error (if an error occurs during adding the node to the cluster), otherwise nil
 func join(joinAddr, raftAddr, nodeID string) error {
 	b, err := json.Marshal(map[string]string{"addr": raftAddr, "id": nodeID})
 	if err != nil {
@@ -93,6 +107,9 @@ func join(joinAddr, raftAddr, nodeID string) error {
 	return nil
 }
 
+// this function is used to make a POST request to remove a node from a cluster
+// parameters: nodeID (a string used to signify the node by ID)
+// returns: error (if an error occurs during adding the node to the cluster), otherwise nil
 func leave(nodeID string) error {
 	b, err := json.Marshal(map[string]string{"id": nodeID})
 	if err != nil {

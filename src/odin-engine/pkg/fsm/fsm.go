@@ -13,12 +13,13 @@ import (
     "github.com/hashicorp/raft"
 )
 
-
+// define constant values to be used by the finite state machine
 const (
     retainSnapshotCount = 2
     raftTimeout = 10 * time.Second
 )
 
+// create a Store type which contains node and raft information
 type Store struct {
     RaftDir     string
     RaftBind    string
@@ -28,6 +29,9 @@ type Store struct {
     PeersLength int
 }
 
+// this function is called on a store type and is used to boostrap the cluster
+// parameters: enableSingle (a boolean used to allow single node cluster setup), localID (a string used to define the ID of a server)
+// returns: error if an error occurs during this bootstrapping process, otherwise nil
 func (s *Store) Open(enableSingle bool, localID string) error {
     config := raft.DefaultConfig()
     config.LocalID = raft.ServerID(localID)
@@ -58,8 +62,8 @@ func (s *Store) Open(enableSingle bool, localID string) error {
         configuration := raft.Configuration{
             Servers: []raft.Server{
                 {
-                        ID:      config.LocalID,
-                        Address: transport.LocalAddr(),
+                    ID:      config.LocalID,
+                    Address: transport.LocalAddr(),
                 },
             },
         }
@@ -68,6 +72,9 @@ func (s *Store) Open(enableSingle bool, localID string) error {
     return nil
 }
 
+// this function is called on a store type and is used to join a node to the cluster
+// parameters: nodeID (a string used to represent a node by name), addr (a string used to denote the address to be used by the server)
+// returns: error if an error occurs during this bootstrapping process, otherwise nil
 func (s *Store) Join(nodeID, addr string) error {
     configFuture := s.Raft.GetConfiguration()
     if err := configFuture.Error(); err != nil {
@@ -96,6 +103,9 @@ func (s *Store) Join(nodeID, addr string) error {
     return nil
 }
 
+// this function is called on a store type and is used to remove a node from the cluster
+// parameters: nodeID (a string used to represent a node by name)
+// returns: error if an error occurs during this bootstrapping process, otherwise nil
 func (s *Store) Leave(nodeID string) error {
 	log.Printf("received leave request for remote node %s", nodeID)
         cf := s.Raft.GetConfiguration()
@@ -104,30 +114,34 @@ func (s *Store) Leave(nodeID string) error {
 		return err
 	}
 	for _, srv := range cf.Configuration().Servers {
-		if srv.ID == raft.ServerID(nodeID) {
-			f := s.Raft.RemoveServer(srv.ID, 0, 0)
-			if err := f.Error(); err != nil {
-				log.Printf("failed to remove server %s", nodeID)
-				return err
-			}
-
-			log.Printf("node %s leaved successfully", nodeID)
-			return nil
+	    if srv.ID == raft.ServerID(nodeID) {
+	        f := s.Raft.RemoveServer(srv.ID, 0, 0)
+		if err := f.Error(); err != nil {
+		    log.Printf("failed to remove server %s", nodeID)
+		    return err
 		}
+		log.Printf("node %s leaved successfully", nodeID)
+		return nil
+	    }
 	}
-
 	log.Printf("node %s not exists in raft group", nodeID)
 	return nil
 }
 
-
+// this function is used to initialize a Store tstruct
+// parameters: nil
+// returns: *Store (a pointer to a newly initialized store)
 func NewStore() *Store {
     return &Store{NumericalID: -1, PeersLength: -1}
 }
 
+// define a type store by the name fsm (finite state machine)
 type fsm Store
 
-func (f *fsm) Apply(l *raft.Log) interface{}  {
+// this function is called on a fsm and is used to apply the information from the latest Join to the store
+// parameters: l (a log consists of a byte array and a raftTimeout)
+//returns: interface{} (this will always be nil)
+func (f *fsm) Apply(l *raft.Log) interface{} {
     stats := f.Raft.Stats()
     config := stats["latest_configuration"]
     peers := PeersList(config)
@@ -138,18 +152,28 @@ func (f *fsm) Apply(l *raft.Log) interface{}  {
     return nil
 }
 
+// this function is called on an fsm and will be used to perform snapshots
 func (f *fsm) Snapshot() (raft.FSMSnapshot, error) {
     log.Printf("snapshot")
     return &fsmSnapshot{}, nil
 }
 
+// this function is called on an fsm and will be used to perform restorations
 func (f *fsm) Restore(rc io.ReadCloser) error {
     log.Printf("restore [%v]", rc)
     return nil
 }
 
+// define an empty struct by the name fsmSnapshot
 type fsmSnapshot struct {}
 
+
+// this function is called on an fsmSnapshot and is used to release and flush any resources
+func (f *fsmSnapshot) Release() {}
+
+// this function is called on an fsmSnapshot and is used to write to file
+// parameters: (a raft.SnapshotSink used to write snapshots)
+// returns: error
 func (f *fsmSnapshot) Persist(sink raft.SnapshotSink) error {
     err := func() error {
         b := []byte("hello from persist")
@@ -164,17 +188,22 @@ func (f *fsmSnapshot) Persist(sink raft.SnapshotSink) error {
     return err
 }
 
-func (f *fsmSnapshot) Release() {}
-
+// this function is used to get the numerical ID of a node from the list of peers
+// parameters: ID (a string identifier of the node), peers (an array of current nodes in the cluster)
+// returns: int (the numeric value of a node's indentifier), otherwise -1
 func GetNumericalID(ID string, peers []string) int {
     for i, value := range peers {
         if value == ID {
-                return i
+            return i
         }
     }
     return -1
 }
 
+
+// this function is used to get the list of peers from a raft config
+// parameters: rawConfig (latest_configuration section of the raft stats)
+//returns: []string (a string array of all nodes in the cluster)
 func PeersList(rawConfig string) []string {
     peers := []string{}
     re := regexp.MustCompile(`ID:[0-9A-z]*`)

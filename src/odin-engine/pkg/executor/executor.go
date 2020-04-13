@@ -51,8 +51,8 @@ func makePutRequest(link string, data *bytes.Buffer) string {
     return string(bodyBytes)
 }
 
-// this function is used to run the batch loop to run all executions
-// parameters: jobs (an array of jobs)
+// this function is called on a queue type and is used to run the batch loop to run all executions
+// parameters:  store (a store of node information)
 // returns: nil
 func (queue Queue) batchRun(store fsm.Store) {
     for _, job := range queue {
@@ -63,8 +63,8 @@ func (queue Queue) batchRun(store fsm.Store) {
     }
 }
 
-// this function is used to update the run number for each job
-// parameters: jobs (an array of jobs)
+// this function is called on a queue type and is used to update the run number for each job
+// parameters: httpAddr (an address string for the node)
 // returns: nil
 func (queue Queue) updateRuns(httpAddr string) {
     for _, job := range queue {
@@ -75,8 +75,8 @@ func (queue Queue) updateRuns(httpAddr string) {
     }
 }
 
-// this function is used to log information from an executed job
-// parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id), data (a byte array containing the data from execution), error (any exit status from the execution)
+// this function is called on a job node type and is used to log information from an executed job
+// parameters: ch (channel used to return data), data (a byte array containing the data from execution), error (any exit status from the execution), store (a store of node information)
 // returns: nil
 func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Store) {
     go func() {
@@ -111,8 +111,8 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Stor
     }()
 }
 
-// this function is used to run a job like a shell would run a command
-// parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id)
+// this function is called on a job node type and is used to run a job like a shell would run a command
+// parameters: ch (channel used to return data), store (a store of node information)
 // returns: nil
 func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
     cmd := exec.Command(job.Lang, job.File)
@@ -124,8 +124,8 @@ func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
 }
 
 // this function is used to run a job like straight from the command line tool
-// parameters: filename (a string containing the path to the local file to execute)
-// returns: boolean (returns true if the file exists and is executed, false otherwise)
+// parameters: filename (a string containing the path to the local file to execute), done (a boolean channel), store (a store of node information)
+// returns: nil
 func executeYaml(filename string, done chan bool, store fsm.Store) {
     if exists(filename) {
         var job JobNode
@@ -151,7 +151,7 @@ func executeYaml(filename string, done chan bool, store fsm.Store) {
 }
 
 // this function is used to execute a file in /etc/odin/$id
-// parameters: contentsJSON (byte array containing uid, gid, language and file information)
+// parameters: contentsJSON (byte array containing uid, gid, language and file information), store (a store of node information)
 // returns: boolean (returns true if the file exists and is executed)
 func executeLang(contentsJSON []byte, done chan bool, httpAddr string, store fsm.Store) {
     var queue Queue
@@ -163,7 +163,7 @@ func executeLang(contentsJSON []byte, done chan bool, httpAddr string, store fsm
 }
 
 // this function is used to decide which of the executeLang and exectureYaml functions to use
-// parameters: contents (byte array containing uid, gid, language and file information), process (int used to decide the function to use in the code)
+// parameters: contents (byte array containing uid, gid, language and file information), process (int used to decide the function to use in the code), httpAddr (an address string for the engine), store (a store of node information)
 // returns: boolean (returns true if one of the functions executes sucessfully, false otherwise)
 func Execute(contents []byte, process int, httpAddr string, store fsm.Store) bool {
     done := make(chan bool)

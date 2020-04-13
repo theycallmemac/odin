@@ -21,11 +21,16 @@ func setOdinEnv(mongoDbUrl string) {
     os.Setenv("ODIN_MONGODB", mongoDbUrl)
 }
 
+// create service type to be used by the raft consensus protocol
+// consists of a base http address and a store in the finite state machine
 type Service struct {
     addr  string
     store fsm.Store
 }
 
+// this function is used to initialise a new service struct
+// parameters: addr (a string of a http address), store (a store of node details)
+// returns: *Service (a newly initialized service struct)
 func newService(addr string, store fsm.Store) *Service {
     return &Service{
         addr:  addr,
@@ -33,6 +38,9 @@ func newService(addr string, store fsm.Store) *Service {
     }
 }
 
+// this function is called on a service and is used to start it
+// parameters: nil
+// returns: nil
 func (s *Service) Start() {
     // restablish new chi router
     r := chi.NewRouter()
