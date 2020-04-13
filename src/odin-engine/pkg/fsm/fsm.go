@@ -96,6 +96,31 @@ func (s *Store) Join(nodeID, addr string) error {
     return nil
 }
 
+func (s *Store) Leave(nodeID string) error {
+	log.Printf("received leave request for remote node %s", nodeID)
+        cf := s.Raft.GetConfiguration()
+	if err := cf.Error(); err != nil {
+		log.Printf("failed to get raft configuration")
+		return err
+	}
+	for _, srv := range cf.Configuration().Servers {
+		if srv.ID == raft.ServerID(nodeID) {
+			f := s.Raft.RemoveServer(srv.ID, 0, 0)
+			if err := f.Error(); err != nil {
+				log.Printf("failed to remove server %s", nodeID)
+				return err
+			}
+
+			log.Printf("node %s leaved successfully", nodeID)
+			return nil
+		}
+	}
+
+	log.Printf("node %s not exists in raft group", nodeID)
+	return nil
+}
+
+
 func NewStore() *Store {
     return &Store{NumericalID: -1, PeersLength: -1}
 }

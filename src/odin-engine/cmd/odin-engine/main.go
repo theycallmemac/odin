@@ -5,6 +5,7 @@ import (
     "encoding/json"
     "flag"
     "fmt"
+    "io/ioutil"
     "log"
     "net/http"
     "os"
@@ -74,6 +75,7 @@ func main() {
     terminate := make(chan os.Signal, 1)
     signal.Notify(terminate, os.Interrupt)
     <-terminate
+    fmt.Println(leave(nodeID))
     log.Println("exiting ...")
 }
 
@@ -89,4 +91,20 @@ func join(joinAddr, raftAddr, nodeID string) error {
 	defer resp.Body.Close()
 
 	return nil
+}
+
+func leave(nodeID string) error {
+	b, err := json.Marshal(map[string]string{"id": nodeID})
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(fmt.Sprintf("http://localhost%s/leave",":3939"), "application-type/json", bytes.NewReader(b))
+        data, _ := ioutil.ReadAll(resp.Body)
+        fmt.Println(data)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+        return nil
 }

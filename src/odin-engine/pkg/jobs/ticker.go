@@ -150,6 +150,7 @@ func doEvery(d time.Duration, f func(time.Time, string), store fsm.Store, httpAd
         id := fsm.GetNumericalID(store.ServerID, peers)
         if mod == id {
             go f(x, httpAddr)
+
         }
         count++
     }

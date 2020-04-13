@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "encoding/json"
     "net/http"
 
@@ -51,7 +50,5 @@ func (rs joinResource) Join(w http.ResponseWriter, r *http.Request) {
 	if err := rs.store.Join(nodeID, remoteAddr); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-        fmt.Println("PEERS: ", rs.store.PeersLength)
-        w.Write([]byte("Join failed"))
 }
 
