@@ -57,9 +57,8 @@ func makePutRequest(link string, data *bytes.Buffer) string {
 func (queue Queue) batchRun(store fsm.Store) {
     for _, job := range queue {
         go func(job JobNode) {
-            fmt.Println("executing", job.ID)
             channel := make(chan Data)
-            go job.runCommand(channel)
+            go job.runCommand(channel, store)
         }(job)
     }
 }
@@ -79,13 +78,14 @@ func (queue Queue) updateRuns(httpAddr string) {
 // this function is used to log information from an executed job
 // parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id), data (a byte array containing the data from execution), error (any exit status from the execution)
 // returns: nil
-func (job JobNode) logger(ch chan<- Data, data []byte, err error) {
+func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Store) {
     go func() {
         var logFile, _ = os.OpenFile("/etc/odin/logs/" + job.ID, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
         logrus.SetOutput(io.MultiWriter(logFile, os.Stdout))
         logrus.SetFormatter(&logrus.TextFormatter{})
         if job.ID != "" {
             logrus.WithFields(logrus.Fields{
+                "node": store.ServerID,
                 "id": job.ID,
                 "uid": job.UID,
                 "gid": job.GID,
@@ -95,6 +95,7 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error) {
         }
         if err != nil {
             logrus.WithFields(logrus.Fields{
+                "node": store.ServerID,
                 "id": job.ID,
                 "uid": job.UID,
                 "gid": job.GID,
@@ -113,19 +114,19 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error) {
 // this function is used to run a job like a shell would run a command
 // parameters: ch (channel used to return data), uid (uint32 used to execute as a particular user), gid (uint32 used to execute as a particular group), language (string value of execution language), file (string containing the name of the base file), id (a string containing the jobs id)
 // returns: nil
-func (job JobNode) runCommand(ch chan<- Data) {
+func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
     cmd := exec.Command(job.Lang, job.File)
     cmd.SysProcAttr = &syscall.SysProcAttr{}
     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: job.UID, Gid: job.GID}
     data, err := cmd.CombinedOutput()
 
-    go job.logger(ch, data, err)
+    go job.logger(ch, data, err, store)
 }
 
 // this function is used to run a job like straight from the command line tool
 // parameters: filename (a string containing the path to the local file to execute)
 // returns: boolean (returns true if the file exists and is executed, false otherwise)
-func executeYaml(filename string, done chan bool) {
+func executeYaml(filename string, done chan bool, store fsm.Store) {
     if exists(filename) {
         var job JobNode
         singleChannel := make(chan Data)
@@ -138,7 +139,7 @@ func executeYaml(filename string, done chan bool) {
         gid, _ := strconv.Atoi(group.Gid)
         job.UID = uint32(uid)
         job.GID = uint32(gid)
-        go job.runCommand(singleChannel)
+        go job.runCommand(singleChannel, store)
         res := <-singleChannel
         ReviewError(res.error, "bool")
         done<- true
@@ -170,7 +171,7 @@ func Execute(contents []byte, process int, httpAddr string, store fsm.Store) boo
         case 0:
             go executeLang(contents, done, httpAddr, store)
         case 1:
-            go executeYaml(string(contents), done)
+            go executeYaml(string(contents), done, store)
     }
     return <-done
 }
