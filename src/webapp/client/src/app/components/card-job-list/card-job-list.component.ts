@@ -23,8 +23,8 @@ export class CardJobListComponent implements OnInit {
   ngOnInit() {
       this.jobsService.jobsGet().subscribe((response) => {
       this.jobList = response
-      this.selectJob(response[3])
-      this.selectedJob = response[3]
+      this.selectJob(response[0])
+      this.selectedJob = response[0]
       this.jobsFound = true;
     });
       this.selectedJobObv = this.jobsService._selectedJobListener
