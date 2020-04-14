@@ -8,6 +8,7 @@ import (
     "math/rand"
     "net/http"
     "sort"
+    "strconv"
     "strings"
     "time"
 
@@ -22,8 +23,8 @@ type Queue struct {
 
 type Node struct {
     ID string
-    UID string
-    GID string
+    UID uint32
+    GID uint32
     Lang string
     File string
     Schedule []int
@@ -139,7 +140,11 @@ func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
     for count, j := range jobs {
         mod, id := getModID(count, store)
         if mod == id {
-            node.ID, node.UID, node.GID, node.Lang, node.File = j.ID, j.UID, j.GID, j.Language, j.File
+            node.ID, node.Lang, node.File = j.ID, j.Language, j.File
+            uid, _ := strconv.ParseUint(j.UID, 10, 32)
+            gid, _ := strconv.ParseUint(j.GID, 10, 32)
+            node.UID = uint32(uid)
+            node.GID = uint32(gid)
             if len(j.Schedule) > 0 {
                 node.Schedule = cronToSeconds(j.Schedule)
                 queue.Items = append(queue.Items, node)
