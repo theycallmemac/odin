@@ -16,7 +16,11 @@ var ExecuteCmd = &cobra.Command{
     Short: "execute a job created by user",
     Long:  `This subcommand executes a job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {
-            executeJob(cmd, args)
+        port, _:= cmd.Flags().GetString("port")
+        if port == "" {
+            port = DefaultPort
+        }
+        executeJob(cmd, args, port)
     },
 }
 
@@ -26,18 +30,19 @@ var ExecuteCmd = &cobra.Command{
 func init() {
     RootCmd.AddCommand(ExecuteCmd)
     ExecuteCmd.Flags().StringP("file", "f", "", "file (required)")
+    ExecuteCmd.Flags().StringP("port", "p", "", "port")
     ExecuteCmd.MarkFlagRequired("file")
 }
 
 // this function is called as the run operation for the ExecuteCmd
-// parameters: cmd (the definition of *cmd.Command), args (an array of strings passed to the command)
+// parameters: cmd (the definition of *cmd.Command), args (an array of strings passed to the command), port (a string of the port to be used)
 // returns: nil
-func executeJob(cmd *cobra.Command, args []string) {
+func executeJob(cmd *cobra.Command, args []string, port string) {
     name, _:= cmd.Flags().GetString("file")
     contents := readJobFileExecute(name)
     fmt.Println(string(contents))
     dir, _ := os.Getwd()
-    resp := makePostRequest("http://localhost:3939/execute/yaml", bytes.NewBuffer([]byte(dir+"/"+name)))
+    resp := makePostRequest(fmt.Sprintf("http://localhost%s/execute/yaml", port), bytes.NewBuffer([]byte(dir+"/"+name)))
     fmt.Println(resp)
     fmt.Println("Executed successfully!")
 }

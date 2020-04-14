@@ -31,6 +31,7 @@ var DeployCmd = &cobra.Command{
 func init() {
     RootCmd.AddCommand(DeployCmd)
     DeployCmd.Flags().StringP("file", "f", "", "file (required)")
+    DeployCmd.Flags().StringP("port", "p", "", "port")
     DeployCmd.MarkFlagRequired("file")
 }
 
@@ -38,6 +39,10 @@ func init() {
 // parameters: cmd (the definition of *cmd.Command), args (an array of strings passed to the command)
 // returns: nil
 func deployJob(cmd *cobra.Command, args []string) {
+    port, _:= cmd.Flags().GetString("port")
+    if port == "" {
+        port = DefaultPort
+    }
     name, _:= cmd.Flags().GetString("file")
     yaml := unmarsharlYaml(readJobFile(name))
     currentDir, _ := os.Getwd()
@@ -51,9 +56,9 @@ func deployJob(cmd *cobra.Command, args []string) {
     job.Description =  yaml.Job.Description
     job.Language = yaml.Job.Language
     job.File = currentDir + "/" + yaml.Job.File
-    job.Schedule = getScheduleString(name)
+    job.Schedule = getScheduleString(name, port)
     jobJSON, _ := json.Marshal(job)
-    body := makePostRequest("http://localhost:3939/jobs", bytes.NewBuffer(jobJSON))
+    body := makePostRequest(fmt.Sprintf("http://localhost%s/jobs", port), bytes.NewBuffer(jobJSON))
     fmt.Println(body)
 }
 
@@ -93,12 +98,12 @@ func ensureDirectory(dir string) bool {
 }
 
 // this function is used to get the schedule string using the path to the file
-// parameters: name (a string containing the path to a file)
+// parameters: name (a string containing the path to a file), port (a string of the port to be used)
 // returns: ss (the generated schedule string)
-func getScheduleString(name string) string {
+func getScheduleString(name string, port string) string {
     dir, _ := os.Getwd()
     absPath := []byte(dir + "/" + name)
-    ss := makePostRequest("http://localhost:3939/schedule", bytes.NewBuffer(absPath))
+    ss := makePostRequest(fmt.Sprintf("http://localhost%s/schedule", port), bytes.NewBuffer(absPath))
     return ss
 }
 

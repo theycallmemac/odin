@@ -13,7 +13,11 @@ var ListCmd = &cobra.Command{
     Short: "lists the user's current Odin jobs",
     Long:  `This subcommand lists the user's current Odin jobs`,
     Run: func(cmd *cobra.Command, args []string) {
-            listJob()
+        port, _:= cmd.Flags().GetString("port")
+        if port == "" {
+            port = DefaultPort
+        }
+        listJob(port)
     },
 }
 
@@ -22,12 +26,13 @@ var ListCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(ListCmd)
+    ListCmd.Flags().StringP("port", "p", "", "port")
 }
 
 // this function is called as the run operation for the ListCmd
-// parameters: nil
+// parameters: port (a string of the port to be used)
 // returns: nil
-func listJob() {
-    response := makePostRequest("http://localhost:3939/jobs/list", bytes.NewBuffer([]byte(fmt.Sprintf("%d", os.Getuid()))))
+func listJob(port string) {
+    response := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/list", port), bytes.NewBuffer([]byte(fmt.Sprintf("%d", os.Getuid()))))
     fmt.Print(response)
 }
