@@ -42,6 +42,7 @@ func makePutRequest(link string, data *bytes.Buffer) string {
         fmt.Println(clientErr)
     }
     bodyBytes, _ := ioutil.ReadAll(response.Body)
+    response.Body.Close()
     return string(bodyBytes)
 }
 

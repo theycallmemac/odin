@@ -19,6 +19,9 @@ import (
     "gopkg.in/yaml.v2"
 )
 
+
+var URI = resources.UnmarsharlYaml(resources.ReadFileBytes(getHome() + "/odin-config.yml")).Mongo.Address
+
 // create NewJob type to be used for accessing and storing job information
 type NewJob struct {
     ID string `yaml:"id"`
@@ -41,6 +44,11 @@ type JobStats struct {
     Value string
 }
 
+func getHome() string {
+    usr, _ := user.Current()
+    return usr.HomeDir
+}
+
 // this function is used to unmarshal YAML
 // parameters: byteArray (an array of bytes representing the contents of a file)
 // returns: Config (a struct form of the YAML)
@@ -60,7 +68,7 @@ func SetupClient() *mongo.Client {
     c := getMongoClient()
     err := c.Ping(context.Background(), readpref.Primary())
     if err != nil {
-        fmt.Println("Cannot connect to MongoDB")
+        fmt.Println("Cannot connect to MongoDB: ", err)
         os.Exit(2)
     }
     return c
@@ -70,8 +78,7 @@ func SetupClient() *mongo.Client {
 // parameters: none
 // returns: *mogno.Client (a client)
 func getMongoClient() *mongo.Client {
-    usr, _ := user.Current()
-    clientOptions := options.Client().ApplyURI(resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml")).Mongo.Address)
+    clientOptions := options.Client().ApplyURI(URI)
     client, err := mongo.NewClient(clientOptions)
     if err != nil {
         log.Fatal(err)
@@ -96,6 +103,7 @@ func InsertIntoMongo(client *mongo.Client, d []byte, path string, uid string) st
     } else {
         collection := client.Database("odin").Collection("jobs")
         _, err := collection.InsertOne(context.TODO(), job)
+        client.Disconnect(context.TODO())
         if err != nil {
             log.Fatalln("Error on inserting new job", err)
         }
@@ -112,6 +120,7 @@ func GetJobStats(client *mongo.Client, id string) []JobStats {
     var statsList []JobStats
     collection := client.Database("odin").Collection("observability")
     documents, _ := collection.Find(context.TODO(), bson.M{"id": id})
+    client.Disconnect(context.TODO())
     for documents.Next(context.TODO()) {
         documents.Decode(&statMap)
         jobStats.ID = statMap["id"]
@@ -130,6 +139,7 @@ func GetJobByValue(client *mongo.Client, filter bson.M, uid string) NewJob {
     var job NewJob
     collection := client.Database("odin").Collection("jobs")
     documentReturned := collection.FindOne(context.TODO(), filter)
+    client.Disconnect(context.TODO())
     documentReturned.Decode(&job)
     if job.UID == uid {
         return job
@@ -145,6 +155,7 @@ func GetUserJobs(client *mongo.Client, uid string) []NewJob {
     var jobs []NewJob
     collection := client.Database("odin").Collection("jobs")
     documents, _ := collection.Find(context.TODO(), bson.D{})
+    client.Disconnect(context.TODO())
     for documents.Next(context.TODO()) {
         var job NewJob
         documents.Decode(&job)
@@ -162,6 +173,7 @@ func GetAll(client *mongo.Client) []NewJob {
     var jobs []NewJob
     collection := client.Database("odin").Collection("jobs")
     documents, _ := collection.Find(context.TODO(), bson.D{})
+    client.Disconnect(context.TODO())
     for documents.Next(context.TODO()) {
         var job NewJob
         documents.Decode(&job)
@@ -184,6 +196,7 @@ func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
     update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule, "runs": job.Runs},}
     collection := client.Database("odin").Collection("jobs")
     updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
+    client.Disconnect(context.TODO())
     return updateResult.ModifiedCount
 }
 
@@ -197,6 +210,7 @@ func DeleteJobByValue(client *mongo.Client, filter bson.M, uid string) bool {
     }
     collection := client.Database("odin").Collection("jobs")
     _, err := collection.DeleteOne(context.TODO(), filter)
+    client.Disconnect(context.TODO())
     if err != nil {
         return false
     }
