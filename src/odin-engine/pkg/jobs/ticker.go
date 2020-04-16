@@ -35,6 +35,12 @@ type ExecNode struct {
     Store fsm.Store
 }
 
+var storage struct {
+    Items []NewJob
+}
+
+var dead bool
+
 // this function is used to get the modulus of the loop and number of peers along with the numerical ID of the current node
 // parameters: count (an integer of the current count), store (a fsm containing node information)
 // returns: (int, int) (the modules and the numeric ID)
@@ -163,8 +169,19 @@ func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
 // parameters: t (the time interval betwen each execution of the fillQueue function), httpAddr (an address string from the server), store (a fsm containing node information)
 // returns: nil
 func startQueuing(t time.Time, httpAddr string, store fsm.Store) {
-    jobs := GetAll(SetupClient())
-    fillQueue(jobs, httpAddr, store)
+    if dead {
+        fillQueue(storage.Items, httpAddr, store)
+    } else {
+        client, err := SetupClient()
+        if err != nil {
+            dead = true
+        } else {
+            dead = false
+            jobs := GetAll(client)
+            fillQueue(jobs, httpAddr, store)
+            storage.Items = jobs
+        }
+    }
 }
 
 // this function is used to execute the fillQueue function every second

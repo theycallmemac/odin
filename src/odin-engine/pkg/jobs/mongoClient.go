@@ -5,8 +5,8 @@ import (
     "encoding/json"
     "fmt"
     "log"
-    "os"
     "os/user"
+    "time"
 
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
@@ -64,14 +64,15 @@ func unmarsharlYaml(byteArray []byte) types.EngineConfig {
 // this function is used to set up a MongoDB client and test it with a ping command
 // parameters: nil
 // returns: *mogno.Client (a client)
-func SetupClient() *mongo.Client {
+func SetupClient() (*mongo.Client, error) {
     c := getMongoClient()
-    err := c.Ping(context.Background(), readpref.Primary())
+    ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
+    err := c.Ping(ctx, readpref.Primary())
     if err != nil {
         fmt.Println("Cannot connect to MongoDB: ", err)
-        os.Exit(2)
+        c.Disconnect(context.TODO())
     }
-    return c
+    return c, err
 }
 
 // this function is used to get a MongoDB Client and set it's options
@@ -194,8 +195,11 @@ func Format(id string, name, string, description string, schedule string) string
 func UpdateJobByValue(client *mongo.Client, job NewJob) int64 {
     update := bson.M{"$set": bson.M{"name": job.Name, "description": job.Description, "schedule": job.Schedule, "runs": job.Runs},}
     collection := client.Database("odin").Collection("jobs")
-    updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
+    updateResult, err := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
     client.Disconnect(context.TODO())
+    if err != nil {
+        return int64(0)
+    }
     return updateResult.ModifiedCount
 }
 

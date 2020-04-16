@@ -1,7 +1,6 @@
 package executor
 
 import (
-    "fmt"
     "io"
     "os"
     "os/exec"
