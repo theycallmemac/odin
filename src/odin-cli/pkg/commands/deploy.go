@@ -7,6 +7,7 @@ import (
     "io/ioutil"
     "log"
     "os"
+    "os/exec"
     "os/user"
     "strconv"
     "syscall"
@@ -53,9 +54,21 @@ func deployJob(cmd *cobra.Command, args []string) {
     gid, _ := strconv.Atoi(group.Gid)
     job.GID = strconv.Itoa(gid)
     job.Name = yaml.Job.Name
-    job.Description =  yaml.Job.Description
-    job.Language = yaml.Job.Language
+    job.Description = yaml.Job.Description
     job.File = currentDir + "/" + yaml.Job.File
+    if yaml.Job.Language == "go" {
+        job.Language = yaml.Job.Language
+        cmd := exec.Command(job.Language, "build", job.File)
+        cmd.SysProcAttr = &syscall.SysProcAttr{}
+        _, err := cmd.CombinedOutput()
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(2)
+        }
+        job.File = job.File[:len(job.File)-3]
+    } else {
+        job.Language = yaml.Job.Language
+    }
     job.Schedule = getScheduleString(name, port)
     jobJSON, _ := json.Marshal(job)
     body := makePostRequest(fmt.Sprintf("http://localhost%s/jobs", port), bytes.NewBuffer(jobJSON))

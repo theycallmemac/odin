@@ -1,6 +1,7 @@
 package executor
 
 import (
+    "fmt"
     "io"
     "os"
     "os/exec"
@@ -51,7 +52,12 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Stor
 // parameters: ch (channel used to return data), store (a store of node information)
 // returns: nil
 func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
-    cmd := exec.Command(job.Lang, job.File)
+    var cmd *exec.Cmd
+    if job.Lang == "go" {
+        cmd = exec.Command(job.File)
+    } else {
+        cmd = exec.Command(job.Lang, job.File)
+    }
     cmd.SysProcAttr = &syscall.SysProcAttr{}
     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: job.UID, Gid: job.GID}
     data, err := cmd.CombinedOutput()

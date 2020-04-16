@@ -71,7 +71,7 @@ func SetupEnvironment(d []byte) string {
         gid, _ := strconv.Atoi(group.Gid)
 	ChownR(newFilePath, 0, gid)
 	ChownR(logsPath + job.ID, 0, gid)
-        ioutil.WriteFile(newFilePath, []byte(""), 0654)
+        ioutil.WriteFile(newFilePath, []byte(""), 0744)
         ioutil.WriteFile(logsPath + job.ID, []byte(""), 0766)
     }
     input, err := ioutil.ReadFile(originalFile)
@@ -79,6 +79,6 @@ func SetupEnvironment(d []byte) string {
         return ""
     }
     ioutil.WriteFile(logsPath, []byte(""), 0766)
-    ioutil.WriteFile(newFilePath, input, 0654)
+    ioutil.WriteFile(newFilePath, input, 0744)
     return newFilePath
 }
