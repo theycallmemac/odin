@@ -37,6 +37,6 @@ func init() {
 // parameters: id (a string of the required id), port (a string of the port to be used)
 // returns: nil
 func describeJob(id string, port string) {
-    response := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/info/description", port), bytes.NewBuffer([]byte(id + " " + fmt.Sprintf("%d", os.Getuid()))))
+    response := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/info/description", port), bytes.NewBuffer([]byte(id + "_" + fmt.Sprintf("%d", os.Getuid()))))
     fmt.Println(response)
 }

@@ -139,7 +139,6 @@ func GetJobByValue(client *mongo.Client, filter bson.M, uid string) NewJob {
     var job NewJob
     collection := client.Database("odin").Collection("jobs")
     documentReturned := collection.FindOne(context.TODO(), filter)
-    client.Disconnect(context.TODO())
     documentReturned.Decode(&job)
     if job.UID == uid {
         return job
