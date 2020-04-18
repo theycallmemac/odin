@@ -12,14 +12,14 @@ import (
 
 )
 
-func Log(varType string, desc string, value string, id string) bool {
-    return FindAndInsert(varType, desc, value, id)
+func Log(varType string, desc string, value string, id string, timestamp string) bool {
+    return FindAndInsert(varType, desc, value, id, timestamp)
 }
 
-func FindAndInsert(varType string, desc string, value string, id string) bool {
+func FindAndInsert(varType string, desc string, value string, id string, timestamp string) bool {
     client := SetupClient()
     filter := bson.M{"id": id, "desc": desc, "type": varType}
-    update := bson.M{"$set": bson.M{"type": varType, "desc": desc, "value": value, "id": id,}}
+    update := bson.M{"$set": bson.M{"type": varType, "desc": desc, "value": value, "id": id, "timestamp": timestamp}}
     collection := client.Database("odin").Collection("observability")
     _, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
     return err == nil
