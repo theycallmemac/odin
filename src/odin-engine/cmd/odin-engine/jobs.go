@@ -67,7 +67,7 @@ func (rs jobsResource) Create(w http.ResponseWriter, r *http.Request) {
 // this function is used to show a job's description
 func (rs jobsResource) DescriptionByID(w http.ResponseWriter, r *http.Request) {
     d, _ := ioutil.ReadAll(r.Body)
-    args := strings.Split(string(d), " ")
+    args := strings.Split(string(d), "_")
     id, uid := args[0], args[1]
     job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": id}, uid)
     w.Write([]byte(job.Name + " - " + job.Description + "\n"))
@@ -86,7 +86,7 @@ func (rs jobsResource) StatsByID(w http.ResponseWriter, r *http.Request) {
 // this function is used to update a job
 func (rs jobsResource) Update(w http.ResponseWriter, r *http.Request) {
     d, _ := ioutil.ReadAll(r.Body)
-    args := strings.Split(string(d), " ")
+    args := strings.Split(string(d), "_")
     id, name, description, schedule, uid := args[0], args[1], args[2], args[3], args[4]
     job := jobs.GetJobByValue(jobs.SetupClient(), bson.M{"id": id}, uid)
     if resources.NotEmpty(name) {

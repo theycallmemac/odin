@@ -14,7 +14,11 @@ var RemoveCmd = &cobra.Command{
     Long:  `This subcommand remove a user's job by ID`,
     Run: func(cmd *cobra.Command, args []string) {
         id, _:= cmd.Flags().GetString("id")
-        removeJob(id)
+	port, _:= cmd.Flags().GetString("port")
+        if port == "" {
+            port = DefaultPort
+        }
+        removeJob(id, port)
     },
 }
 
@@ -24,12 +28,14 @@ var RemoveCmd = &cobra.Command{
 func init() {
     RootCmd.AddCommand(RemoveCmd)
     RemoveCmd.Flags().StringP("id", "i", "", "id")
+    RemoveCmd.Flags().StringP("port", "p", "", "port")
+    RemoveCmd.MarkFlagRequired("id")
 }
 
 // this function is called as the run operation for the RemoveCmd
-// parameters: id (a string of the required id)
+// parameters: id (a string of the required id), port (a string of the port to be used)
 // returns: nil
-func removeJob(id string) {
-    response := makePutRequest("http://localhost:3939/jobs", bytes.NewBuffer([]byte(id + " " + fmt.Sprintf("%d", os.Getuid()))))
+func removeJob(id string, port string) {
+    response := makePutRequest(fmt.Sprintf("http://localhost%s/jobs", port), bytes.NewBuffer([]byte(id + " " + fmt.Sprintf("%d", os.Getuid()))))
     fmt.Println(response)
 }

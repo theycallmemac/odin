@@ -18,7 +18,11 @@ var ModifyCmd = &cobra.Command{
             name, _:= cmd.Flags().GetString("name")
             desc, _:= cmd.Flags().GetString("description")
             schedule, _:= cmd.Flags().GetString("schedule")
-            modifyJob(id, name, desc, schedule)
+            port, _:= cmd.Flags().GetString("port")
+            if port == "" {
+                port = DefaultPort
+            }
+            modifyJob(id, name, desc, schedule, port)
     },
 }
 
@@ -32,16 +36,17 @@ func init() {
     ModifyCmd.Flags().StringP("name", "n", "", "name")
     ModifyCmd.Flags().StringP("description", "d", "", "description")
     ModifyCmd.Flags().StringP("schedule", "s", "", "schedule")
+    ModifyCmd.Flags().StringP("port", "p", "", "port")
 }
 
 // this function is called as the run operation for the ModifyCmd
-// parameters: id (a string of the required id), name (a string to change the job name), desc (a string to change the job description), schedule (a string to change the job schedule)
+// parameters: id (a string of the required id), name (a string to change the job name), desc (a string to change the job description), schedule (a string to change the job schedule), port (a string of the port to be used)
 // returns: nil
-func modifyJob(id string, name string, desc string, schedule string) {
+func modifyJob(id string, name string, desc string, schedule string, port string) {
     if id != "" && name == "" && desc == "" && schedule == "" {
         fmt.Println("Please specify which field you want to modify in job " + id + "\n")
     } else {
-        response := makePutRequest("http://localhost:3939/jobs/info/", bytes.NewBuffer([]byte(id + " " + name + " " + desc + " " + schedule + " " + fmt.Sprintf("%d", os.Getuid()))))
+        response := makePutRequest(fmt.Sprintf("http://localhost%s/jobs/info/", port), bytes.NewBuffer([]byte(id + "_" + name + "_" + desc + "_" + schedule + "_" + fmt.Sprintf("%d", os.Getuid()))))
         fmt.Println(response)
     }
 }

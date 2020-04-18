@@ -14,8 +14,12 @@ var DescribeCmd = &cobra.Command{
     Short: "describe a running Odin job",
     Long:  `This subcommand will describe a running Odin job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {
-            id, _:= cmd.Flags().GetString("id")
-            describeJob(id)
+        id, _:= cmd.Flags().GetString("id")
+        port, _:= cmd.Flags().GetString("port")
+        if port == "" {
+            port = DefaultPort
+        }
+        describeJob(id, port)
     },
 }
 
@@ -25,13 +29,14 @@ var DescribeCmd = &cobra.Command{
 func init() {
     RootCmd.AddCommand(DescribeCmd)
     DescribeCmd.Flags().StringP("id", "i", "", "id (required)")
+    DescribeCmd.Flags().StringP("port", "p", "", "port")
     DescribeCmd.MarkFlagRequired("id")
 }
 
 // this function is called as the run operation for the DescribeCmd
-// parameters: id (a string of the required id)
+// parameters: id (a string of the required id), port (a string of the port to be used)
 // returns: nil
-func describeJob(id string) {
-    response := makePostRequest("http://localhost:3939/jobs/info/description", bytes.NewBuffer([]byte(id + " " + fmt.Sprintf("%d", os.Getuid()))))
+func describeJob(id string, port string) {
+    response := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/info/description", port), bytes.NewBuffer([]byte(id + "_" + fmt.Sprintf("%d", os.Getuid()))))
     fmt.Println(response)
 }

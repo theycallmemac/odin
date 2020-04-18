@@ -101,7 +101,6 @@ func Execute(filePath string) []types.StringFormat {
     // initalize a 2-D string aray and get the yaml passed to the scheduler
     var formattedRules [][]string
     yaml := resources.SchedulerYaml(filePath)
-
     if isScheduleValid(yaml) {
         var sf types.StringFormat
         if yaml == "every minute" {

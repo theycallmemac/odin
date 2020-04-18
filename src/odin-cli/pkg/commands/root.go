@@ -11,6 +11,9 @@ import (
     "github.com/spf13/cobra"
 )
 
+const (
+    DefaultPort = ":3939"
+)
 
 // ----------------------- INIT COBRA ROOT CMD ---------------------- //
 // ------------------------------------------------------------------ //
@@ -21,7 +24,6 @@ var RootCmd = &cobra.Command{
     Short: "orchestrate your jobs",
     Long: `orchestrate your jobs for periodic execution`,
 }
-
 
 // this function is called as the run operation for the RootCmd
 // parameters: nil
