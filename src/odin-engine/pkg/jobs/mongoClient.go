@@ -186,6 +186,9 @@ func GetAll(client *mongo.Client) []NewJob {
 // parameters: id, name, description, stats, schedule (five strings corresponding to individual job data)
 // returns: string (a space formatted string used for display)
 func Format(id string, name, string, description string, schedule string) string {
+    if schedule == "0 5 31 2 *" {
+        schedule = "never"
+    }
     return fmt.Sprintf("%-20s%-20s%-20s%-20s\n", id, name, description, schedule)
 }
 

@@ -103,6 +103,11 @@ func Execute(filePath string) []types.StringFormat {
     yaml := resources.SchedulerYaml(filePath)
     if isScheduleValid(yaml) {
         var sf types.StringFormat
+        if yaml == "never" {
+            sf.Minute, sf.Hour, sf.Dom, sf.Mon, sf.Dow = "0","5","31","2","*"
+            stringFormat = append(stringFormat, sf)
+            return stringFormat
+        }
         if yaml == "every minute" {
             sf.Minute, sf.Hour, sf.Dom, sf.Mon, sf.Dow = "*","*","*","*","*"
             stringFormat = append(stringFormat, sf)
