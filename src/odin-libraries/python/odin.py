@@ -3,6 +3,7 @@ from sys import exit
 from ruamel.yaml import YAML
 import json
 from odin_logger import OdinLogger as logger
+from time import time
 
 
 class Odin:
@@ -15,6 +16,7 @@ class Odin:
         except Exception as e:
             print(e)
         self.id = data["job"]["id"]
+        self.timestamp = time()
 
         if 'ODIN_EXEC_ENV' in environ or test != False:
             self.ENV_CONFIG = True
@@ -23,14 +25,14 @@ class Odin:
 
     def condition(self, desc, expr):
         if self.ENV_CONFIG:
-            logger.log("condition", desc, expr, self.id)
+            logger.log("condition", desc, expr, self.id, self.timestamp)
         return expr
     
     def watch(self, desc, value):
         if self.ENV_CONFIG:
-            logger.log("watch", desc, value, self.id)
+            logger.log("watch", desc, value, self.id, self.timestamp)
 
     def result(self, desc, status):
         if self.ENV_CONFIG:
-            logger.log("result", desc, status, self.id)
+            logger.log("result", desc, status, self.id, self.timestamp)
         exit(0)
