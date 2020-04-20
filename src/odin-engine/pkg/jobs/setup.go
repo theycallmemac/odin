@@ -65,20 +65,23 @@ func SetupEnvironment(d []byte) string {
     fileSlice := strings.Split(job.File, "/")
     job.File = string(fileSlice[len(fileSlice)-1])
     newFilePath := jobsPath + job.ID + "/" + job.File
+    var gid int
     if notDirectory(jobsPath + job.ID) {
         makeDirectory(jobsPath + job.ID)
         group, _ := user.LookupGroup("odin")
-        gid, _ := strconv.Atoi(group.Gid)
+        gid, _ = strconv.Atoi(group.Gid)
 	ChownR(newFilePath, 0, gid)
 	ChownR(logsPath + job.ID, 0, gid)
-        ioutil.WriteFile(newFilePath, []byte(""), 0744)
-        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0766)
+        ioutil.WriteFile(newFilePath, []byte(""), 0474)
+        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0474)
     }
     input, err := ioutil.ReadFile(originalFile)
     if err != nil {
         return ""
     }
-    ioutil.WriteFile(logsPath, []byte(""), 0766)
-    ioutil.WriteFile(newFilePath, input, 0744)
+    ioutil.WriteFile(logsPath, []byte(""), 0474)
+    ioutil.WriteFile(newFilePath, input, 0474)
+    os.Chown(newFilePath, 0, gid)
+    os.Chmod(newFilePath, 0474)
     return newFilePath
 }
