@@ -1,4 +1,4 @@
-import odin
+import pyodin as odin
 import unittest
 from pymongo import MongoClient
 import json
@@ -19,7 +19,7 @@ class odinSdkTest(unittest.TestCase):
         r = random.randint(100000, 999999)
         test_desc = 'test_desc' + str(r)
         
-        o = odin.Odin()
+        o = odin.Odin(config="job.yml")
 
         cond = o.condition(test_desc, True)       
         result = self.collection.find_one({"desc" : test_desc})
@@ -31,7 +31,7 @@ class odinSdkTest(unittest.TestCase):
         r = random.randint(100000, 999999)
         test_desc = 'test_desc' + str(r)
         
-        o = odin.Odin()
+        o = odin.Odin(config="job.yml")
 
         o.watch(test_desc, True)
         result = self.collection.find_one({"desc" : test_desc})
@@ -43,7 +43,7 @@ class odinSdkTest(unittest.TestCase):
         test_desc = 'test_desc' + str(r)
         
         # test True sets odin exc env to true and in turn enables logging everything to the DB
-        o = odin.Odin(test=True)
+        o = odin.Odin(test=True, config="job.yml")
 
         cond = o.condition(test_desc, True)    
         result = self.collection.find_one({"desc" : test_desc})
@@ -56,7 +56,7 @@ class odinSdkTest(unittest.TestCase):
         test_desc = 'test_desc' + str(r)
         
         # test True sets odin exc env to true and in turn enables logging everything to the DB
-        o = odin.Odin(test=True)
+        o = odin.Odin(test=True, config="job.yml")
 
         o.watch(test_desc, True)       
         result = self.collection.find_one({"desc" : test_desc})
