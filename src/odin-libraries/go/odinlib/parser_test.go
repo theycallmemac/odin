@@ -6,7 +6,6 @@ import (
     "testing"
 )
 
-var cfg JobConfig
 var f *os.File
 var b []byte
 

@@ -1,10 +1,11 @@
 provider:
-  name: "odin"
-  version: "1.0.0"
+  name: 'odin'
+  version: '1.0.0'
 job:
-  name: "test_job"
-  description: "This job should say hello"
-  language: "python3"
-  file: "main.py"
-  schedule: "every September 9th at 13:00 and every March 21st at 13:00"
+  id: '13a772a848e1'
+  name: 'giveaway'
+  description: 'Sends me an email of competitions to enter'
+  language: 'go'
+  file: 'giveaway.go'
+  schedule: 'every Monday at 09:00 and every Thursday at 09:00'
 
