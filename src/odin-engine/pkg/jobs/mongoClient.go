@@ -7,6 +7,7 @@ import (
     "log"
     "os/user"
     "time"
+    "strings"
 
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
@@ -34,6 +35,7 @@ type NewJob struct {
     Stats string `yaml:"stats"`
     Schedule string `yaml:"schedule"`
     Runs int
+    Links string `yaml:"links"`
 }
 
 // create JobStats type to be used for accessing and storing job stats information
@@ -221,4 +223,59 @@ func DeleteJobByValue(client *mongo.Client, filter bson.M, uid string) bool {
         return false
     }
     return true
+}
+
+// this function is used to add links the job is associated with
+// parameters: client (a *mongo.Client), job (a NewJob structure)
+// returns: int64 (value of the number of entries modified)
+func AddJobLinksByValue(client *mongo.Client, filter, job2 NewJob) int64 {
+    tmpJob := GetJobByValue(client, filter, uid)
+    if job.ID == "" || job.UID != uid {
+        return false
+    }
+    tmpJob.Links = fmt.Sprintf("%s%s", tmpJob.Links, job2.Links)
+    update := bson.M{"$set": bson.M{ "links": tempJob.Links},}
+    collection := client.Database("odin").Collection("jobs")
+    updateResult, err := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
+    client.Disconnect(context.TODO())
+    if err != nil {
+        return int64(0)
+    }
+    return updateResult.ModifiedCount
+}
+
+// this function is used to delete links the job is associated with
+// parameters: client (a *mongo.Client), filter (a bson encoding of a job id), uid (a string of the user's ID), linkJobID ()
+// returns: int64 (value of the number of entries modified)
+func DeleteJobLinksByValue(client *mongo.Client, filter bson.M, uid string, linkJobID string) int64 {
+    job := GetJobByValue(client, filter, uid)
+    if job.ID == "" || job.UID != uid {
+        return false
+    }
+    links = string.Split(job.Links, ", ")
+    for i, l := range(links) {
+        if l == linkJobID {
+            links[i] = links[len(links)-1].
+            links[len(links)-1] = ""
+            links = links[:len(links)-1]
+        }
+    }
+    job.Links = strings.Join(links, ", ")
+    update := bson.M{"$set": bson.M{ "links": job.Links},}
+    collection := client.Database("odin").Collection("jobs")
+    updateResult, err := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
+    client.Disconnect(context.TODO())
+    if err != nil {
+        return int64(0)
+    }
+    return updateResult.ModifiedCount
+}
+
+// this function is used to get links the job is associated with
+// parameters: client (a *mongo.Client), filter (a bson encoding of a job id), uid (a string of the user's ID)
+// returns: []string (links as an array of strings)
+func GetAllJobLinks(client *mongo.Client, filter bson.M, uid string) []string {
+    job GetJobByValue(client *mongo.Client, filter, uid string)
+    links = string.Split(job.Links, ", ")
+    return links
 }
