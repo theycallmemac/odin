@@ -9,6 +9,10 @@ import (
     "strings"
 )
 
+var job NewJob
+
+var GID int
+
 // this function is used to check whether or not a directory exists
 // parameters: dir (a string of the directory path to check)
 // returns: boolean (true if it exists, false otherwise)
@@ -46,39 +50,81 @@ func ChownR(path string, uid, gid int) bool {
     return true
 }
 
+// this function is used to create a new path for the runtime file
+// parameters: jobsPath (a string containing the jobs directory), file (a string containing the source runtime file)
+// returns: string (the full path to the files new location)
+func createNewPath(jobsPath string, file string) string {
+    fileSlice := strings.Split(file, "/")
+    job.File = string(fileSlice[len(fileSlice)-1])
+    return jobsPath + job.ID + "/" + job.File
+
+}
+
+// this function is used to create a new path for the config
+// parameters: jobsPath (a string containing the jobs directory), file (a string containing the source config file)
+// returns: string (the full path to the configs new location)
+func createNewConfigPath(jobsPath string, file string) string {
+    fileSlice := strings.Split(file, "/")
+    file = string(fileSlice[len(fileSlice)-1])
+    return jobsPath + job.ID + "/" + file
+}
+
+// this function is used copy the contents of the user generated files up to /etc/odin/jobs/<id>/filename.ext
+// parameters: name (the name of the file to read contents from)
+// returns: []byte (a byte array of the content read from the file)
+func copyFile(name string) []byte {
+    content, err := ioutil.ReadFile(name)
+    if err != nil {
+        return nil
+    }
+    return content
+}
+
 // this function is used to kickstart the process for setting up the correct directories and files used by odin
 // parameters: d (a byte array containing marshaled JSON)
 // returns: string (the path to the newly created file)
 func SetupEnvironment(d []byte) string {
-    var job NewJob
     err := json.Unmarshal(d, &job)
+
     if err != nil {
         return ""
     }
+
     jobsPath := "/etc/odin/jobs/"
     logsPath := "/etc/odin/logs/"
+
     if notDirectory(jobsPath) && notDirectory(logsPath) {
         makeDirectory(jobsPath)
         makeDirectory(logsPath)
     }
+
     originalFile := job.File
-    fileSlice := strings.Split(job.File, "/")
-    job.File = string(fileSlice[len(fileSlice)-1])
-    newFilePath := jobsPath + job.ID + "/" + job.File
+    originalConfig := job.File[:len(originalFile)-3] + ".yml"
+
+    newFilePath := createNewPath(jobsPath, job.File)
+    newConfigPath := createNewPath(jobsPath, originalConfig)
+
     if notDirectory(jobsPath + job.ID) {
         makeDirectory(jobsPath + job.ID)
         group, _ := user.LookupGroup("odin")
         gid, _ := strconv.Atoi(group.Gid)
+        GID = gid
 	ChownR(newFilePath, 0, gid)
+	ChownR(newConfigPath, 0, gid)
 	ChownR(logsPath + job.ID, 0, gid)
-        ioutil.WriteFile(newFilePath, []byte(""), 0744)
-        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0766)
+        ioutil.WriteFile(newFilePath, []byte(""), 0774)
+        ioutil.WriteFile(newConfigPath, []byte(""), 0774)
+        ioutil.WriteFile(logsPath + job.ID, []byte(""), 0774)
     }
-    input, err := ioutil.ReadFile(originalFile)
-    if err != nil {
-        return ""
-    }
-    ioutil.WriteFile(logsPath, []byte(""), 0766)
-    ioutil.WriteFile(newFilePath, input, 0744)
+
+    fileInput := copyFile(originalFile)
+    configInput := copyFile(originalConfig)
+
+    ioutil.WriteFile(logsPath, []byte(""), 0774)
+    ioutil.WriteFile(newFilePath, fileInput, 0774)
+    ioutil.WriteFile(newConfigPath, configInput, 0774)
+
+    os.Chown(newFilePath, 0, GID)
+    os.Chown(newConfigPath, 0, GID)
     return newFilePath
 }
