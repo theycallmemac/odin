@@ -2,8 +2,8 @@ package odinlib
 
 import (
     "fmt"
+    "io/ioutil"
     "os"
-    "path/filepath"
     "time"
 )
 
@@ -27,8 +27,20 @@ type Odin struct {
 func newOdin(id string) *Odin {
     return &Odin{ID: id, Timestamp: fmt.Sprint(time.Now().Unix())}
 }
+
 func Setup(config string) (*Odin, string) {
-    path, _ := filepath.Abs(config)
+    var path string
+    path = ""
+    files, _ := ioutil.ReadDir("/etc/odin/jobs/")
+    for _, f := range files {
+        newPath := "/etc/odin/jobs/" + f.Name() + "/" + config
+        if _, err := os.Stat(newPath); !os.IsNotExist(err) {
+            path = newPath
+        }
+    }
+    if path == "" {
+        return nil, "Failed to read yaml config file"
+    }
     if ParseYaml(&cfg, ReadFile(path)) {
         odin = newOdin(cfg.Job.ID)
     }
