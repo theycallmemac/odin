@@ -28,8 +28,8 @@ var DescribeCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(DescribeCmd)
-    DescribeCmd.Flags().StringP("id", "i", "", "id (required)")
-    DescribeCmd.Flags().StringP("port", "p", "", "port")
+    DescribeCmd.Flags().StringP("id", "i", "", "id used to specify a job to describe (required)")
+    DescribeCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     DescribeCmd.MarkFlagRequired("id")
 }
 

@@ -27,8 +27,8 @@ var RemoveCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(RemoveCmd)
-    RemoveCmd.Flags().StringP("id", "i", "", "id")
-    RemoveCmd.Flags().StringP("port", "p", "", "port")
+    RemoveCmd.Flags().StringP("id", "i", "", "id used to specify a job to remove (required)")
+    RemoveCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     RemoveCmd.MarkFlagRequired("id")
 }
 

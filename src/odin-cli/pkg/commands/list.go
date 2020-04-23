@@ -26,7 +26,7 @@ var ListCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(ListCmd)
-    ListCmd.Flags().StringP("port", "p", "", "port")
+    ListCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
 }
 
 // this function is called as the run operation for the ListCmd

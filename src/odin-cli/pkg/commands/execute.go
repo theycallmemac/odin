@@ -29,8 +29,8 @@ var ExecuteCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(ExecuteCmd)
-    ExecuteCmd.Flags().StringP("file", "f", "", "file (required)")
-    ExecuteCmd.Flags().StringP("port", "p", "", "port")
+    ExecuteCmd.Flags().StringP("file", "f", "", "file used to specify the job to execute (required)")
+    ExecuteCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     ExecuteCmd.MarkFlagRequired("file")
 }
 

@@ -31,12 +31,12 @@ var ModifyCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(ModifyCmd)
-    ModifyCmd.Flags().StringP("id", "i", "", "id")
+    ModifyCmd.Flags().StringP("id", "i", "", "id used to specify a job to modify (required)")
+    ModifyCmd.Flags().StringP("name", "n", "", "change the current name")
+    ModifyCmd.Flags().StringP("description", "d", "", "change the current description")
+    ModifyCmd.Flags().StringP("schedule", "s", "", "change the current schedule")
+    ModifyCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     ModifyCmd.MarkFlagRequired("id")
-    ModifyCmd.Flags().StringP("name", "n", "", "name")
-    ModifyCmd.Flags().StringP("description", "d", "", "description")
-    ModifyCmd.Flags().StringP("schedule", "s", "", "schedule")
-    ModifyCmd.Flags().StringP("port", "p", "", "port")
 }
 
 // this function is called as the run operation for the ModifyCmd

@@ -36,9 +36,9 @@ var StatsCmd = &cobra.Command{
 func init() {
     var All bool
     RootCmd.AddCommand(StatsCmd)
-    StatsCmd.Flags().BoolVarP(&All, "all", "a", false, "all")
-    StatsCmd.Flags().StringP("id", "i", "", "id (required)")
-    StatsCmd.Flags().StringP("port", "p", "", "port")
+    StatsCmd.Flags().BoolVarP(&All, "all", "a", false, "show all stats of all jobs")
+    StatsCmd.Flags().StringP("id", "i", "", "id used to view a specific jobs stats (required)")
+    StatsCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     StatsCmd.MarkFlagRequired("id")
 }
 

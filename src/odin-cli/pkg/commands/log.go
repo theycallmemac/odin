@@ -28,8 +28,8 @@ var LogCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(LogCmd)
-    LogCmd.Flags().StringP("id", "i", "", "id")
-    LogCmd.Flags().StringP("port", "p", "", "port")
+    LogCmd.Flags().StringP("id", "i", "", "id used to view a specific jobs logs (required)")
+    LogCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     LogCmd.MarkFlagRequired("id")
 }
 

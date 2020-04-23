@@ -26,8 +26,8 @@ var GenerateCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(GenerateCmd)
-    GenerateCmd.Flags().StringP("file", "f", "", "file (required)")
-    GenerateCmd.Flags().StringP("lang", "l", "", "lang (required)")
+    GenerateCmd.Flags().StringP("file", "f", "", "name of generated config file (required)")
+    GenerateCmd.Flags().StringP("lang", "l", "", "language of generated job (required)")
     GenerateCmd.MarkFlagRequired("file")
     GenerateCmd.MarkFlagRequired("lang")
 }
