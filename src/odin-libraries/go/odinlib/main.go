@@ -30,16 +30,20 @@ func newOdin(id string) *Odin {
 
 func Setup(config string) (*Odin, string) {
     var path string
-    path = ""
-    files, _ := ioutil.ReadDir("/etc/odin/jobs/")
-    for _, f := range files {
-        newPath := "/etc/odin/jobs/" + f.Name() + "/" + config
-        if _, err := os.Stat(newPath); !os.IsNotExist(err) {
-            path = newPath
+    if TEST != false {
+        path = ""
+        files, _ := ioutil.ReadDir("/etc/odin/jobs/")
+        for _, f := range files {
+            newPath := "/etc/odin/jobs/" + f.Name() + "/" + config
+            if _, err := os.Stat(newPath); !os.IsNotExist(err) {
+                path = newPath
+            }
         }
-    }
-    if path == "" {
-        return nil, "Failed to read yaml config file"
+        if path == "" {
+            return nil, "Failed to read yaml config file"
+        }
+    } else {
+        path = config
     }
     if ParseYaml(&cfg, ReadFile(path)) {
         odin = newOdin(cfg.Job.ID)
