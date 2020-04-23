@@ -25,7 +25,9 @@ var GenerateCmd = &cobra.Command{
 func init() {
     RootCmd.AddCommand(GenerateCmd)
     GenerateCmd.Flags().StringP("file", "f", "", "file (required)")
+    GenerateCmd.Flags().StringP("lang", "l", "", "lang (required)")
     GenerateCmd.MarkFlagRequired("file")
+    GenerateCmd.MarkFlagRequired("lang")
 }
 
 // this function is called as the run operation for the GenerateCmd
@@ -33,6 +35,7 @@ func init() {
 // returns: nil
 func generateJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
+    lang, _:= cmd.Flags().GetString("lang")
     if strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml") {
         id := generateId()
         data := []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  id: '" + id + "'\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: ''\n\n")
@@ -40,7 +43,19 @@ func generateJob(cmd *cobra.Command, args []string) {
         if err != nil {
             panic(err)
         }
-        fmt.Println(name + " config generated!")
+        var extension string
+        switch lang {
+            case "go":
+                extension = ".go"
+            case "golang":
+                extension = ".go"
+            case "python":
+                extension = ".py"
+            case "python3":
+                extension = ".py"
+        }
+        ioutil.WriteFile(strings.Split(name, ".")[0] + extension, []byte(""), 0644)
+        fmt.Println("Config and language files generated!")
     }
 }
 
