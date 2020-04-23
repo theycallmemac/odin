@@ -1,6 +1,7 @@
 package executor
 
 import (
+    "fmt"
     "io"
     "os"
     "os/exec"
@@ -60,6 +61,8 @@ func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
     cmd.SysProcAttr = &syscall.SysProcAttr{}
     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: job.UID, Gid: job.GID}
     data, err := cmd.CombinedOutput()
-
+    if err != nil {
+        fmt.Println(cmd.Stderr)
+    }
     go job.logger(ch, data, err, store)
 }

@@ -84,6 +84,7 @@ func copyFile(name string) []byte {
 // parameters: d (a byte array containing marshaled JSON)
 // returns: string (the path to the newly created file)
 func SetupEnvironment(d []byte) string {
+    var originalConfig string
     err := json.Unmarshal(d, &job)
 
     if err != nil {
@@ -99,7 +100,11 @@ func SetupEnvironment(d []byte) string {
     }
 
     originalFile := job.File
-    originalConfig := job.File[:len(originalFile)-3] + ".yml"
+    if strings.Contains(job.File, ".") {
+        originalConfig = job.File[:len(originalFile)-3] + ".yml"
+    } else {
+        originalConfig = job.File + ".yml"
+    }
 
     newFilePath := createNewPath(jobsPath, job.File)
     newConfigPath := createNewPath(jobsPath, originalConfig)
