@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, path
 from sys import exit
 from ruamel.yaml import YAML
 import json
@@ -7,7 +7,8 @@ from time import time
 
 class Odin:
     def __init__(self, config="job.yml", test=False):
-        self.config = config
+        pathway = path.abspath(".")
+        self.config = pathway + "/" + config
         try: 
             with open(self.config,"r") as config:
                 configR = config.read()
