@@ -1,4 +1,4 @@
-from os import environ, path
+from os import environ, listdir, path
 from sys import exit
 from ruamel.yaml import YAML
 import json
@@ -6,9 +6,14 @@ from pyodin.odin_logger import OdinLogger as logger
 from time import time
 
 class Odin:
-    def __init__(self, config="job.yml", test=False):
-        pathway = path.abspath(".")
-        self.config = pathway + "/" + config
+    def __init__(self, config="job.yml", test=False, pathType="absolute"):
+        if pathType == "absolute":
+            for file in listdir("/etc/odin/jobs"):
+                if path.exists("/etc/odin/jobs/" + file + "/" + config):
+                    self.config = "/etc/odin/jobs/" + file + "/" + config
+                    break
+        else:
+            self.config = config
         try: 
             with open(self.config,"r") as config:
                 configR = config.read()
