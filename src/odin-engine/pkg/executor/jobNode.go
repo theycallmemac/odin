@@ -26,7 +26,7 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Stor
         var logFile, _ = os.OpenFile("/etc/odin/logs/" + job.ID, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
         logrus.SetOutput(io.MultiWriter(logFile, os.Stdout))
         logrus.SetFormatter(&logrus.TextFormatter{})
-        if job.ID != "" {
+        if job.ID != "" && err == nil {
             logrus.WithFields(logrus.Fields{
                 "node": store.ServerID,
                 "id": job.ID,
