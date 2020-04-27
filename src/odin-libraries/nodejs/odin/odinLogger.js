@@ -8,13 +8,19 @@ class OdinLogger {
     constructor() {
         MongoClient.connect(url, function(err, client){
             assert.equal(null, err);
-            this.db = client.db('odin')
-            this.collection = this.db.collection('observability')
+            if (err) {
+                this.success = false;
+            }
+            this.db = client.db('odin');
+            this.collection = this.db.collection('observability');
+            this.success = true;
         })
     }
 
     async log(type, desc, value, id, timestamp, collection=this.collection){
-        await OdinLogger.insert(collection, type, desc, value, id, timestamp)
+        if (this.success == true){
+            await OdinLogger.insert(collection, type, desc, value, id, timestamp)
+        }
     }
 
     static async insert(collection, type, desc, value, id, timestamp){
