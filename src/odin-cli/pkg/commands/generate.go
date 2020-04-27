@@ -5,7 +5,9 @@ import (
     "fmt"
     "io/ioutil"
     "log"
+    "os"
     "strings"
+
     "github.com/spf13/cobra"
 )
 
@@ -25,7 +27,9 @@ var GenerateCmd = &cobra.Command{
 func init() {
     RootCmd.AddCommand(GenerateCmd)
     GenerateCmd.Flags().StringP("file", "f", "", "file (required)")
+    GenerateCmd.Flags().StringP("lang", "l", "", "lang (required)")
     GenerateCmd.MarkFlagRequired("file")
+    GenerateCmd.MarkFlagRequired("lang")
 }
 
 // this function is called as the run operation for the GenerateCmd
@@ -33,14 +37,18 @@ func init() {
 // returns: nil
 func generateJob(cmd *cobra.Command, args []string) {
     name, _:= cmd.Flags().GetString("file")
+    lang, _:= cmd.Flags().GetString("lang")
     if strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml") {
-        id := generateId()
-        data := []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  id: '" + id + "'\n  name: ''\n  description: ''\n  language: ''\n  file: ''\n  schedule: ''\n\n")
-        err := ioutil.WriteFile(name, data, 0644)
-        if err != nil {
-            panic(err)
+        languageFile := createLanguageFile(name, lang)
+        if languageFile == "" {
+            fmt.Println("Language passed is not valid")
+            os.Exit(2)
         }
-        fmt.Println(name + " config generated!")
+        ioutil.WriteFile(languageFile, []byte(""), 0644)
+        id := generateId()
+        data := []byte("provider:\n  name: 'odin'\n  version: '1.0.0'\njob:\n  id: '" + id + "'\n  name: ''\n  description: ''\n  language: '" + lang + "'\n  file: '" + languageFile + "'\n  schedule: ''\n\n")
+        ioutil.WriteFile(name, data, 0644)
+        fmt.Println("Config and language files generated!")
     }
 }
 
@@ -55,4 +63,20 @@ func generateId() string {
     }
     id := fmt.Sprintf("%x%x", b[0:4], b[4:6])
     return id
+}
+
+func createLanguageFile(name string, lang string) string {
+    var extension string
+    switch lang {
+        case "go":
+            extension = ".go"
+        case "python3":
+            extension = ".py"
+        default:
+            extension = ""
+    }
+    if extension == "" {
+        return ""
+    }
+    return strings.Split(name, ".")[0] + extension
 }
