@@ -18,8 +18,13 @@ class OdinLogger {
     }
 
     async log(type, desc, value, id, timestamp, collection=this.collection){
-        if (this.success == true){
-            await OdinLogger.insert(collection, type, desc, value, id, timestamp)
+        try {
+            if (this.success == true){
+                await OdinLogger.insert(collection, type, desc, value, id, timestamp)
+            }
+        // if error was encountered, stops logging for this run to not hinder performance
+        } catch(err) {
+            this.success = false;
         }
     }
 
