@@ -19,6 +19,7 @@ import (
 // define the DeployCmd's metadata and run operation
 var DeployCmd = &cobra.Command{
     Use:   "deploy",
+    Aliases: []string{"add", "dep"},
     Short: "deploy a job created by user",
     Long:  `This subcommand deploys a job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {

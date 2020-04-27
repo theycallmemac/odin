@@ -13,6 +13,7 @@ import (
 // define the ExecuteCmd's metadata and run operation
 var ExecuteCmd = &cobra.Command{
     Use:   "execute",
+    Aliases: []string{"exec"},
     Short: "execute a job created by user",
     Long:  `This subcommand executes a job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {

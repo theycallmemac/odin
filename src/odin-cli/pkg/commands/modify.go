@@ -11,6 +11,7 @@ import (
 // define the ModifyCmd's metadata and run operation
 var ModifyCmd = &cobra.Command{
     Use:   "modify",
+    Aliases: []string{"mod"},
     Short: "change details about an Odin job in-place",
     Long:  `This subcommand change details about an Odin job in-place`,
     Run: func(cmd *cobra.Command, args []string) {

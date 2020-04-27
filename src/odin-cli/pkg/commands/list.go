@@ -10,6 +10,7 @@ import (
 // define the ListCmd's metadata and run operation
 var ListCmd = &cobra.Command{
     Use:   "list",
+    Aliases: []string{"ls"},
     Short: "lists the user's current Odin jobs",
     Long:  `This subcommand lists the user's current Odin jobs`,
     Run: func(cmd *cobra.Command, args []string) {

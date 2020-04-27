@@ -11,6 +11,7 @@ import (
 // define the DescribeCmd's metadata and run operation
 var DescribeCmd = &cobra.Command{
     Use:   "describe",
+    Aliases: []string{"desc"},
     Short: "describe a running Odin job",
     Long:  `This subcommand will describe a running Odin job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {

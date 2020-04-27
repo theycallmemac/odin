@@ -14,6 +14,7 @@ import (
 // define the GenerateCmd's metadata and run operation
 var GenerateCmd = &cobra.Command{
     Use:   "generate ",
+    Aliases: []string{"gen"},
     Short: "creates config files for an Odin job",
     Long:  `This subcommand creates config files for an Odin job`,
     Run: func(cmd *cobra.Command, args []string) {

@@ -10,6 +10,7 @@ import (
 // define the RemoveCmd's metadata and run operation
 var RemoveCmd = &cobra.Command{
     Use:   "remove",
+    Aliases: []string{"rm"},
     Short: "removes a user's job by ID",
     Long:  `This subcommand remove a user's job by ID`,
     Run: func(cmd *cobra.Command, args []string) {
