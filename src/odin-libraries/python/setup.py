@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'pyodin',
   packages = ['pyodin'],
-  version = '0.1.9',
+  version = '0.1.10',
   license='MIT',
   description = 'A python package for gathering information in odin jobs',
   url = 'https://gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7',
