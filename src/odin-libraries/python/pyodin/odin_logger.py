@@ -1,15 +1,24 @@
 from pymongo import errors, MongoClient
 from os import environ
 
-client = MongoClient(environ.get('ODIN_MONGODB'), serverSelectionTimeoutMS=2000)
+try:
+    client = MongoClient(environ.get('ODIN_MONGODB'), serverSelectionTimeoutMS=2000)
+    db = client['odin']
+    collection = db['observability']
+    clientSuccess = True
+except:
+    clientSuccess = False
 
 class OdinLogger:
     @classmethod
     def log(self, type, desc, value, id, timestamp):
-        if self.check_connection(client): 
-            db = client['odin']
-            collection = db['observability']
-            self.find_and_insert(collection, type, desc, value,  id, timestamp)
+        try:
+            if (clientSuccess): 
+                self.find_and_insert(collection, type, desc, value,  id, timestamp)
+        except:
+            # if logging fails, check connection 
+            clientSuccess = self.check_connection(client)
+
     
     @staticmethod
     def find_and_insert(collection, type, desc, value, id, timestamp):
@@ -29,6 +38,6 @@ class OdinLogger:
         try:
             client.admin.command('ping')
             return True
-        except errors.ServerSelectionTimeoutError as e:
+        except errors.ServerSelectionTimeoutError:
             return False
 
