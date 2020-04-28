@@ -8,7 +8,7 @@ import (
 
 func TestGetValidKeywords(t *testing.T) {
     cases := []struct {Name string; Expected int} {
-	{"validate correct start of time", 115},
+	{"validate correct start of time", 116},
     }
     for i, testCase := range cases {
         t.Run(fmt.Sprintf("getValidKeywords()"), func(t *testing.T) {
