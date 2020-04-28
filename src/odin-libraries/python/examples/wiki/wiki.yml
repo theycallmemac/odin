@@ -1,0 +1,11 @@
+provider:
+  name: 'odin'
+  version: '1.0.0'
+job:
+  id: 'a37b187f5930'
+  name: 'wiki'
+  description: 'Email a random wikipedia article to me'
+  language: 'python3'
+  file: 'wiki.py'
+  schedule: 'everyday at 09:00'
+
