@@ -28,6 +28,7 @@ type Node struct {
     Lang string
     File string
     Schedule []int
+    Links string
 }
 
 type ExecNode struct {
@@ -147,7 +148,7 @@ func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
     for count, j := range jobs {
         mod, id := getModID(count, store)
         if mod == id {
-            node.ID, node.Lang, node.File = j.ID, j.Language, j.File
+            node.ID, node.Lang, node.File, node.Links = j.ID, j.Language, j.File, j.Links
             uid, _ := strconv.ParseUint(j.UID, 10, 32)
             gid, _ := strconv.ParseUint(j.GID, 10, 32)
             node.UID = uint32(uid)

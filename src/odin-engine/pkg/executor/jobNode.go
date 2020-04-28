@@ -6,11 +6,13 @@ import (
     "os"
     "os/exec"
     "os/user"
+    "strings"
     "syscall"
 
     "github.com/sirupsen/logrus"
 
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/jobs"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
 )
 
@@ -57,7 +59,7 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Stor
 // this function is called on a job node type and is used to run a job like a shell would run a command
 // parameters: ch (channel used to return data), store (a store of node information)
 // returns: nil
-func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
+func (job JobNode) runCommand(ch chan<- Data, httpAddr string, store fsm.Store) {
     URI := resources.UnmarsharlYaml(resources.ReadFileBytes(getHome() + "/odin-config.yml")).Mongo.Address
     os.Setenv("ODIN_EXEC_ENV", "True")
     os.Setenv("ODIN_MONGODB", URI)
@@ -73,5 +75,9 @@ func (job JobNode) runCommand(ch chan<- Data, store fsm.Store) {
     if err != nil {
         fmt.Println(cmd.Stderr)
     }
-    go job.logger(ch, data, err, store)
+    if job.Links != "" {
+        links := strings.Split(job.Links, ",")
+        jobs.RunLinks(links, job.UID, httpAddr, store)
+    }
+    job.logger(ch, data, err, store)
 }
