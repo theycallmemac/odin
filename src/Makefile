@@ -3,8 +3,8 @@ all: mongodb engine cli group
 
 engine:
 	cd odin-engine
-	make build
-	cp config/odin-config.yml $HOME
+	make install
+	cp config/odin-config.yml $${HOME}
 	cp init/odin.service /lib/systemd/system
 	systemctl daemon-reload
 	systemctl start odin
@@ -21,8 +21,7 @@ mongodb:
 
 cli:
 	cd odin-cli
-	make build
-	cp odin /bin
+	make install
 
 group:
 	/bin/bash -c 'if grep -q "odin" /etc/group; then echo "odin group already exists!"; else groupadd odin && echo "odin group created!"; fi'
