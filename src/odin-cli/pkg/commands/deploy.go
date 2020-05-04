@@ -19,6 +19,7 @@ import (
 // define the DeployCmd's metadata and run operation
 var DeployCmd = &cobra.Command{
     Use:   "deploy",
+    Aliases: []string{"add", "dep"},
     Short: "deploy a job created by user",
     Long:  `This subcommand deploys a job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {
@@ -31,8 +32,8 @@ var DeployCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(DeployCmd)
-    DeployCmd.Flags().StringP("file", "f", "", "file (required)")
-    DeployCmd.Flags().StringP("port", "p", "", "port")
+    DeployCmd.Flags().StringP("file", "f", "", "file used to specify the job to deploy (required)")
+    DeployCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     DeployCmd.MarkFlagRequired("file")
 }
 

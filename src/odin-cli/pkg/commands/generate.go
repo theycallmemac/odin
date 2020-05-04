@@ -14,6 +14,7 @@ import (
 // define the GenerateCmd's metadata and run operation
 var GenerateCmd = &cobra.Command{
     Use:   "generate ",
+    Aliases: []string{"gen"},
     Short: "creates config files for an Odin job",
     Long:  `This subcommand creates config files for an Odin job`,
     Run: func(cmd *cobra.Command, args []string) {
@@ -26,8 +27,8 @@ var GenerateCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(GenerateCmd)
-    GenerateCmd.Flags().StringP("file", "f", "", "file (required)")
-    GenerateCmd.Flags().StringP("lang", "l", "", "lang (required)")
+    GenerateCmd.Flags().StringP("file", "f", "", "name of generated config file (required)")
+    GenerateCmd.Flags().StringP("lang", "l", "", "language of generated job (required)")
     GenerateCmd.MarkFlagRequired("file")
     GenerateCmd.MarkFlagRequired("lang")
 }
