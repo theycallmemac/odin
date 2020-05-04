@@ -28,7 +28,7 @@ var NodesCmd = &cobra.Command{
 		    http, _:= cmd.Flags().GetString("addr")
 		    raft, _:= cmd.Flags().GetString("raft")
 		    if name == "" || http == "" || raft == "" {
-		        fmt.Println("You must supply values for:\n  - The name of the new node (e.g -n worker1)\n  - The address of the new node (e.g -a :39391)\n  - The raft address of the new node (e.g -r :12001)\n")
+		        fmt.Println("You must supply values for:\n  - The name of the new node (e.g -n worker1)\n  - The address of the new node (e.g -a :39391)\n  - The raft address of the new node (e.g -r :12001)")
 		    } else {
 		        addNodesJob(name, http, raft)
                     }
