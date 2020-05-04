@@ -1,6 +1,6 @@
 [Unit]
 Description=odin
-ConditionPathExists=$GOPATH/src/2020-ca400-urbanam2-mcdermj7/src/odin-engine/
+ConditionPathExists=/bin/odin-engine
 After=network.target
 
 [Service]
@@ -9,7 +9,7 @@ Restart=always
 RestartSec=10
 RestartPreventExitStatus=0
 TimeoutStopSec=10
-ExecStart=/home/odin/go_projects/src/2020-ca400-urbanam2-mcdermj7/src/odin-engine/odin-engine -id node0 raft0
+ExecStart=/bin/odin-engine -id master-node raft0
 PermissionsStartOnly=true
 StandardOutput=syslog
 StandardError=syslog
