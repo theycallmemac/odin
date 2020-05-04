@@ -7,7 +7,7 @@ DIR=./cmd/odin
 
 all: build
 build:
-	$(GO_BUILD) -o $(NAME) -v $(DIR)
+	$(GO_BUILD) -o /bin/$(NAME) -v $(DIR)
 clean:
 	$(GO_CLEAN) -v ./...
 	rm -f $(NAME)
