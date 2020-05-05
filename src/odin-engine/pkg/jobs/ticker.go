@@ -48,6 +48,9 @@ func getModID(count int, store fsm.Store) (int, int) {
     peers := fsm.PeersList(store.Raft.Stats()["latest_configuration"])
     mod := count % len(peers)
     id := fsm.GetNumericalID(store.ServerID, peers)
+    if id < 0 {
+	id = 0
+    }
     return id, mod
 }
 
@@ -145,8 +148,8 @@ func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
     var queue Queue
     var node Node
     for count, j := range jobs {
-        mod, id := getModID(count, store)
-        if mod == id {
+        id, mod := getModID(count, store)
+        if id == mod {
             node.ID, node.Lang, node.File = j.ID, j.Language, j.File
             uid, _ := strconv.ParseUint(j.UID, 10, 32)
             gid, _ := strconv.ParseUint(j.GID, 10, 32)
