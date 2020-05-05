@@ -125,11 +125,12 @@ func SetupEnvironment(d []byte) string {
     fileInput := copyFile(originalFile)
     configInput := copyFile(originalConfig)
 
-    ioutil.WriteFile(logsPath, []byte(""), 0774)
+    ioutil.WriteFile(logsPath + job.ID, []byte(""), 0774)
     ioutil.WriteFile(newFilePath, fileInput, 0774)
     ioutil.WriteFile(newConfigPath, configInput, 0774)
 
     os.Chown(newFilePath, 0, GID)
     os.Chown(newConfigPath, 0, GID)
+    os.Chown(logsPath + job.ID, 0, GID)
     return newFilePath
 }

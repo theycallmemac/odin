@@ -4,7 +4,10 @@ import (
     "bytes"
     "fmt"
     "os"
+    "os/user"
+    "strconv"
     "syscall"
+
     "github.com/spf13/cobra"
 )
 
@@ -37,9 +40,17 @@ func init() {
 // parameters: id (a string of the required id), port (a string of the port to be used)
 // returns: nil
 func logJob(id string, port string) {
+    var gid int
     if id != "" {
         fileInfo, _ := os.Stat("/etc/odin/jobs/" + id)
-        if (os.Getgid() == int(fileInfo.Sys().(*syscall.Stat_t).Gid)) {
+	group, err := user.LookupGroup("odin")
+	if err != nil {
+	    fmt.Println("User is not in the `odin` group")
+	    os.Exit(2)
+	} else {
+	    gid, _ = strconv.Atoi(group.Gid)
+	}
+        if (gid == int(fileInfo.Sys().(*syscall.Stat_t).Gid)) {
             response := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/logs", port), bytes.NewBuffer([]byte(id)))
             fmt.Println(response)
         } else {
