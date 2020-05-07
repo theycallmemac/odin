@@ -54,9 +54,9 @@ func (rs jobsResource) List(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("MongoDB cannot be accessed at the moment\n"))
     } else {
         jobList := jobs.GetUserJobs(client, string(d))
-        w.Write([]byte(jobs.Format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "SCHEDULE")))
+        w.Write([]byte(jobs.SchFormat("ID", "NAME", "DESCRIPTION", "LANGUAGE", "SCHEDULE")))
         for _, job := range jobList {
-            w.Write([]byte(jobs.Format(job.ID, job.Name, job.Description, job.Language, job.Schedule[:len(job.Schedule)-1])))
+            w.Write([]byte(jobs.SchFormat(job.ID, job.Name, job.Description, job.Language, job.Schedule[:len(job.Schedule)-1])))
         }
     }
 }
@@ -96,9 +96,9 @@ func (rs jobsResource) StatsByID(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("MongoDB cannot be accessed at the moment\n"))
     } else {
         statsList := jobs.GetJobStats(client, string(d))
-        w.Write([]byte(jobs.Format("ID", "DESCRIPTION", "", "TYPE", "VALUE")))
+        w.Write([]byte(jobs.Format("ID", "DESCRIPTION", "TYPE", "VALUE")))
         for _, stat := range statsList {
-            w.Write([]byte(jobs.Format(stat.ID, stat.Description, "", stat.Type, stat.Value)))
+            w.Write([]byte(jobs.Format(stat.ID, stat.Description, stat.Type, stat.Value)))
         }
     }
 }
