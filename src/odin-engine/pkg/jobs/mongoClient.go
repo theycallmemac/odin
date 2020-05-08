@@ -1,18 +1,22 @@
 package jobs
 
 import (
+    "bytes"
     "context"
     "encoding/json"
     "fmt"
     "log"
     "os/user"
     "time"
+    "strconv"
+    "strings"
 
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo/readpref"
 
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/types"
 
@@ -34,6 +38,7 @@ type NewJob struct {
     Stats string `yaml:"stats"`
     Schedule string `yaml:"schedule"`
     Runs int
+    Links string
 }
 
 // create JobStats type to be used for accessing and storing job stats information
@@ -185,8 +190,11 @@ func GetAll(client *mongo.Client) []NewJob {
 // this function is used to format the output of MongoDB contents
 // parameters: id, name, description, stats, schedule (five strings corresponding to individual job data)
 // returns: string (a space formatted string used for display)
-func Format(id string, name, string, description string, schedule string) string {
-    return fmt.Sprintf("%-20s%-20s%-20s%-20s\n", id, name, description, schedule)
+func Format(id string, name, string, description string, links string, schedule string) string {
+    if schedule == "0 5 31 2 *" {
+        schedule = "never"
+    }
+    return fmt.Sprintf("%-20s%-20s%-20s%-20s%-20s\n", id, name, description, links, schedule)
 }
 
 // this function is used to modify a job in MongoDB
@@ -218,4 +226,61 @@ func DeleteJobByValue(client *mongo.Client, filter bson.M, uid string) bool {
         return false
     }
     return true
+}
+
+// this function is used to add links the job is associated with
+// parameters: client (a *mongo.Client), from (a string of a job ID to give a new link), to (a string of a job ID to create a link to), uid (a string of the user's ID)
+// returns: int64 (value of the number of entries modified)
+func AddJobLink(client *mongo.Client, from string, to string, uid string) int64 {
+    job := GetJobByValue(client, bson.M{"id": string(from)}, uid)
+    if strings.Contains(job.Links, to) {
+        return 0
+    }
+    job.Links = job.Links + to + ","
+    update := bson.M{"$set": bson.M{ "links": job.Links}}
+    collection := client.Database("odin").Collection("jobs")
+    updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": from}, update)
+    client.Disconnect(context.TODO())
+    return updateResult.ModifiedCount
+}
+
+// this function is used to delete links the job is associated with
+// parameters: client (a *mongo.Client), from (a string of a job ID to remove a link from), to (a string of a job ID to remove), uid (a string of the user's ID)
+// returns: int64 (value of the number of entries modified)
+func DeleteJobLink(client *mongo.Client, from string, to string, uid string) int64 {
+    var newLinks string
+    job := GetJobByValue(client, bson.M{"id": string(from)}, uid)
+    links := strings.Split(job.Links, ",")
+    for _, link := range(links) {
+        if link != to && link != "" {
+            newLinks = newLinks + link + ","
+        }
+    }
+    update := bson.M{"$set": bson.M{"links": newLinks}}
+    collection := client.Database("odin").Collection("jobs")
+    updateResult, _ := collection.UpdateOne(context.TODO(), bson.M{"id": job.ID}, update)
+    client.Disconnect(context.TODO())
+    return updateResult.ModifiedCount
+}
+
+func RunLinks(links []string, uid uint32, httpAddr string, store fsm.Store) {
+    client, _ := SetupClient()
+    var jobs []Node
+    var node Node
+    for _, link := range links {
+        job := GetJobByValue(client, bson.M{"id": string(link)}, fmt.Sprint(uid))
+        node.ID, node.Lang, node.File, node.Links = job.ID, job.Language, job.File, job.Links
+        uid, _ := strconv.ParseUint(job.UID, 10, 32)
+        gid, _ := strconv.ParseUint(job.GID, 10, 32)
+        node.UID = uint32(uid)
+        node.GID = uint32(gid)
+        jobs = append(jobs, node)
+    }
+    client.Disconnect(context.TODO())
+    var en ExecNode
+    jobsArray, _ := json.Marshal(jobs)
+    en.Items = jobsArray
+    en.Store = store
+    buffer, _:= json.Marshal(en)
+    go MakePostRequest("http://localhost" + httpAddr + "/execute", bytes.NewBuffer(buffer))
 }

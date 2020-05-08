@@ -24,6 +24,7 @@ type JobNode struct {
     File string
     Schedule []int
     Runs int
+    Links string
 }
 
 type Data struct {
@@ -49,7 +50,7 @@ func makePutRequest(link string, data *bytes.Buffer) string {
 // this function is used to run a job like straight from the command line tool
 // parameters: filename (a string containing the path to the local file to execute), done (a boolean channel), store (a store of node information)
 // returns: nil
-func executeYaml(filename string, done chan bool, store fsm.Store) {
+func executeYaml(filename string, done chan bool, httpAddr string, store fsm.Store) {
     if exists(filename) {
         var job JobNode
         singleChannel := make(chan Data)
@@ -62,7 +63,7 @@ func executeYaml(filename string, done chan bool, store fsm.Store) {
         gid, _ := strconv.Atoi(group.Gid)
         job.UID = uint32(uid)
         job.GID = uint32(gid)
-        go job.runCommand(singleChannel, store)
+        go job.runCommand(singleChannel, httpAddr, store)
         res := <-singleChannel
         ReviewError(res.error, "bool")
         done<- true
@@ -79,7 +80,7 @@ func executeYaml(filename string, done chan bool, store fsm.Store) {
 func executeLang(contentsJSON []byte, done chan bool, httpAddr string, store fsm.Store) {
     var queue Queue
     json.Unmarshal(contentsJSON, &queue)
-    go queue.BatchRun(store)
+    go queue.BatchRun(httpAddr, store)
     go queue.UpdateRuns(httpAddr)
     done<- true
     return
@@ -94,7 +95,7 @@ func Execute(contents []byte, process int, httpAddr string, store fsm.Store) boo
         case 0:
             go executeLang(contents, done, httpAddr, store)
         case 1:
-            go executeYaml(string(contents), done, store)
+            go executeYaml(string(contents), done, httpAddr, store)
     }
     return <-done
 }
