@@ -3,4 +3,4 @@ odin:
   master: "localhost"
   port: "3939"
 mongo:
-  address: "mongodb://root:sAlzuOLcNDB4@54.76.192.190:27017"
+  address: "mongodb://localhost:27017"

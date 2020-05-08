@@ -49,6 +49,9 @@ func getModID(count int, store fsm.Store) (int, int) {
     peers := fsm.PeersList(store.Raft.Stats()["latest_configuration"])
     mod := count % len(peers)
     id := fsm.GetNumericalID(store.ServerID, peers)
+    if id < 0 {
+	id = 0
+    }
     return id, mod
 }
 

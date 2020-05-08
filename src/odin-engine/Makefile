@@ -9,6 +9,8 @@ DIR=./cmd/odin-engine
 all: test build
 build:
 	$(GO_BUILD) -o $(NAME) -v $(DIR)
+install:
+	$(GO_BUILD) -o /bin/$(NAME) -v $(DIR)
 test:
 	$(GO_TEST) -v -cover ./...
 clean:

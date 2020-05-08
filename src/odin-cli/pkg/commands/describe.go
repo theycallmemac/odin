@@ -11,6 +11,7 @@ import (
 // define the DescribeCmd's metadata and run operation
 var DescribeCmd = &cobra.Command{
     Use:   "describe",
+    Aliases: []string{"desc"},
     Short: "describe a running Odin job",
     Long:  `This subcommand will describe a running Odin job created by the user`,
     Run: func(cmd *cobra.Command, args []string) {
@@ -28,8 +29,8 @@ var DescribeCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(DescribeCmd)
-    DescribeCmd.Flags().StringP("id", "i", "", "id (required)")
-    DescribeCmd.Flags().StringP("port", "p", "", "port")
+    DescribeCmd.Flags().StringP("id", "i", "", "id used to specify a job to describe (required)")
+    DescribeCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
     DescribeCmd.MarkFlagRequired("id")
 }
 

@@ -10,6 +10,7 @@ import (
 // define the ListCmd's metadata and run operation
 var ListCmd = &cobra.Command{
     Use:   "list",
+    Aliases: []string{"ls"},
     Short: "lists the user's current Odin jobs",
     Long:  `This subcommand lists the user's current Odin jobs`,
     Run: func(cmd *cobra.Command, args []string) {
@@ -26,7 +27,7 @@ var ListCmd = &cobra.Command{
 // returns: nil
 func init() {
     RootCmd.AddCommand(ListCmd)
-    ListCmd.Flags().StringP("port", "p", "", "port")
+    ListCmd.Flags().StringP("port", "p", "", "connect to a specific port (default: 3939)")
 }
 
 // this function is called as the run operation for the ListCmd
