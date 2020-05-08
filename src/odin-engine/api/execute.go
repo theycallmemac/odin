@@ -1,7 +1,6 @@
 package api
 
 import (
-    "fmt"
     "encoding/json"
     "io/ioutil"
     "net/http"
