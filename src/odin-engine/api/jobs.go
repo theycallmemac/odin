@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
     "bytes"
@@ -54,13 +54,13 @@ func (rs jobsResource) List(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("MongoDB cannot be accessed at the moment\n"))
     } else {
         jobList := jobs.GetUserJobs(client, string(d))
-        w.Write([]byte(jobs.Format("ID", "NAME", "DESCRIPTION", "LANGUAGE", "LINKS", "SCHEDULE")))
+        w.Write([]byte(jobs.SchFormat("ID", "NAME", "DESCRIPTION", "LANGUAGE", "LINKS", "SCHEDULE")))
         for _, job := range jobList {
             linkLen := len(job.Links) - 1
             if linkLen < 0 {
                 linkLen = 0
             }
-            w.Write([]byte(jobs.Format(job.ID, job.Name, job.Description, job.Language, job.Links[:linkLen], job.Schedule[:len(job.Schedule)-1])))
+            w.Write([]byte(jobs.SchFormat(job.ID, job.Name, job.Description, job.Language, job.Links[:linkLen], job.Schedule[:len(job.Schedule)-1])))
         }
     }
 }
@@ -100,9 +100,9 @@ func (rs jobsResource) StatsByID(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("MongoDB cannot be accessed at the moment\n"))
     } else {
         statsList := jobs.GetJobStats(client, string(d))
-        w.Write([]byte(jobs.Format("ID", "DESCRIPTION", "", "", "TYPE", "VALUE")))
+        w.Write([]byte(jobs.Format("ID", "DESCRIPTION", "TYPE", "VALUE")))
         for _, stat := range statsList {
-            w.Write([]byte(jobs.Format(stat.ID, stat.Description, "", "", stat.Type, stat.Value)))
+            w.Write([]byte(jobs.Format(stat.ID, stat.Description, stat.Type, stat.Value)))
         }
     }
 }

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
     "encoding/json"
@@ -9,7 +9,6 @@ import (
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/executor"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
-
 
 // create JobNode type to be used to unmarshal data into after a HTTP request
 // consists of Items, a byte array of marshaled json, and a store of node details
