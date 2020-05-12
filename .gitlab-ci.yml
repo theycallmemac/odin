@@ -6,7 +6,7 @@ variables:
   GROUP: mcdermj7
   PROJECT: 2020-ca400-urbanam2-mcdermj7
 
-  
+
 stages:
   - init
   - test
@@ -65,7 +65,7 @@ frontend:build:
   image: trion/ng-cli-karma:${CLI_VERSION}
   needs: ["frontend:test"]
   script:
-    - ./node_modules/@angular/cli/bin/ng build --prod 
+    - ./node_modules/@angular/cli/bin/ng build --prod
   artifacts:
     expire_in: 1 day
     paths:
@@ -101,11 +101,17 @@ cli:test:
     - mkdir -p $GOPATH/src/$REPO/$GROUP /go/src/_/builds
     - cp -r $CI_PROJECT_DIR /go/src/$REPO/$GROUP/$PROJECT
     - ln -s /go/src/$REPO/$GROUP /go/src/_/builds/$GROUP
+    - cd src/odin-engine
+    - go get -v ./...
+    - go build -b ./...
+    - ./odin-engine -id master raft0 &
+    - cd ../..
     - go get -v -d ./src/odin-cli/...
     - go test -v  ./src/odin-cli/...
   only:
     refs:
       - dev/master
+      - tests/e2e
 
 engine:test:
   image: golang:${GO_VERSION}
