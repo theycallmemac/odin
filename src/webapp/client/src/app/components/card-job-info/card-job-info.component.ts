@@ -10,9 +10,9 @@ import cronstrue from 'cronstrue';
 })
 export class CardJobInfoComponent implements OnInit {
 
-  private selectedJob: any;
-  private jobSchedule: String;
-  private selectedJobObv : any;
+  public selectedJob: any;
+  public jobSchedule: String;
+  public selectedJobObv : any;
   
   constructor(
     private jobsService: JobsService

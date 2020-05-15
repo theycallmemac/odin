@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 export class CardJobValuesListComponent implements OnInit {
 
   private ValuesListObv : any;
-  private ValuesList : any;
+  public ValuesList : any;
 
   public tableHeaders = ["timestamp", "type", "desc", "value"];
   public mappings = {

@@ -2,7 +2,7 @@ import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
-import { RouterModule, Router, RouterOutlet } from '@angular/router';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -11,9 +11,7 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent,
       ],
-      providers: [
-        RouterOutlet,
-      ]
+      schemas: [ NO_ERRORS_SCHEMA ]
     }).compileComponents();
   }));
   it('should create the app', async(() => {

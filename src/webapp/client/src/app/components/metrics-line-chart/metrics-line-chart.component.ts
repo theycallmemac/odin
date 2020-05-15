@@ -23,7 +23,7 @@ export class MetricsLineChartComponent implements OnInit {
   public lineChartType = 'line';
   public lineChartData: Array<any> = [];
   public lineChartLabels: Array<any> = [];
-  public lineChartOptions: any = { responsive: true, line : {lineTension: 0 }};
+  public lineChartOptions: any = { responsive: true,  animation: false, line : {lineTension: 0 }};
   public lineChartLegend = true;
   public lineChartPlugins = [];
 
@@ -76,7 +76,9 @@ export class MetricsLineChartComponent implements OnInit {
     let dataArray = [];
 
     for (let i = 0; i < metrics.length; i++) {
-      metrics[i].observability = metrics[i].observability.slice(metrics[i].observability.length - 10, metrics[i].observability.length);
+      if (metrics[i].observability.length > 10) {
+        metrics[i].observability = metrics[i].observability.slice(metrics[i].observability.length - 10, metrics[i].observability.length);
+      }
       if (metrics[i].observability[0].type !== "result" && metrics[i].observability[0].type !== "condition"  && !isNaN(Number(metrics[i].observability[0].value))) {
         let data =  { data: [], label: metrics[i]["_id"]}
         for (let j = 0; j < metrics[i].observability.length; j++) {
@@ -107,7 +109,9 @@ export class MetricsLineChartComponent implements OnInit {
     let labels = []
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
+    if (metrics.observability.length > 10) {
+      metrics.observability = metrics.observability.slice(metrics.observability.length - 10, metrics.observability.length)
+    }
     for (let i = 0; i < metrics.observability.length && i < 10 ; i++) {
       let date = new Date((Number(metrics.observability[i].timestamp)*1000))
       let day = date.getDate();

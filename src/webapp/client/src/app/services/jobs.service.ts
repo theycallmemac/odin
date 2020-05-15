@@ -21,8 +21,8 @@ export class JobsService {
     id: "id",
     language: "python3",
     name: "Name",
-    runs: 1,
-    schedule: "15 * * * *",
+    runs: 0,
+    schedule: "* * * * *",
     stats: "",
     uid: "uid",
     _id: "id"
@@ -62,9 +62,9 @@ export class JobsService {
   }
 
   // returns a job by id
-  jobGet() {
+  jobGet(jobid: String) {
     const token = this._authService.getToken()
-    this._http.post<{success: boolean, job: any}>(this._apiUrl + this._apiJobs + this._apiJobGet, { token })
+    this._http.post<{success: boolean, job: any}>(this._apiUrl + this._apiJobs + this._apiJobGet, { token, jobid})
         .subscribe(response => {
             return response.job
         });

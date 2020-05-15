@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CardJobInfoComponent } from './card-job-info.component';
+import { HttpClientTestingModule} from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CardJobInfoComponent', () => {
   let component: CardJobInfoComponent;
@@ -8,7 +9,8 @@ describe('CardJobInfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CardJobInfoComponent ]
+      declarations: [ CardJobInfoComponent ],
+      imports: [RouterTestingModule, HttpClientTestingModule]
     })
     .compileComponents();
   }));

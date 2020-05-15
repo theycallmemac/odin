@@ -14,8 +14,8 @@ export class CardJobStatusComponent implements OnInit {
   private selectedJob: any;
   private jobSchedule: String;
   private selectedJobObv: any;
-  private jobLastRunStatus: String;
-  private jobLastRunTime: any;
+  public jobLastRunStatus: String;
+  public jobLastRunTime: any;
   
   constructor(
     private jobsService: JobsService,
