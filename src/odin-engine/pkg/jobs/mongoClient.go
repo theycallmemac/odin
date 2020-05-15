@@ -7,9 +7,9 @@ import (
     "fmt"
     "log"
     "os/user"
-    "time"
     "strconv"
     "strings"
+    "time"
 
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
@@ -17,6 +17,8 @@ import (
     "go.mongodb.org/mongo-driver/mongo/readpref"
 
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "github.com/lnquy/cron"
+
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/types"
 
@@ -187,14 +189,36 @@ func GetAll(client *mongo.Client) []NewJob {
     return jobs
 }
 
-// this function is used to format the output of MongoDB contents
-// parameters: id, name, description, stats, schedule (five strings corresponding to individual job data)
+// this function is used to format the output of MongoDB stat contents
+// parameters: id, description, valType, value (four strings corresponding to individual job stats)
 // returns: string (a space formatted string used for display)
-func Format(id string, name, string, description string, links string, schedule string) string {
+func Format(id string, description string, valType string, value string) string {
+    return fmt.Sprintf("%-20s%-20s%-20s%-20s\n", id, description, valType, value)
+}
+
+// this function is used to parse and format the output of the MongoDB schedule contents
+// parameters: id, name, description, schedule (four strings corresponding to individual job data)
+// returns: string (a space formatted string used for display)
+func SchFormat(id string, name, string, description string, links string, schedule string) string {
+    var finalSchedule = ""
+    var tmpSchedule = ""
     if schedule == "0 5 31 2 *" {
-        schedule = "never"
+        finalSchedule = "never"
+    } else if schedule != "SCHEDULE" {
+        scheduleArray := strings.Split(schedule, ",")
+        for i, item := range scheduleArray {
+            descriptor, _ := cron.NewDescriptor()
+            tmpSchedule, _ = descriptor.ToDescription(item, cron.Locale_en)
+            if i + 1 == len(scheduleArray) {
+                finalSchedule += tmpSchedule
+            } else {
+                finalSchedule += tmpSchedule + " & "
+            }
+        }
+    } else {
+        finalSchedule = schedule
     }
-    return fmt.Sprintf("%-20s%-20s%-20s%-20s%-20s\n", id, name, description, links, schedule)
+    return fmt.Sprintf("%-20s%-20s%-20s%-20s%-20s\n", id, name, description, links, finalSchedule)
 }
 
 // this function is used to modify a job in MongoDB

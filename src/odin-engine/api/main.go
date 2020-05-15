@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
     "os"
@@ -12,8 +12,11 @@ import (
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
 )
 
+
+var httpAddr string
+
 // set Odin ENV variables to be used by running jobs via Odin SDK 
-func setOdinEnv(mongoDbUrl string) {
+func SetOdinEnv(mongoDbUrl string) {
     // tells SDK that job is running within an Odin Environment
     os.Setenv("ODIN_EXEC_ENV", "True")
     syscall.Exec(os.Getenv("zsh"), []string{os.Getenv("zsh")}, syscall.Environ())
@@ -31,7 +34,7 @@ type Service struct {
 // this function is used to initialise a new service struct
 // parameters: addr (a string of a http address), store (a store of node details)
 // returns: *Service (a newly initialized service struct)
-func newService(addr string, store fsm.Store) *Service {
+func NewService(addr string, store fsm.Store) *Service {
     return &Service{
         addr:  addr,
 	store: store,
@@ -67,6 +70,7 @@ func (s *Service) Start() {
     // start the countdown timer for the execution until the first job
     go jobs.StartTicker(s.store, s.addr)
 
+    httpAddr = s.addr
     // listen and service on the provided host and port in ~/odin-config.yml
     http.ListenAndServe(s.addr, r)
 }

@@ -13,6 +13,7 @@ import (
     "os/signal"
     "time"
 
+    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/api"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
     "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
 )
@@ -71,10 +72,10 @@ func main() {
     if httpAddr == "" {
         usr, _ := user.Current()
         config := resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
-        setOdinEnv(config.Mongo.Address)
+        api.SetOdinEnv(config.Mongo.Address)
         httpAddr = config.OdinVars.Master + ":" + config.OdinVars.Port
     }
-    service := newService(httpAddr, *s)
+    service := api.NewService(httpAddr, *s)
     go service.Start()
     if joinAddr != "" {
 	if err := join(joinAddr, raftAddr, nodeID); err != nil {
