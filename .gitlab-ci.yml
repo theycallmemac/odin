@@ -93,20 +93,6 @@ backend:test:
       - webapp/*
       - urbanam2/dev
 
-cli:test:
-  image: golang:${GO_VERSION}
-  stage: test
-  before_script: ['']
-  script:
-    - mkdir -p $GOPATH/src/$REPO/$GROUP /go/src/_/builds
-    - cp -r $CI_PROJECT_DIR /go/src/$REPO/$GROUP/$PROJECT
-    - ln -s /go/src/$REPO/$GROUP /go/src/_/builds/$GROUP
-    - go get -v -d ./src/odin-cli/...
-    - go test -v  ./src/odin-cli/...
-  only:
-    refs:
-      - dev/master
-
 engine:test:
   image: golang:${GO_VERSION}
   stage: test
