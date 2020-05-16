@@ -1,0 +1,11 @@
+provider:
+  name: 'odin'
+  version: '1.0.0'
+job:
+  id: '5d7341fa3fea'
+  name: 'amzn'
+  description: 'Check amazon stock price'
+  language: 'python3'
+  file: 'amzn_stock.py'
+  schedule: 'every minute'
+
