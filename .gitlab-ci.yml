@@ -86,6 +86,7 @@ backend:test:
   script:
     - cd src/webapp/server
     - npm install
+    - npm start &
     - npm test ./tests
   cache:
     policy: pull-push
