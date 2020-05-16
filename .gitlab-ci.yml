@@ -34,6 +34,7 @@ init:
       - webapp/*
       - urbanam2/dev
       - dev/master
+      - master
       
 lint:nglint:
   stage: test
@@ -61,6 +62,7 @@ frontend:test:
       - webapp/*
       - urbanam2/dev
       - dev/master
+      - master
 
 frontend:build:
   stage: build
@@ -77,6 +79,7 @@ frontend:build:
       - webapp/*
       - urbanam2/dev
       - dev/master
+      - master
 
 backend:test:
   stage: test
@@ -96,7 +99,6 @@ backend:test:
     refs:
       - webapp/*
       - urbanam2/dev
-      - dev/master
 
 engine:test:
   image: golang:${GO_VERSION}
@@ -111,6 +113,7 @@ engine:test:
   only:
     refs:
       - dev/master
+      - master
 
 golangsdk:test:
   image: golang:${GO_VERSION}
@@ -128,6 +131,7 @@ golangsdk:test:
     refs:
       - dev/master
       - odin-libraries/go
+      - master
 
 pythonsdk:test:
   stage: test
@@ -141,4 +145,5 @@ pythonsdk:test:
     refs:
       - dev/master
       - odin-libraries/python
+      - master
 
