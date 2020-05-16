@@ -6,7 +6,7 @@ variables:
   GROUP: mcdermj7
   PROJECT: 2020-ca400-urbanam2-mcdermj7
 
-  
+
 stages:
   - init
   - test
@@ -69,7 +69,7 @@ frontend:build:
   image: trion/ng-cli-karma:${CLI_VERSION}
   needs: ["frontend:test"]
   script:
-    - ./node_modules/@angular/cli/bin/ng build --prod 
+    - ./node_modules/@angular/cli/bin/ng build --prod
   artifacts:
     expire_in: 1 day
     paths:
