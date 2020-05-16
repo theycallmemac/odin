@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+  odin-engine:
+    build:
+      context: .
+    container_name: "odin-engine"
+    restart: always
+    network_mode: "host"
+    ports:
+      - "3939:3939"
+      - "27017:27017"

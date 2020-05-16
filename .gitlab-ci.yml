@@ -33,7 +33,9 @@ init:
     refs:
       - webapp/*
       - urbanam2/dev
-
+      - dev/master
+      - master
+      
 lint:nglint:
   stage: test
   image: trion/ng-cli-karma:${CLI_VERSION}
@@ -59,6 +61,8 @@ frontend:test:
     refs:
       - webapp/*
       - urbanam2/dev
+      - dev/master
+      - master
 
 frontend:build:
   stage: build
@@ -74,6 +78,8 @@ frontend:build:
     refs:
       - webapp/*
       - urbanam2/dev
+      - dev/master
+      - master
 
 backend:test:
   stage: test
@@ -83,7 +89,8 @@ backend:test:
   script:
     - cd src/webapp/server
     - npm install
-    - npm test
+    - npm start &
+    - npm test ./tests
   cache:
     policy: pull-push
     key: ${CI_COMMIT_SHA}
@@ -92,26 +99,6 @@ backend:test:
     refs:
       - webapp/*
       - urbanam2/dev
-
-cli:test:
-  image: golang:${GO_VERSION}
-  stage: test
-  before_script: ['']
-  script:
-    - mkdir -p $GOPATH/src/$REPO/$GROUP /go/src/_/builds
-    - cp -r $CI_PROJECT_DIR /go/src/$REPO/$GROUP/$PROJECT
-    - ln -s /go/src/$REPO/$GROUP /go/src/_/builds/$GROUP
-    - cd src/odin-engine
-    - go get -v ./...
-    - go build -b ./...
-    - ./odin-engine -id master raft0 &
-    - cd ../..
-    - go get -v -d ./src/odin-cli/...
-    - go test -v  ./src/odin-cli/...
-  only:
-    refs:
-      - dev/master
-      - tests/e2e
 
 engine:test:
   image: golang:${GO_VERSION}
@@ -126,6 +113,7 @@ engine:test:
   only:
     refs:
       - dev/master
+      - master
 
 golangsdk:test:
   image: golang:${GO_VERSION}
@@ -143,17 +131,19 @@ golangsdk:test:
     refs:
       - dev/master
       - odin-libraries/go
+      - master
 
 pythonsdk:test:
   stage: test
   before_script: ['']
   script:
     - export ODIN_MONGODB=$ODIN_MONGODB
-    - cd src/odin-libraries/python/pyodin
+    - cd src/odin-libraries/python
     - pip install -r requirements.txt
     - python odin_test.py
   only:
     refs:
       - dev/master
       - odin-libraries/python
+      - master
 

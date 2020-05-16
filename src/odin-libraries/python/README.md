@@ -1,0 +1,1 @@
+To run tests 'ODIN_MONGODB' ENV Variable needs to be set to a valid mongodb connection URL

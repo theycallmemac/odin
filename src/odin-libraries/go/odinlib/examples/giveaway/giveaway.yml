@@ -1,0 +1,11 @@
+provider:
+  name: 'odin'
+  version: '1.0.0'
+job:
+  id: '13a772a848e1'
+  name: 'giveaway'
+  description: 'Sends me an email of competitions to enter'
+  language: 'go'
+  file: 'giveaway.go'
+  schedule: 'every Monday at 09:00 and every Thursday at 09:00'
+

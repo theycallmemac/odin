@@ -1,0 +1,15 @@
+<div class="card">
+  <h3>Metrics Table</h3>
+  <table>
+    <tr>
+      <th *ngFor = "let column of tableHeaders">
+        {{mappings[column]}}
+      </th>
+    </tr>
+    <tr *ngFor = "let row of ValuesList">
+      <td *ngFor = "let column of tableHeaders">
+        {{row[column]}}
+      </td>
+    </tr>
+  </table>
+</div>

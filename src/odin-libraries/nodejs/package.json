@@ -1,0 +1,18 @@
+{
+  "name": "@martynasur/odinsdk",
+  "version": "0.1.0",
+  "description": "A nodejs package for gathering information in odin jobs",
+  "license": "MIT",
+  "repository": "https://gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7",
+  "main": "odin/odin.js",
+  "keywords": [
+    "odin",
+    "odinsdk",
+    "npm",
+    "package"
+  ],
+  "dependencies": {
+    "mongodb": "^3.5.6",
+    "yamljs": "^0.3.0"
+  }
+}

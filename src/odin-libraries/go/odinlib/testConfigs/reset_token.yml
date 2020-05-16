@@ -1,0 +1,10 @@
+provider:
+  name: "odin"
+  version: "1.0.0"
+job:
+  name: "test_job"
+  description: "This job should say hello"
+  language: "python3"
+  file: "main.py"
+  schedule: "every September 9th at 13:00 and every March 21st at 13:00"
+
