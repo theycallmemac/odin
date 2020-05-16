@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CardJobStatusComponent } from './card-job-status.component';
+import { HttpClientTestingModule} from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CardJobStatusComponent', () => {
   let component: CardJobStatusComponent;
@@ -8,7 +10,8 @@ describe('CardJobStatusComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CardJobStatusComponent ]
+      declarations: [ CardJobStatusComponent ],
+      imports: [RouterTestingModule, HttpClientTestingModule]
     })
     .compileComponents();
   }));

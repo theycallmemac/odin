@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./card-job-runs.component.css']
 })
 export class CardJobRunsComponent implements OnInit {
-  private selectedJob: any;
+  public selectedJob: any;
   private jobSchedule: String;
   private selectedJobObv : any;
   
