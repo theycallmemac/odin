@@ -2,19 +2,24 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert')
 
 // Connection URL
-const url = (process.env.ODIN_MONGODB)
+const url = process.env.ODIN_MONGODB
 
 class OdinLogger {
     constructor() {
-        MongoClient.connect(url, function(err, client){
-            assert.equal(null, err);
-            if (err) {
-                this.success = false;
-            }
-            this.db = client.db('odin');
-            this.collection = this.db.collection('observability');
-            this.success = true;
+        if (url != null) {
+            console.log(url)
+            MongoClient.connect(url, function(err, client){
+                assert.equal(null, err);
+                if (err) {
+                    this.success = false;
+                }
+                this.db = client.db('odin');
+                this.collection = this.db.collection('observability');
+                this.success = true;
         })
+        } else {
+            this.success = false;
+        }
     }
 
     async log(type, desc, value, id, timestamp, collection=this.collection){
