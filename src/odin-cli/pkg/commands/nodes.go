@@ -108,7 +108,6 @@ func createNode(ch chan<- Data, name, http, raft string) {
     }
 }
 
-
 // this function is used to format the output of of the node list
 // parameters: pid, name, http, raft (four strings corresponding to individual node data)
 // returns: string (a space formatted string used for display)
