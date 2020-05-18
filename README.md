@@ -16,7 +16,7 @@ This observability can be achieved through a web facing user interface which dis
 First off, before building the project, we must first clone the repository via HTTPS with the following command:
 
 ```
-git clone https://gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7.git
+git clone https://github.com/theycallmemac/odin.git 
 ```
 
 From here we move into the appropriate source code directory as specified below:
