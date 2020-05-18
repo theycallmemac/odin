@@ -1,0 +1,17 @@
+// host address, use for testing routes via requests
+const PORT = process.env.PORT || 3000;
+const HOST = `http://localhost:${PORT}`;
+
+// Valid user auth information to be used in tests 
+const testUser = {
+    "email":"odintestsuser@gmail.com",
+    "name":"Odin user",
+    "image":"https://lh4.googleusercontent.com/-WhlT7WLSt-Y/AAAAAAAAAAI/AAAAAAAAAAA/AKF05nBlP28ig13s8Px4RCa95GR2utkV-g/s96-c/photo.jpg",
+    "id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjE3ZDU1ZmY0ZTEwOTkxZDZiMGVmZDM5MmI5MWEzM2U1NGMwZTIxOGIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiODA2NzYwNzA3NDI5LWs5ZGtvZ2J2NnVoOHQ0MWJpdm0zZDhpa3Q3aWEydGUzLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiODA2NzYwNzA3NDI5LWs5ZGtvZ2J2NnVoOHQ0MWJpdm0zZDhpa3Q3aWEydGUzLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE4MTQxNjU4NTQ4ODU5MTYwNDM0IiwiZW1haWwiOiJvZGludGVzdHN1c2VyQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoicUktUkJfbFY1T2d5c3BqZFl4REd4dyIsIm5hbWUiOiJPZGluIHVzZXIiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDQuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1XaGxUN1dMU3QtWS9BQUFBQUFBQUFBSS9BQUFBQUFBQUFBQS9BS0YwNW5CbFAyOGlnMTNzOFB4NFJDYTk1R1IydXRrVi1nL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJPZGluIiwiZmFtaWx5X25hbWUiOiJ1c2VyIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE1ODMyNDkwODAsImV4cCI6MTU4MzI1MjY4MCwianRpIjoiOTlhNmU5YTk5NDMxZjQ2OWVjY2VmYTI5ZTE2OTE1NWM0OWFiYjRjMiJ9.O0PdqQG0Ln3ykjIau7tz4Btd-cQ-Vdb1HuzirN2Os_Ph4H8iL44NJlVD1qNZ06wqxESA5F6zcMSvGbBpM2woD9AQ-pHlvmwB7UYjvsOcAKp-_IODuiaADV_0t33dVeGWTUI-GIdYM7Urb315aSM-XYzXMOipQRlgAUPn4O-eeWN5s68VFUUeqEnWDPcBogKU_iyCVZsxvEQFjsUcP8a4fq4kXpqBgKSk94le_5x0v_GfeEoUhfo5wdB752uy8-57kgS0rjqFC_8CffYaw2jt6cUXb_UcXACKUMiik9p_O97Rd97Sb1bgqbz28_2pE0fCGBQYNcXiUPnPvNs2p5QS_w",
+    "userid":"118141658548859160434"
+}
+
+module.exports = {
+    HOST : HOST,
+    testUser : testUser
+};

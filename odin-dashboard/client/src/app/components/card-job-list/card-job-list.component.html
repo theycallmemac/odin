@@ -1,0 +1,12 @@
+<div class="card">
+  <h3>Jobs List</h3>
+  <div *ngIf="jobsFound" class="list-group">
+    <a *ngFor="let job of jobList" (click)="selectJob(job)" class="list-group-item list-group-item-action flex-column align-items-start" [ngClass]="{'active' : job.id == selectedJob.id}">
+      <div class="d-flex w-100 justify-content-between">
+        <h4>Name : {{job.name}}</h4>
+        <h5>Created {{dateDifference(dateFromObjectId(job._id))}} days ago</h5>
+      </div>
+      <h6>Description : {{job.description}}</h6>
+    </a>
+  </div>
+</div>
