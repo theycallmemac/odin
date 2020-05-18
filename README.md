@@ -1,4 +1,4 @@
-# Odin
+![Odin Logo](https://i.imgur.com/eMRhrRb.png)
 
 ### Introduction
 
