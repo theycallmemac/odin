@@ -25,20 +25,20 @@ cd 2020-ca400-urbanam2-mcdermj7/src
 ```
 
 To build the project, we can consult the Makefile in this directory. This file will automate the installation of the:
-    - Odin Engine
-    - Odin CLI
-    - MongoDB instance
+- Odin Engine
+- Odin CLI
+- MongoDB instance
 
 Along with this, the Odin Engine will be run as a systemd service and the Odin CLI will be universally accessible from the `/bin` directory.
 
 To utilise this automation we must run the makefile as the root user as so with the make command. This will:
-    - build the Odin Engine
-    - build the Odin CLI
-    - move the `odin-engine/config/odin-config.yml` file to the root user home directory
-    - move the generated CLI and Engine binary to the `/bin` directory
-    - move the `odin-engine/init/odin.service` file to `/lib/systemd/system` so it can be run as a systemd service
-    - install a locally accessible MongoDB
-    - creates the odin group, which users must be a member of to use the system.
+- build the Odin Engine
+- build the Odin CLI
+- move the `odin-engine/config/odin-config.yml` file to the root user home directory
+- move the generated CLI and Engine binary to the `/bin` directory
+- move the `odin-engine/init/odin.service` file to `/lib/systemd/system` so it can be run as a systemd service
+- install a locally accessible MongoDB
+- creates the odin group, which users must be a member of to use the system.
 
 We can verify all components were successfully install with the following series of commands:
 ```
