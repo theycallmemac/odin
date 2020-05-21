@@ -1,4 +1,4 @@
-![Odin Logo](https://i.imgur.com/eMRhrRb.png)
+![Odin Logo](https://i.imgur.com/cwmb5j4.png)
 
 ### Introduction
 
