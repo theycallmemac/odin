@@ -19,11 +19,6 @@ First off, before building the project, we must first clone the repository via H
 git clone https://github.com/theycallmemac/odin.git 
 ```
 
-From here we move into the appropriate source code directory as specified below:
-```
-cd 2020-ca400-urbanam2-mcdermj7/src
-```
-
 To build the project, we can consult the Makefile in this directory. This file will automate the installation of the:
 - Odin Engine
 - Odin CLI
