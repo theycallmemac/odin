@@ -2,11 +2,11 @@
 
 ### Introduction
 
-Odin is a programmble, observable and distributed job orchestration system  which allows for the scheduling, management and unattended background execution of individual user created tasks on Linux based systems.
+Odin is a programmable, observable and distributed job orchestration system  which allows for the scheduling, management and unattended background execution of individual user created tasks on Linux based systems.
 
-Job schedulers by definition are supposed to eliminate toil, a kind of work tied to running a service which is manual, repetitive and most importantly - automatable. Classically, job schedulers are ad-hoc systems that treat it’s jobs as code to be executed, specifying the parameters of what is to be executed, and when it is to be executed. Odin treats it’s jobs as code to be managed before and after execution. While caring about what is to be executed and when it will be executed, Odin is equally concerned with the expected behaviour of your job, which is to be described entirely by the user’s code. 
+Job schedulers by definition are supposed to eliminate toil, a kind of work tied to running a service which is manual, repetitive and most importantly, automatable. Classically, job schedulers are ad-hoc systems that treat it’s jobs as code to be executed, specifying the parameters of what is to be executed, and when it is to be executed. Odin treats it’s jobs as code to be managed before and after execution. While caring about what is to be executed and when it will be executed, Odin is equally concerned with the expected behaviour of your job, which is to be described entirely by the user’s code. 
 
-This observability can be achieved through a web facing user interface which displays job logs and metrics. All of this is gathered through the use of Odin libraries (written in Go, Python and Node.js) and this is how Odin helps infer the internal state of jobs.
+This observability is achieved through a web facing user interface which displays job logs and metrics. All of this is gathered through the use of Odin libraries (written in Go, Python and Node.js) and Odin helps infer the internal state of jobs by leveraging these libraries.
 
 
 ### Setup
