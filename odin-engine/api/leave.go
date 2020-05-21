@@ -5,8 +5,7 @@ import (
     "net/http"
 
     "github.com/go-chi/chi"
-
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 )
 // create resource type to be used by the router
 // consists of a base http address and a store in the finite state machine

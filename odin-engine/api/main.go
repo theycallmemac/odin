@@ -7,9 +7,8 @@ import (
 
     "github.com/go-chi/chi"
     "github.com/go-chi/chi/middleware"
-
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/jobs"
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/jobs"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 )
 
 

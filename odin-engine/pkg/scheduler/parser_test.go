@@ -4,7 +4,7 @@ import (
     "fmt"
     "testing"
 
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
+    "github.com/theycallmemac/odin/odin-engine/pkg/resources"
 )
 
 func TestIsTimeValid(t *testing.T) {

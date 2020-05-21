@@ -6,8 +6,8 @@ import (
     "net/http"
 
     "github.com/go-chi/chi"
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/executor"
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/executor"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 )
 
 // create JobNode type to be used to unmarshal data into after a HTTP request

@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-        "net/smtp"
-        "log"
+    "fmt"
+    "net/http"
+    "net/smtp"
+    "log"
 
-	"github.com/yhat/scrape"
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
+    "github.com/theycallmemac/odin/odin-libraries/go/odinlib"
+    "github.com/yhat/scrape"
 
-        "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-libraries/go/odinlib"
+    "golang.org/x/net/html"
+    "golang.org/x/net/html/atom"
 )
 
 

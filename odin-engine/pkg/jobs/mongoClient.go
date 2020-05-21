@@ -11,16 +11,15 @@ import (
     "strings"
     "time"
 
+    "github.com/lnquy/cron"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/resources"
+    "github.com/theycallmemac/odin/odin-engine/pkg/types"
+
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo/readpref"
-
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
-    "github.com/lnquy/cron"
-
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/types"
 
     "gopkg.in/yaml.v2"
 )

@@ -5,7 +5,7 @@ import (
     "fmt"
     "strconv"
 
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 )
 
 // this function is called on a queue type and is used to run the batch loop to run all executions

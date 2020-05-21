@@ -8,11 +8,11 @@ import (
     "strconv"
     "strings"
 
-    "go.mongodb.org/mongo-driver/bson"
     "github.com/go-chi/chi"
+    "github.com/theycallmemac/odin/odin-engine/pkg/jobs"
+    "github.com/theycallmemac/odin/odin-engine/pkg/resources"
 
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/jobs"
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
+    "go.mongodb.org/mongo-driver/bson"
 )
 
 // create resource type to be used by the router

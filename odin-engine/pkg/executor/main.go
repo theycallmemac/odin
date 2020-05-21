@@ -10,8 +10,8 @@ import (
     "strings"
     "strconv"
 
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/resources"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/resources"
 )
 
 type Queue []JobNode

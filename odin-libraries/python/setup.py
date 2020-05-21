@@ -5,7 +5,7 @@ setup(
   version = '0.1.11',
   license='MIT',
   description = 'A python package for gathering information in odin jobs',
-  url = 'https://gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7',
+  url = 'https://github.com/theycallmemac/odin/',
   author = 'James McDermott',
   author_email = 'james.mcdermott7@mail.dcu.ue',
   install_requires=[

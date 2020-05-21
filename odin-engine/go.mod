@@ -1,4 +1,4 @@
-module gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine
+module github.com/theycallmemac/odin/odin-engine
 
 go 1.13
 

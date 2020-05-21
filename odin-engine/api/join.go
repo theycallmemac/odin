@@ -5,8 +5,7 @@ import (
     "net/http"
 
     "github.com/go-chi/chi"
-
-    "gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7/src/odin-engine/pkg/fsm"
+    "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 )
 
 

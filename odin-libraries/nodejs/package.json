@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A nodejs package for gathering information in odin jobs",
   "license": "MIT",
-  "repository": "https://gitlab.computing.dcu.ie/mcdermj7/2020-ca400-urbanam2-mcdermj7",
+  "repository": "github.com/theycallmemac/odin",
   "main": "odin/odin.js",
   "keywords": [
     "odin",
