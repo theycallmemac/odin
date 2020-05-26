@@ -1,0 +1,52 @@
+name: Odin Engine
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Get Odin Engine Dependencies
+      run: |
+        export GOBIN=$GOPATH/bin
+        go get -v -d ./odin-engine/...
+
+    - name: Build Odin Engine
+      run: sudo make engine
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Get Odin Engine Dependencies
+      run: |
+        export GOBIN=$GOPATH/bin
+        go get -v -d ./odin-engine/...
+
+    - name: Test Odin Engine
+      run: go test -cover ./odin-engine/...
