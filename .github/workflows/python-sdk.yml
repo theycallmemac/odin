@@ -1,0 +1,36 @@
+name: Python Odin SDK
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Set Up Test MongoDB Instance
+      run: |
+        sudo make mongodb
+    - name: Install Odin SDK Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        cd odin-libraries/python
+        pip install -r requirements.txt
+    - name: Test Odin SDK
+      run: |
+        export ODIN_MONGODB=mongodb://localhost:27017
+        cd odin-libraries/python
+        python odin_test.py
+

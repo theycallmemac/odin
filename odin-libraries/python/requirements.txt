@@ -1,3 +1,2 @@
 pymongo==3.10.1
-ruamel.yaml<=0.15
-dnspython==1.16.0
+ruamel.yaml==0.16.10 
