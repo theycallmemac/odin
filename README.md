@@ -1,81 +1,44 @@
 ![Odin Logo](https://i.imgur.com/cwmb5j4.png)
 
-### Introduction
+![Odin Engine](https://github.com/theycallmemac/odin/workflows/Odin%20Engine/badge.svg) ![Odin CLI](https://github.com/theycallmemac/odin/workflows/Odin%20CLI/badge.svg) ![Go Odin SDK](https://github.com/theycallmemac/odin/workflows/Go%20Odin%20SDK/badge.svg) ![Python Odin SDK](https://github.com/theycallmemac/odin/workflows/Python%20Odin%20SDK/badge.svg)
 
-Odin is a programmable, observable and distributed job orchestration system  which allows for the scheduling, management and unattended background execution of individual user created tasks on Linux based systems.
+## 📖 Overview
 
-Job schedulers by definition are supposed to eliminate toil, a kind of work tied to running a service which is manual, repetitive and most importantly, automatable. Classically, job schedulers are ad-hoc systems that treat it’s jobs as code to be executed, specifying the parameters of what is to be executed, and when it is to be executed. Odin treats it’s jobs as code to be managed before and after execution. While caring about what is to be executed and when it will be executed, Odin is equally concerned with the expected behaviour of your job, which is to be described entirely by the user’s code. 
+Odin is a programmable, observable and distributed job orchestration system which allows for the scheduling, management and unattended background execution of user created tasks on Linux based systems.
 
-This observability is achieved through a web facing user interface which displays job logs and metrics. All of this is gathered through the use of Odin libraries (written in Go, Python and Node.js) and Odin helps infer the internal state of jobs by leveraging these libraries.
+Job schedulers by definition are supposed to eliminate toil, a kind of work tied to running a service which is manual, repetitive and most importantly, automatable. While Odin cares about what is to be executed and when it will be executed, Odin is equally concerned with the expected behaviour of your job, which is described entirely by the user’s code. 
+
+This observability is achieved through a web facing user interface which displays job logs and metrics. All of this is gathered through the use of Odin Libraries written in Go, Node.js and Python and Node.js.
+
+Odin can infer the internal state of jobs by leveraging these libraries, which in turn can be used to speed up the debugging process associated with jobs which yield unexpected behaviour.
 
 
-### Setup
+## 🔧 Installation
 
-#### Odin Engine, MongoDB and Odin CLI
+To install Odin please consult the [installation guide](https://github.com/theycallmemac/odin/blob/master/INSTALL.md) for a quick walkthrough on setting up the system.
 
-First off, before building the project, we must first clone the repository via HTTPS with the following command:
+## 🚀 Usage
 
-```
-git clone https://github.com/theycallmemac/odin.git 
-```
+You can check out the documentation for using Odin [here](https://github.com/theycallmemac/odin/blob/final-year-project/docs/documentation/Odin-User-Manual.pdf). 
 
-To build the project, we can consult the Makefile in this directory. This file will automate the installation of the:
-- Odin Engine
-- Odin CLI
-- MongoDB instance
+I'm currently working on converting the documentation from PDF to Markdown.
 
-Along with this, the Odin Engine will be run as a systemd service and the Odin CLI will be universally accessible from the `/bin` directory.
 
-To utilise this automation we must run the makefile as the root user as so with the make command. This will:
-- build the Odin Engine
-- build the Odin CLI
-- move the `odin-engine/config/odin-config.yml` file to the root user home directory
-- move the generated CLI and Engine binary to the `/bin` directory
-- move the `odin-engine/init/odin.service` file to `/lib/systemd/system` so it can be run as a systemd service
-- install a locally accessible MongoDB
-- creates the odin group, which users must be a member of to use the system.
+## 👤 Author
 
-We can verify all components were successfully install with the following series of commands:
-```
-systemctl status odin
+**James McDermott**
 
-systemctl status mongod
+- Email: <james.mcdermott7@mail.dcu.ie>
+- Twitter: [@theycallmemac_](https://twitter.com/theycallmemac_)
+- Github: [@theycallmemac](https://github.com/theycallmemac)
 
-odin --help
-```
+## ⭐️ Show your support
 
-It is advised the first two commands are run through root or with sudo. These commands will allow systemd to report the current status of the Odin Engine and the local MongoDB instance. The final command will verify you have a working install of the Odin CLI tool.
+Give a ⭐️ if this project helped you!
 
-It’s also advisable to set the following two environment variables for the Odin Engine to use:
+## 📝 License
 
-```
-export ODIN_EXEC_ENV=True
-export ODIN_MONGODB="mongodb://localhost:27017"
-```
+Copyright © 2020 [James McDermott](https://github.com/theycallmemac)<br /> This project is [MIT](https://github.com/butlerx/wetty/blob/master/LICENSE) licensed.
 
-#### Odin Observability Dashboard
-
-To set up the Odin Observability Dashboard, just run the following command in both the `odin-dashboard/client` and `odin-dashboard/server` directory to install dependencies:
-
-```
-npm install
-```
-
-In the `odin-dashboard/client` directory, you can run: 
-
-`npm install -g @angular/cli@latest`
-
-This will install the latest version of the Angular CLI tool. To make the user interface accessible at `http://localhost:4200`, just run:
-
-```
-ng serve
-```
-
-In the `odin-dashboard/server` directory just run:
-
-```
-npm start
-```
-
-This will start up the backend server for the dashabord. This server will start listing on port 3000 and will be accessible at http://localhost:3000. 
+---
 
