@@ -1,26 +1,25 @@
 # Documentation
 
+1. [The Odin Scheduling Format](https://github.com/theycallmemac/odin/blob/master/DOCS.md#1-the-odin-scheduling-format)
+2. [The Odin CLI](https://github.com/theycallmemac/odin/blob/master/DOCS.md#2-the-odin-cli)
+    - [Getting help](https://github.com/theycallmemac/odin/blob/master/DOCS.md#getting-help)
+    - [Generate required job files](https://github.com/theycallmemac/odin/blob/master/DOCS.md#generate-required-job-files)
+    - [Deploying a job](https://github.com/theycallmemac/odin/blob/master/DOCS.md#deploying-a-job)
+    - [Removing a job](https://github.com/theycallmemac/odin/blob/master/DOCS.md#removing-a-job)
+    - [Show a jobs log](https://github.com/theycallmemac/odin/blob/master/DOCS.md#show-a-jobs-log)
+    - [Describe running jobs](https://github.com/theycallmemac/odin/blob/master/DOCS.md#describe-running-jobs)
+    - [Modify running jobs](https://github.com/theycallmemac/odin/blob/master/DOCS.md#modify-running-jobs)
+    - [Link jobs together](https://github.com/theycallmemac/odin/blob/master/DOCS.md#link-jobs-together)
+    - [Unlink jobs from each other](https://github.com/theycallmemac/odin/blob/master/DOCS.md#unlink-jobs-from-each-other)
+    - [Recover job files](https://github.com/theycallmemac/odin/blob/master/DOCS.md#recover-job-files)
+    - [View job stats](https://github.com/theycallmemac/odin/blob/master/DOCS.md#view-job-stats)
+    - [Add more Odin Engine nodes](https://github.com/theycallmemac/odin/blob/master/DOCS.md#add-more-odin-engine-nodes)
 
-1. [The Odin Scheduling Format]()
-2. [The Odin CLI]()
-    - [Getting help]()
-    - [Generate required job files]()
-    - [Deploying a job]()
-    - [Removing a job]()
-    - [Show a jobs log]()
-    - [Describe running jobs]()
-    - [Modify running jobs]()
-    - [Link jobs together]()
-    - [Unlink jobs from each other]()
-    - [Recover job files]()
-    - [View job stats]()
-    - [Add more Odin Engine nodes]()
-
-3. [The Odin Software Development Kits]()
-    - [Python SDK]()
-    - [Go SDK]()
-5. [The Odin Observability Dashboard]()
-6. [The Odin Engine as a Distributed System]()
+3. [The Odin Software Development Kits](https://github.com/theycallmemac/odin/blob/master/DOCS.md#3-the-odin-software-development-kits)
+    - [Python SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#python-sdk)
+    - [Go SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#go-sdk)
+4. [The Odin Observability Dashboard](https://github.com/theycallmemac/odin/blob/master/DOCS.md#4-the-odin-observability-dashboard)
+5. [The Odin Engine as a Distributed System](https://github.com/theycallmemac/odin/blob/master/DOCS.md#5-the-odin-engine-as-a-distributed-system)
 
 ---
 
@@ -254,7 +253,7 @@ This gives us an an output which will look something like this:
 
 ![](https://lh5.googleusercontent.com/9ghEtYC48WPclmqqnRCMYPqlV1TptfC3r4MPL4GnD4DkgO_oi1R4mNnx0lyM107lbBl75nRHrG4uWZ0SfBivCM4R0UFCd2CJ6Fv1dreG2tXsohdSW_N2Nu3cpV_rVz6OcnMvkKnk)
 
-These values from the code are generally tracked thanks to the Odin Software Development Kits. You can learn more about the SDK's [here]().
+These values from the code are generally tracked thanks to the Odin Software Development Kits. You can learn more about the SDK's [here](https://github.com/theycallmemac/odin/blob/master/DOCS.md#3-the-odin-software-development-kits).
 
 <br/>
 
@@ -286,8 +285,6 @@ Which returns a list of nodes in the cluster:
 In regards to distributed systems, in particular with raft based systems, it’s advisable to run 3-node clusters or 5-node clusters. This is recommended as:
 - 3-node clusters can tolerate a failure in 1 node
 - 5-node clusters can tolerate a failure in any 2 nodes
-
-Please consult [here]() in regards to further details on running Odin as a distributed system.
 
 <br/>
 
@@ -427,7 +424,7 @@ After a job is run, the currently selected job metrics will update automatically
 
 As previously mentioned Odin Engine leverages the Raft consensus protocol to provide a highly available replicated log to run as a distributed system. Distributed systems offer reliability to systems in case of a failure, and Odin proves to be an easily scalable and flexible system. 
 
-Please consult [this section]() in regards to adding nodes to the Odin cluster.
+Please consult [this section](https://github.com/theycallmemac/odin/blob/master/DOCS.md#add-more-odin-engine-nodes) in regards to adding nodes to the Odin cluster.
 
 With Raft based systems, it’s advisable to run 3-node clusters or 5-node clusters. This is recommended as:
 - 3-node clusters can tolerate a failure in 1 node
@@ -436,7 +433,7 @@ With Raft based systems, it’s advisable to run 3-node clusters or 5-node clust
 
 ![](https://lh3.googleusercontent.com/gdWk9JMp5OqPtSh2ECcWKTkb0knkDa82nMFkCRuNPK3F-oW-1AzNOWUImwOAvU8vAlrX3UowlUN_XEoFKERlq3wm4HMULYx9mNCGr0FsA0lSwmQpTWiuVad0w7MjIWJAIjKUE7UN)
 
-In the example set out [above](), if the master node fails, a new master node must be elected. Given the set up in the image, the new master node will be worker1 or worker2. This capacity for failure is one of the greatest benefits with distributed systems. At this point however, you may find that Odin CLI operations will seemingly fail as they are made to interact directly with the master node. 
+In the example set out above, if the master node fails, a new master node must be elected. Given the set up in the image, the new master node will be worker1 or worker2. This capacity for failure is one of the greatest benefits with distributed systems. At this point however, you may find that Odin CLI operations will seemingly fail as they are made to interact directly with the master node. 
 
 We have built in a --port flag for each Odin CLI operation. This allows users to interface with a node of their choice in the case the master node goes offline. As Raft maintains a replicated log between nodes specifying the node to execute upon will not make any difference outside of having to add an additional flag to your commands.
 
