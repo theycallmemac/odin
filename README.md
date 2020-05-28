@@ -19,10 +19,7 @@ To install Odin please consult the [installation guide](https://github.com/theyc
 
 ## 🚀 Usage
 
-You can check out the documentation for using Odin [here](https://github.com/theycallmemac/odin/blob/final-year-project/docs/documentation/Odin-User-Manual.pdf). 
-
-I'm currently working on converting the documentation from PDF to Markdown.
-
+You can check out the documentation for using Odin [here](https://github.com/theycallmemac/odin/blob/master/DOCS.md). 
 
 ## 👤 Author
 
