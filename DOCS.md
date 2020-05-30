@@ -1,7 +1,8 @@
 # Documentation
 
-1. [The Odin Scheduling Format](https://github.com/theycallmemac/odin/blob/master/DOCS.md#1-the-odin-scheduling-format)
-2. [The Odin CLI](https://github.com/theycallmemac/odin/blob/master/DOCS.md#2-the-odin-cli)
+1. [The Odin Group](https://github.com/theycallmemac/odin/blob/master/DOCS.md#1-the-odin-group)
+2. [The Odin Scheduling Format](https://github.com/theycallmemac/odin/blob/master/DOCS.md#2-the-odin-scheduling-format)
+3. [The Odin CLI](https://github.com/theycallmemac/odin/blob/master/DOCS.md#3-the-odin-cli)
     - [Getting help](https://github.com/theycallmemac/odin/blob/master/DOCS.md#getting-help)
     - [Generate required job files](https://github.com/theycallmemac/odin/blob/master/DOCS.md#generate-required-job-files)
     - [Deploying a job](https://github.com/theycallmemac/odin/blob/master/DOCS.md#deploying-a-job)
@@ -15,17 +16,25 @@
     - [View job stats](https://github.com/theycallmemac/odin/blob/master/DOCS.md#view-job-stats)
     - [Add more Odin Engine nodes](https://github.com/theycallmemac/odin/blob/master/DOCS.md#add-more-odin-engine-nodes)
 
-3. [The Odin Software Development Kits](https://github.com/theycallmemac/odin/blob/master/DOCS.md#3-the-odin-software-development-kits)
+4. [The Odin Software Development Kits](https://github.com/theycallmemac/odin/blob/master/DOCS.md#4-the-odin-software-development-kits)
     - [Python SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#python-sdk)
     - [Go SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#go-sdk)
-4. [The Odin Observability Dashboard](https://github.com/theycallmemac/odin/blob/master/DOCS.md#4-the-odin-observability-dashboard)
-5. [The Odin Engine as a Distributed System](https://github.com/theycallmemac/odin/blob/master/DOCS.md#5-the-odin-engine-as-a-distributed-system)
+5. [The Odin Observability Dashboard](https://github.com/theycallmemac/odin/blob/master/DOCS.md#5-the-odin-observability-dashboard)
+6. [The Odin Engine as a Distributed System](https://github.com/theycallmemac/odin/blob/master/DOCS.md#6-the-odin-engine-as-a-distributed-system)
 
 ---
 
 <br/>
 
-## 1. The Odin Scheduling Format
+## 1. The Odin Group
+
+For security reasons, Odin only allows certain users to access its resources. Theses are users which have been added to the `odin` Linux group. This group was automatically created while installing the Odin Engine. To give a specific user the permission to use Odin you can run the following command as a sudo or root user:
+
+```usermod -aG odin <username>```
+
+<br/>
+
+## 2. The Odin Scheduling Format
 
 The Odin Scheduling Format is heavily reliant on the simplicity of the English language. 
 
@@ -37,9 +46,7 @@ Here are some examples of acceptable Odin schedule strings:
 
 <br/>
 
-## 2. The Odin CLI
-
-
+## 3. The Odin CLI
 
 ### Getting help
 To view all available Odin CLI commands you can simply run:
@@ -288,7 +295,7 @@ In regards to distributed systems, in particular with raft based systems, it’s
 
 <br/>
 
-## 3. The Odin Software Development Kits
+## 4. The Odin Software Development Kits
 
 In each of the following subsections we will demonstrate how a language specific SDK is used in conjunction with that language. Operationally each section is the exact same.
 
@@ -400,7 +407,7 @@ In either case, the result is annotated by a string once more. Once a result ope
 
 <br/>
 
-## 4. The Odin Observability Dashboard
+## 5. The Odin Observability Dashboard
 
 Once running, open the Odin Observability Dashboard in browser. If the configuration is unchanged this can be done by going to `http://localhost:4200`.
 
@@ -420,7 +427,7 @@ After a job is run, the currently selected job metrics will update automatically
 
 <br/>
 
-## 5. The Odin Engine as a Distributed System
+## 6. The Odin Engine as a Distributed System
 
 As previously mentioned Odin Engine leverages the Raft consensus protocol to provide a highly available replicated log to run as a distributed system. Distributed systems offer reliability to systems in case of a failure, and Odin proves to be an easily scalable and flexible system. 
 
