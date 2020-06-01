@@ -34,7 +34,6 @@ func (rs jobsResource) Routes() chi.Router {
     // define routes under the jobs/info endpoint
     r.Route("/info", func(r chi.Router) {
         r.Post("/description", rs.DescriptionByID)
-        r.Post("/stats", rs.StatsByID)
         r.Put("/runs", rs.UpdateRuns)
         r.Put("/", rs.Update)
     })
@@ -89,21 +88,6 @@ func (rs jobsResource) DescriptionByID(w http.ResponseWriter, r *http.Request) {
     } else {
         job := jobs.GetJobByValue(client, bson.M{"id": id}, uid)
         w.Write([]byte(job.Name + " - " + job.Description + "\n"))
-    }
-}
-
-// this function is used to show a job's stats
-func (rs jobsResource) StatsByID(w http.ResponseWriter, r *http.Request) {
-    d, _ := ioutil.ReadAll(r.Body)
-    client, err := jobs.SetupClient()
-    if err != nil {
-        w.Write([]byte("MongoDB cannot be accessed at the moment\n"))
-    } else {
-        statsList := jobs.GetJobStats(client, string(d))
-        w.Write([]byte(jobs.Format("ID", "DESCRIPTION", "TYPE", "VALUE")))
-        for _, stat := range statsList {
-            w.Write([]byte(jobs.Format(stat.ID, stat.Description, stat.Type, stat.Value)))
-        }
     }
 }
 

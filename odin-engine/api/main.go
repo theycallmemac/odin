@@ -64,6 +64,7 @@ func (s *Service) Start() {
     r.Mount("/join", joinResource{}.Routes(s))
     r.Mount("/leave", leaveResource{}.Routes(s))
     r.Mount("/schedule", scheduleResource{}.Routes())
+    r.Mount("/stats", statsResource{}.Routes())
     r.Mount("/links", linksResource{}.Routes())
 
     // start the countdown timer for the execution until the first job
