@@ -73,6 +73,10 @@ func createLanguageFile(name string, lang string) string {
             extension = ".go"
         case "python3":
             extension = ".py"
+        case "node":
+            extension = ".js"
+        case "bash":
+            extension = ".sh"
         default:
             extension = ""
     }
