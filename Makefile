@@ -8,6 +8,7 @@ engine:
 	cp init/odin.service /lib/systemd/system
 	systemctl daemon-reload
 	systemctl start odin
+	systemctl status odin
 
 mongodb:
 	apt update
