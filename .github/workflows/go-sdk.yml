@@ -41,10 +41,15 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
       
-    - name: Set Up Test MongoDB Instance
+    - name: Set Up Odin
       run: |
+        export ODIN_MONGODB=mongodb://localhost:27017
         sudo make mongodb
-        
+        cd odin-engine
+        make build
+        sudo cp config/odin-config.yml /root
+        sudo ./odin-engine -id master-node raft0 & 
+
     - name: Get Odin SDK Dependencies
       run: |
         export GOBIN=$GOPATH/bin
