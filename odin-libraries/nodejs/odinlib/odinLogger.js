@@ -22,11 +22,12 @@ class OdinLogger {
 	})
 
 	request.on('error', (error) => {
-	  console.error(error)
+            return false
 	})
 
 	request.write(data)
 	request.end()
+        return true
     }
 }
 
