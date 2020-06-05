@@ -1,7 +1,6 @@
 from os import environ, listdir, path
 from sys import exit
 from ruamel.yaml import YAML
-import json
 from pyodin.odin_logger import OdinLogger as logger
 from time import time
 
@@ -22,6 +21,7 @@ class Odin:
             self.timestamp = time()
         except Exception as e:
             print(e)
+
         if 'ODIN_EXEC_ENV' in environ or test != False:
             self.ENV_CONFIG = True
         else:

@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'pyodin',
   packages = ['pyodin'],
-  version = '0.1.11',
+  version = '0.2.0',
   license='MIT',
   description = 'A python package for gathering information in odin jobs',
   url = 'https://github.com/theycallmemac/odin/',

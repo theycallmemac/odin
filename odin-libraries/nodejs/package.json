@@ -1,18 +1,22 @@
 {
-  "name": "@martynasur/odinsdk",
-  "version": "0.1.0",
+  "name": "odinlib",
+  "version": "0.2.0",
   "description": "A nodejs package for gathering information in odin jobs",
   "license": "MIT",
   "repository": "github.com/theycallmemac/odin",
   "main": "odin/odin.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "keywords": [
     "odin",
-    "odinsdk",
-    "npm",
-    "package"
+    "odinlib"
   ],
   "dependencies": {
-    "mongodb": "^3.5.6",
     "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^7.2.0",
+    "mongodb": "^3.5.8"
   }
 }
