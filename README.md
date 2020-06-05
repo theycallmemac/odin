@@ -1,5 +1,8 @@
 ![Odin Logo](https://i.imgur.com/cwmb5j4.png)
 
+![Go Report Badge](https://goreportcard.com/badge/github.com/theycallmemac/odin) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 ![Odin Engine](https://github.com/theycallmemac/odin/workflows/Odin%20Engine/badge.svg) ![Odin CLI](https://github.com/theycallmemac/odin/workflows/Odin%20CLI/badge.svg) ![Go Odin SDK](https://github.com/theycallmemac/odin/workflows/Go%20Odin%20SDK/badge.svg) ![Python Odin SDK](https://github.com/theycallmemac/odin/workflows/Python%20Odin%20SDK/badge.svg) ![Node.js Odin SDK](https://github.com/theycallmemac/odin/workflows/Node.js%20Odin%20SDK/badge.svg)
 
 ## 📖 Overview
