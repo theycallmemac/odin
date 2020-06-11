@@ -50,3 +50,14 @@ jobs:
         cd odin-libraries/python
         python odin_test.py
 
+    - name: Publish Odin SDK
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        cd odin-libraries/python
+        python setup.py sdist
+        twine upload  --repository-url https://upload.pypi.org/legacy/ dist/* || true
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
