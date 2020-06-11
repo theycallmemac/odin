@@ -3,8 +3,9 @@
 There are two steps to installing Odin:
 1. [Odin Engine, MongoDB and Odin CLI](https://github.com/theycallmemac/odin/blob/master/INSTALL.md#1-odin-engine-mongodb-and-odin-cli)
 2. [Odin Observability Dashboard](https://github.com/theycallmemac/odin/blob/master/INSTALL.md#2-odin-observability-dashboard)
+3. [Odin Software Development Kits](https://github.com/theycallmemac/odin/blob/master/INSTALL.md#3-odin-software-development-kits)
 
-After completing both steps you will be ready to consult [the documentation](https://github.com/theycallmemac/odin/blob/final-year-project/docs/documentation/Odin-User-Manual.pdf) to start using Odin!
+After completing these steps you will be ready to consult [the documentation](https://github.com/theycallmemac/odin/blob/final-year-project/docs/documentation/Odin-User-Manual.pdf) to start using Odin!
 
 
 ## 1. Odin Engine, MongoDB and Odin CLI
@@ -74,5 +75,24 @@ npm start
 ```
 
 This will start up the backend server for the dashabord. This server will start listing on port 3000 and will be accessible at http://localhost:3000. 
+
+
+## 3. Odin Software Development Kits
+
+Currently there are three Odin SDKs available:
+
+- Go
+
+  ```go get github.com/theycallmemac/odin/odin-libraries/go/odinlib```
+
+- Python
+
+  ```pip install pyodin```
+
+- Node.js
+
+  ```npm install odinlib```
+
+Please consult [the Odin SDK documentation](https://github.com/theycallmemac/odin/blob/master/DOCS.md#4-the-odin-software-development-kits) for a guide on how they are used.
 
 ---
