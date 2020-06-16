@@ -10,23 +10,23 @@ init() {
             if [[ -f $file/$CONFIG ]];then
                 CONFIG=$file/$CONFIG
                 ID=$(grep 'id:' $CONFIG | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
-                echo $ID > "$HOME/.bash_odin_id.txt"
+                echo $ID > $HOME/.bash_odin_id.txt
                 TIME=$(date +%s)
                 echo $TIME > $HOME/.bash_odin_time.txt
             fi
         done
-        if [[ "$ODIN_EXEC_ENV" == "True" || "$TEST" != false ]];then
-            BASH_ODIN_ENV_CONFIG=true
-        else
-            BASH_ODIN_ENV_CONFIG=false
-        fi
-        echo $BASH_ODIN_ENV_CONFIG > $HOME/.bash_odin_env.txt
     else
         ID=$(grep 'id:' $CONFIG | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
-        echo $ID > "$HOME/.bash_odin_id.txt"
+        echo $ID > $HOME/.bash_odin_id.txt
         TIME=$(date +%s)
         echo $TIME > $HOME/.bash_odin_time.txt
     fi
+    if [[ "$ODIN_EXEC_ENV" == "True" || "$TEST" != "false" ]];then
+        BASH_ODIN_ENV_CONFIG=true
+    else
+        BASH_ODIN_ENV_CONFIG=false
+    fi
+    echo $BASH_ODIN_ENV_CONFIG > $HOME/.bash_odin_env.txt
 }
 
 operation() {
@@ -70,8 +70,8 @@ log() {
 
 
 PATH_TYPE="absolute"
-TEST=false
-while getopts "i:d:w:c:r:p:t:" opt; do
+TEST="false"
+while getopts ":ti:d:w:c:r:p:" opt; do
     case "$opt" in
         i)
             CONFIG=$OPTARG
@@ -97,7 +97,7 @@ while getopts "i:d:w:c:r:p:t:" opt; do
             PATH_TYPE=$OPTARG
             ;;
         t)
-            TEST=true
+            TEST="true"
             ;;
     esac
 done
