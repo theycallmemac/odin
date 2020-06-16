@@ -15,10 +15,11 @@
     - [Recover job files](https://github.com/theycallmemac/odin/blob/master/DOCS.md#recover-job-files)
     - [View job stats](https://github.com/theycallmemac/odin/blob/master/DOCS.md#view-job-stats)
     - [Add more Odin Engine nodes](https://github.com/theycallmemac/odin/blob/master/DOCS.md#add-more-odin-engine-nodes)
-
 4. [The Odin Software Development Kits](https://github.com/theycallmemac/odin/blob/master/DOCS.md#4-the-odin-software-development-kits)
     - [Python SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#python-sdk)
     - [Go SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#go-sdk)
+    - [Node.js SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#nodejs-sdk)
+    - [Bash SDK](https://github.com/theycallmemac/odin/blob/master/DOCS.md#bash-sdk)
 5. [The Odin Observability Dashboard](https://github.com/theycallmemac/odin/blob/master/DOCS.md#5-the-odin-observability-dashboard)
 6. [The Odin Engine as a Distributed System](https://github.com/theycallmemac/odin/blob/master/DOCS.md#6-the-odin-engine-as-a-distributed-system)
 
@@ -400,6 +401,92 @@ If the statement `url != ""` is true then the `Condition` operation will return 
 Finally, we take a look at the `Result` operation:
 
 ![](https://lh6.googleusercontent.com/bgPDnYJc10H7tUXIpRzxqywTrY55ClZ_a8YXRMDlMS7_f0tODoXRfgN7FawDREUd3nQ8OqVym1MFE3bNVW-xpTdvyAKcACTF2unP50cd)
+
+This operation acts like a return statement, once it’s executed the job is considered to be over. A successful attempt is denoted by a 0 while a failed attempt is denoted by a 1.
+
+In either case, the result is annotated by a string once more. Once a result operation is run, the code will finish execution.
+
+<br/>
+
+
+### Node.js SDK
+
+The Node.js SDK can be imported as a package using the following command:
+
+```npm install odinlib```
+
+You can create the odin object in your Node.js user code like so:
+
+
+```node
+odinlib = require('odinlib');
+odin  = new odlib.Odin(config="job.yml");
+```
+
+It’s important you specify the name of your YAML configuration file here as the Node.js SDK utilises metadata from it.
+
+From here it’s quite simple, you have three distinctive operations:
+- Watch
+- Condition
+- Result
+
+Let’s look at the `watch` operation with respect to the following code snippet:
+
+![](https://i.imgur.com/vxU7Jx2.png)
+
+This snippet fetches a random url from wikipedia on each execution. The watch operation stores this url along with a string “url fetched” to annotate the variable being stored.
+
+This allows us to better debug our jobs for when they don’t work as intended. If this job failed, we could immediately diagnose whether or not it was because a url wasn’t generated from the block begining on line 5.
+
+Let’s now look at this code again, but with the `condition` operation added:
+
+![](https://i.imgur.com/sJe3OHh.png)
+
+This time, we are introducing a new line at line 7. This `condition` operation will store the boolean equivalent to the statement `body.url != ""` and will be annotated by the string “check if url is empty”.
+
+If the statement `body.url != ""` is true then the condition operation will return true and progress to the `watch` operation on line 8.
+
+Finally, we take a look at the `result` operation: 
+
+![](https://i.imgur.com/Ll3gO0U.png)
+
+This operation acts like a return statement, once it’s executed the job is considered to be over. A successful attempt is denoted by a 0 while a failed attempt is denoted by a 1.
+
+In either case, the result is annotated by a string once more. Once a result operation is run, the code will finish execution.
+
+<br/>
+
+### Bash SDK
+
+The Bash SDK can be found as a regular shell script and you can install this by running the following command with root or sudo privileges:
+
+```curl -s https://raw.githubusercontent.com/theycallmemac/odin/v2.0.0/runtime-support/odin-libraries/bash/odinbash > /bin/odinbash```
+
+You can create initalise a specific jobs info in your Bash script like so:
+
+```bash
+#!/bin/bash
+
+odinbash -i job.yml
+```
+
+It’s important you specify the name of your YAML configuration file here as the Bash SDK utilises metadata from it.
+
+From here it’s quite simple, you have two distinctive operations:
+- Watch
+- Result
+
+Let’s look at the `watch` operation with respect to the following code snippet:
+
+![](https://i.imgur.com/4yZTwbx.png)
+
+This snippet fetches a random url from wikipedia on each execution. The watch operation stores this url along with a string “url fetched” to annotate the variable being stored.
+
+This allows us to better debug our jobs for when they don’t work as intended. If this job failed, we could immediately diagnose whether or not it was because a url wasn’t generated from the code on line 4.
+
+Finally, we take a look at the `result` operation: 
+
+![](https://i.imgur.com/uwuxtNT.png)
 
 This operation acts like a return statement, once it’s executed the job is considered to be over. A successful attempt is denoted by a 0 while a failed attempt is denoted by a 1.
 
