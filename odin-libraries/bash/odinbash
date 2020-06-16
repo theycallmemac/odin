@@ -1,0 +1,107 @@
+#!/bin/bash
+
+main() {
+    operation
+}
+
+init() {
+    if [[ $PATH_TYPE == "absolute" ]];then
+        for file in /etc/odin/jobs/*; do
+            if [[ -f $file/$CONFIG ]];then
+                CONFIG=$file/$CONFIG
+                ID=$(grep 'id:' $CONFIG | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
+                echo $ID > $HOME/.bash_odin_id.txt
+                TIME=$(date +%s)
+                echo $TIME > $HOME/.bash_odin_time.txt
+            fi
+        done
+    else
+        ID=$(grep 'id:' $CONFIG | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
+        echo $ID > $HOME/.bash_odin_id.txt
+        TIME=$(date +%s)
+        echo $TIME > $HOME/.bash_odin_time.txt
+    fi
+    if [[ "$ODIN_EXEC_ENV" == "True" || "$TEST" != "false" ]];then
+        BASH_ODIN_ENV_CONFIG=true
+    else
+        BASH_ODIN_ENV_CONFIG=false
+    fi
+    echo $BASH_ODIN_ENV_CONFIG > $HOME/.bash_odin_env.txt
+}
+
+operation() {
+    if [[ $TYPE == "watch" ]];then
+        watchOp
+    elif [[ $TYPE == "condition" ]];then
+        conditionOp
+    else
+        resultOp
+    fi
+}
+
+clean() {
+    rm $HOME/.bash_odin*
+}
+
+watchOp() {
+    if [[ $(cat $HOME/.bash_odin_env.txt) == true ]];then
+        log
+    fi
+}
+
+conditionOp() {
+    if [[ $(cat $HOME/.bash_odin_env.txt) == true ]];then
+        log
+    fi
+}
+
+resultOp() {
+    if [[ $(cat $HOME/.bash_odin_env.txt) == true ]];then
+        log
+        clean
+        exit 0
+    fi
+    exit 1
+}
+
+log() {
+    curl --silent --data "$TYPE,$DESC,$VALUE,$(cat $HOME/.bash_odin_id.txt),$(cat $HOME/.bash_odin_time.txt)" localhost:3939/stats/add > /dev/null
+}
+
+
+PATH_TYPE="absolute"
+TEST="false"
+while getopts ":ti:d:w:c:r:p:" opt; do
+    case "$opt" in
+        i)
+            CONFIG=$OPTARG
+            init
+            exit 0
+            ;;
+        d)
+            DESC=$OPTARG
+            ;;
+        w)
+            TYPE="watch"
+            VALUE=$OPTARG
+            ;;
+        c)
+            TYPE="condition"
+            VALUE=$OPTARG
+            ;;
+        r)
+            TYPE="result"
+            VALUE=$OPTARG
+            ;;
+        p)
+            PATH_TYPE=$OPTARG
+            ;;
+        t)
+            TEST="true"
+            ;;
+    esac
+done
+
+main || exit 1
+exit 0
+
