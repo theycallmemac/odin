@@ -1,0 +1,47 @@
+name: Python Odin SDK
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Set Up Odin
+      run: |
+        export ODIN_MONGODB=mongodb://localhost:27017
+        sudo make mongodb
+        cd odin-engine
+        make build
+        sudo cp config/odin-config.yml /root
+        sudo ./odin-engine -id master-node raft0 &
+
+    - name: Test Odin SDK
+      run: |
+        export ODIN_MONGODB=mongodb://localhost:27017
+        cd odin-libraries/bash
+        sudo cp odinbash /bin
+        python test_bash.py
+
