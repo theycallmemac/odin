@@ -47,7 +47,7 @@ func modifyJob(id string, name string, desc string, schedule string, port string
 	if id != "" && name == "" && desc == "" && schedule == "" {
 		fmt.Println("Please specify which field you want to modify in job " + id + "\n")
 	} else {
-		response := makePutRequest(fmt.Sprintf("http://localhost%s/jobs/info/", port), bytes.NewBuffer([]byte(id+"_"+name+"_"+desc+"_"+schedule+"_"+fmt.Sprintf("%d", os.Getuid()))))
+		response := makePutRequest(fmt.Sprintf("http://localhost%s/jobs/info/update", port), bytes.NewBuffer([]byte(id+"_"+name+"_"+desc+"_"+schedule+"_"+fmt.Sprintf("%d", os.Getuid()))))
 		fmt.Println(response)
 	}
 }

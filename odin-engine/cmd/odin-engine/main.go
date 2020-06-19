@@ -38,7 +38,7 @@ var (
 // parameters: nil
 // returns: nil
 func init() {
-	flag.StringVar(&httpAddr, "http", DefaultHttpAddr, "Set Http bind address")
+	flag.StringVar(&httpAddr, "http", DefaultHttpAddr, "Set HTTP bind address")
 	flag.StringVar(&raftAddr, "raft", DefaultRaftAddr, "Set Raft bind address")
 	flag.StringVar(&joinAddr, "join", "", "Set join address, if any")
 	flag.StringVar(&nodeID, "id", "", "Node ID")
@@ -75,6 +75,7 @@ func main() {
 	}
 	service := api.NewService(httpAddr, *s)
 	go service.Start()
+        fmt.Println("ADDR:",httpAddr,"JOIN:",joinAddr, "RAFT:", raftAddr)
 	if joinAddr != "" {
 		if err := join(joinAddr, raftAddr, nodeID); err != nil {
 			log.Fatalf("failed to join node at %s: %s", joinAddr, err.Error())
@@ -96,7 +97,7 @@ func join(joinAddr, raftAddr, nodeID string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(fmt.Sprintf("http://localhost%s/join", joinAddr), "application-type/json", bytes.NewReader(b))
+	resp, err := http.Post(fmt.Sprintf("http://localhost%s/cluster/join", joinAddr), "application-type/json", bytes.NewReader(b))
 	if err != nil {
 		return err
 	}
@@ -113,7 +114,7 @@ func leave(nodeID string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(fmt.Sprintf("http://localhost%s/leave", ":3939"), "application-type/json", bytes.NewReader(b))
+	resp, err := http.Post(fmt.Sprintf("http://localhost%s/cluster/leave", ":3939"), "application-type/json", bytes.NewReader(b))
 	_, _ = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err

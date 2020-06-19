@@ -37,6 +37,6 @@ func init() {
 // parameters: id (a string of the required id), port (a string of the port to be used)
 // returns: nil
 func removeJob(id string, port string) {
-	response := makePutRequest(fmt.Sprintf("http://localhost%s/jobs", port), bytes.NewBuffer([]byte(id+" "+fmt.Sprintf("%d", os.Getuid()))))
+	response := makePutRequest(fmt.Sprintf("http://localhost%s/jobs/delete", port), bytes.NewBuffer([]byte(id+" "+fmt.Sprintf("%d", os.Getuid()))))
 	fmt.Println(response)
 }
