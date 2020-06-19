@@ -1,17 +1,19 @@
 package api
 
 import (
-	"net/http"
-	"os"
-	"syscall"
+        "os"
+        "syscall"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
-	"github.com/theycallmemac/odin/odin-engine/pkg/jobs"
+	"github.com/valyala/fasthttp"
+        "github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+        "github.com/theycallmemac/odin/odin-engine/pkg/jobs"
 )
 
-var httpAddr string
+var (
+    // HTTPAddr contains the port used by this node
+    HTTPAddr string
+)
+
 
 // SetOdinEnv is used to set variables to be used by running jobs via Odin SDK
 // parameters: mongoURL (a string of the address for the MongoDB instance)
@@ -44,34 +46,47 @@ func NewService(addr string, store fsm.Store) *Service {
 // Start is called on a Service and is used to kick off its execution
 // parameters: nil
 // returns: nil
-func (s *Service) Start() {
-	// restablish new chi router
-	r := chi.NewRouter()
+func (service *Service) Start() {
+	routes := func(ctx *fasthttp.RequestCtx) {
+		switch string(ctx.Path()) {
+                        case "/cluster/join":
+                                service.JoinCluster(ctx)
+                        case "/cluster/leave":
+                                service.LeaveCluster(ctx)
+                        case "/execute":
+                                Executor(ctx)
+                        case "/execute/yaml":
+                                ExecuteYaml(ctx)
+                        case "/jobs/add":
+                                AddJob(ctx)
+                        case "/jobs/delete":
+                                DeleteJob(ctx)
+                        case "/jobs/info/update":
+                                UpdateJob(ctx)
+                        case "/jobs/info/description":
+                                GetJobDescription(ctx)
+                        case "/jobs/info/runs":
+                                UpdateJobRuns(ctx)
+                        case "/jobs/list":
+                                ListJobs(ctx)
+                        case "/jobs/logs":
+                                GetJobLogs(ctx)
+                        case "/links/add":
+                                LinkJobs(ctx)
+                        case "/links/delete":
+                                UnlinkJobs(ctx)
+		        case "/schedule":
+			        GetJobSchedule(ctx)
+                        case "/stats/add":
+                                AddJobStats(ctx)
+                        case "/stats/get":
+                                GetJobStats(ctx)
+		}
+	}
 
-	// tell router to use some middlewares
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+        // start the countdown timer for the execution until the first job
+        go jobs.StartTicker(service.store, service.addr)
 
-	// set the base endpoint to return nothing
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(""))
-	})
-
-	// define current odin-engine endpoints
-	r.Mount("/execute", executeResource{}.Routes())
-	r.Mount("/jobs", jobsResource{}.Routes())
-	r.Mount("/join", joinResource{}.Routes(s))
-	r.Mount("/leave", leaveResource{}.Routes(s))
-	r.Mount("/schedule", scheduleResource{}.Routes())
-	r.Mount("/stats", statsResource{}.Routes())
-	r.Mount("/links", linksResource{}.Routes())
-
-	// start the countdown timer for the execution until the first job
-	go jobs.StartTicker(s.store, s.addr)
-
-	httpAddr = s.addr
-	// listen and service on the provided host and port in ~/odin-config.yml
-	http.ListenAndServe(s.addr, r)
+        HTTPAddr = service.addr
+	fasthttp.ListenAndServe(HTTPAddr, routes)
 }

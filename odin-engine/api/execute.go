@@ -2,12 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
 
-	"github.com/go-chi/chi"
 	"github.com/theycallmemac/odin/odin-engine/pkg/executor"
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+        "github.com/valyala/fasthttp"
 )
 
 // ExecNode is a type to be used to unmarshal data into after a HTTP request
@@ -17,34 +15,16 @@ type ExecNode struct {
 	Store fsm.Store
 }
 
-// create resource type to be used by the router
-type executeResource struct{}
-
-func (rs executeResource) Routes() chi.Router {
-	// establish new chi router
-	r := chi.NewRouter()
-
-	// define routes under the execute endpoint
-	r.Post("/", rs.Executor)
-	r.Post("/yaml", rs.ExecuteYaml)
-
-	return r
-}
-
 // Executor is used to execute the item at the head of the job queue
-func (rs executeResource) Executor(w http.ResponseWriter, r *http.Request) {
+func Executor(ctx *fasthttp.RequestCtx) {
 	var en ExecNode
-	body, err := ioutil.ReadAll(r.Body)
-	json.Unmarshal(body, &en)
-	executor.ReviewError(err, "bool")
-	go executor.Execute(en.Items, 0, httpAddr, en.Store)
+	json.Unmarshal(ctx.PostBody(), &en)
+	go executor.Execute(en.Items, 0, HTTPAddr, en.Store)
 }
 
 // ExecuteYaml is used to execute a job passed to the command line tool
-func (rs executeResource) ExecuteYaml(w http.ResponseWriter, r *http.Request) {
+func ExecuteYaml(ctx *fasthttp.RequestCtx) {
 	var en ExecNode
-	body, err := ioutil.ReadAll(r.Body)
-	json.Unmarshal(body, &en)
-	executor.ReviewError(err, "bool")
-	go executor.Execute(en.Items, 1, httpAddr, en.Store)
+	json.Unmarshal(ctx.PostBody(), &en)
+	go executor.Execute(en.Items, 1, HTTPAddr, en.Store)
 }

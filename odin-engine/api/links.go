@@ -1,51 +1,35 @@
 package api
 
 import (
-	"io/ioutil"
-	"net/http"
+        "fmt"
 	"strings"
 
-	"github.com/go-chi/chi"
 	"github.com/theycallmemac/odin/odin-engine/pkg/jobs"
+        "github.com/valyala/fasthttp"
 )
 
-// create resource type to be used by the router
-type linksResource struct{}
-
-func (rs linksResource) Routes() chi.Router {
-	// establish new chi router
-	r := chi.NewRouter()
-
-	r.Post("/add", rs.Link)
-	r.Post("/delete", rs.Unlink)
-
-	return r
-}
-
-// Link is used to link two jobs together
-func (rs linksResource) Link(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body)
-	split := strings.Split(string(body), "_")
+// LinkJobs is used to link two jobs together
+func LinkJobs(ctx *fasthttp.RequestCtx) {
+	split := strings.Split(string(ctx.PostBody()), "_")
 	from, to, uid := split[0], split[1], split[2]
 	client, _ := jobs.SetupClient()
 	updated := jobs.AddJobLink(client, from, to, uid)
 	if updated == 1 {
-		w.Write([]byte("Job " + from + " linked to " + to + "!\n"))
+		fmt.Fprintf(ctx, "Job " + from + " linked to " + to + "!\n")
 	} else {
-		w.Write([]byte("Job " + from + " could not be linked to " + to + ".\n"))
+		fmt.Fprintf(ctx, "Job " + from + " could not be linked to " + to + ".\n")
 	}
 }
 
-// Unlink is used to delete a job link
-func (rs linksResource) Unlink(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body)
-	split := strings.Split(string(body), "_")
+// UnlinkJobs is used to delete a job link
+func UnlinkJobs(ctx *fasthttp.RequestCtx) {
+	split := strings.Split(string(ctx.PostBody()), "_")
 	from, to, uid := split[0], split[1], split[2]
 	client, _ := jobs.SetupClient()
 	updated := jobs.DeleteJobLink(client, from, to, uid)
 	if updated == 1 {
-		w.Write([]byte("Job " + to + " unlinked from " + from + "!\n"))
+		fmt.Fprintf(ctx, "Job " + to + " unlinked from " + from + "!\n")
 	} else {
-		w.Write([]byte("Job " + to + " has no links!\n"))
+		fmt.Fprintf(ctx, "Job " + to + " has no links!\n")
 	}
 }
