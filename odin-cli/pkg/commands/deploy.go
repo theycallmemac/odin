@@ -72,7 +72,7 @@ func deployJob(cmd *cobra.Command, args []string) {
 	}
 	job.Schedule = getScheduleString(name, port)
 	jobJSON, _ := json.Marshal(job)
-	body := makePostRequest(fmt.Sprintf("http://localhost%s/jobs", port), bytes.NewBuffer(jobJSON))
+	body := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/add", port), bytes.NewBuffer(jobJSON))
 	fmt.Println(body)
 }
 
