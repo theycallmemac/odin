@@ -8,7 +8,7 @@ import (
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 )
 
-// atchRun is called on a queue type and is used to run the batch loop to run all executions
+// BatchRun is called on a queue type and is used to run the batch loop to run all executions
 // parameters:  store (a store of node information)
 // returns: nil
 func (queue Queue) BatchRun(httpAddr string, store fsm.Store) {

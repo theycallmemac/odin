@@ -2,14 +2,13 @@ package executor
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"os/user"
 	"strings"
 	"syscall"
+	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 	"github.com/theycallmemac/odin/odin-engine/pkg/jobs"
 	"github.com/theycallmemac/odin/odin-engine/pkg/resources"
@@ -25,30 +24,20 @@ func getHome() string {
 // returns: nil
 func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Store) {
 	go func() {
-		var logFile, _ = os.OpenFile("/etc/odin/logs/"+job.ID, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		logrus.SetOutput(io.MultiWriter(logFile, os.Stdout))
-		logrus.SetFormatter(&logrus.TextFormatter{})
+		var logStatus string
 		if job.ID != "" && err == nil {
-			logrus.WithFields(logrus.Fields{
-				"node":     store.ServerID,
-				"id":       job.ID,
-				"uid":      job.UID,
-				"gid":      job.GID,
-				"language": job.Lang,
-				"file":     job.File,
-			}).Info("executed")
+			logStatus = "[EXECUTED]"
 		}
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"node":     store.ServerID,
-				"id":       job.ID,
-				"uid":      job.UID,
-				"gid":      job.GID,
-				"language": job.Lang,
-				"file":     job.File,
-				"error":    err,
-			}).Warn("failed")
+			logStatus = "[FAILED]"
 		}
+		t := time.Now()
+		f, _ := os.OpenFile("/etc/odin/logs/" + job.ID, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+                _, err := f.WriteString(t.Format("Jan 2 15:04:05") + " " + logStatus + ": " + job.ID + " on " + store.ServerID + "\n")
+                if err != nil {
+                    fmt.Println(err)
+                    f.Close()
+                }
 		ch <- Data{
 			error:  err,
 			output: data,
