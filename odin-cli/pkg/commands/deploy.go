@@ -47,6 +47,9 @@ func deployJob(cmd *cobra.Command, args []string) {
 	}
 	name, _ := cmd.Flags().GetString("file")
 	yaml := unmarsharlYaml(readJobFile(name))
+        if !semanticCheck(yaml) {
+            os.Exit(2)
+        }
 	currentDir, _ := os.Getwd()
 	var job NewJob
 	job.ID = yaml.Job.ID
@@ -74,6 +77,37 @@ func deployJob(cmd *cobra.Command, args []string) {
 	jobJSON, _ := json.Marshal(job)
 	body := makePostRequest(fmt.Sprintf("http://localhost%s/jobs/add", port), bytes.NewBuffer(jobJSON))
 	fmt.Println(body)
+}
+
+// this function is used to check the Yaml Config of a job before a deployment
+// parameters: yaml (a Config type containing the file fields)
+// returns: bool (a boolean indicating the success the check process)
+func semanticCheck(yaml Config) bool {
+    var status = true
+    if yaml.Provider.Version == "2.0.0" {
+        if yaml.Job.Name == "" {
+            printField("\n - Name")
+            status = false
+        }
+        if yaml.Job.Description == "" {
+            printField("\n - Description")
+            status = false
+        }
+        if yaml.Job.Schedule == "" {
+            printField("\n - Schedule")
+            status = false
+        }
+    }
+    return status
+}
+
+// this function is used to print a specific field
+// parameters: field (a string containing the field to print)
+// returns: nil 
+func printField(field string) {
+    if field != "" {
+        fmt.Println(field + " field is missing from Yaml config.")
+    }
 }
 
 // this function is used to read a file
