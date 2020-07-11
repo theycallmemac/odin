@@ -4,6 +4,8 @@
 
 ![Odin Engine](https://github.com/theycallmemac/odin/workflows/Odin%20Engine/badge.svg) ![Odin CLI](https://github.com/theycallmemac/odin/workflows/Odin%20CLI/badge.svg) ![Go Odin SDK](https://github.com/theycallmemac/odin/workflows/Go%20Odin%20SDK/badge.svg) ![Python Odin SDK](https://github.com/theycallmemac/odin/workflows/Python%20Odin%20SDK/badge.svg) ![Node.js Odin SDK](https://github.com/theycallmemac/odin/workflows/Node.js%20Odin%20SDK/badge.svg) ![Bash Odin SDK](https://github.com/theycallmemac/odin/workflows/Bash%20Odin%20SDK/badge.svg)
 
+[![Discord](https://img.shields.io/badge/chat-Join%20us!-green?style=for-the-badge&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/BpNSC5v)
+
 ## 📖 Overview
 
 Odin is a programmable, observable and distributed job orchestration system which allows for the scheduling, management and unattended background execution of user created tasks on Linux based systems.
