@@ -46,7 +46,7 @@ func generateJob(cmd *cobra.Command, args []string) {
 			os.Exit(2)
 		}
 		ioutil.WriteFile(languageFile, []byte(""), 0644)
-		id := generateId()
+		id := generateID()
 		data := []byte("provider:\n  name: 'odin'\n  version: '2.0.0'\njob:\n  id: '" + id + "'\n  name: ''\n  description: ''\n  language: '" + lang + "'\n  file: '" + languageFile + "'\n  schedule: ''\n\n")
 		ioutil.WriteFile(name, data, 0644)
 		fmt.Println("Config and language files generated!")
@@ -56,7 +56,7 @@ func generateJob(cmd *cobra.Command, args []string) {
 // this function is used to generate a unqiue id
 // parameters: nil
 // returns: string (the generated id)
-func generateId() string {
+func generateID() string {
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {

@@ -21,7 +21,7 @@ import (
 // define constsant default values to be used by the engine
 const (
 	DefaultRaftAddr     = ":12000"
-	DefaultHttpAddr     = ":3939"
+	DefaultHTTPAddr     = ":3939"
 	retainSnapshotCount = 2
 	raftTimeout         = 10 * time.Second
 )
@@ -38,7 +38,7 @@ var (
 // parameters: nil
 // returns: nil
 func init() {
-	flag.StringVar(&httpAddr, "http", DefaultHttpAddr, "Set HTTP bind address")
+	flag.StringVar(&httpAddr, "http", DefaultHTTPAddr, "Set HTTP bind address")
 	flag.StringVar(&raftAddr, "raft", DefaultRaftAddr, "Set Raft bind address")
 	flag.StringVar(&joinAddr, "join", "", "Set join address, if any")
 	flag.StringVar(&nodeID, "id", "", "Node ID")

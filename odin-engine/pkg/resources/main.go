@@ -68,9 +68,8 @@ func SchedulerYaml(filename string) string {
 	var cfg types.JobConfig
 	if ParseYaml(&cfg, ReadFile(filename)) {
 		return cfg.Job.Schedule
-	} else {
-		return "Failed to read file."
 	}
+	return "Failed to read file."
 }
 
 // ExecutorYaml is used to return the yaml attribute needed for the executor endpoint
@@ -80,9 +79,8 @@ func ExecutorYaml(filename string) (string, string) {
 	var cfg types.JobConfig
 	if ParseYaml(&cfg, ReadFile(filename)) {
 		return cfg.Job.Language, cfg.Job.File
-	} else {
-		return "Failed to read file.", ""
 	}
+	return "Failed to read file.", ""
 }
 
 // ParseYaml is used to parse a given YAML config
