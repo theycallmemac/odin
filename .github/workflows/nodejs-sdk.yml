@@ -24,7 +24,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Run ESLint
-    - run: |
+      run: |
         npm i -g eslint
         eslint odin-libraries/nodejs/odinlib/**
 
