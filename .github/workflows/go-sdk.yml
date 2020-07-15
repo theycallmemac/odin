@@ -21,6 +21,15 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
+    - name: Run Golint
+      run: |
+        go env GOPATH GOBIN
+        export GOPATH=$HOME/go
+        export GOBIN=$GOPATH/bin
+        source $HOME/.bash_profile
+        go get -u golang.org/x/lint/golint
+        $GOBIN/golint ./odin-libraries/go/...
+
     - name: Get Odin SDK Dependencies
       run: |
         export GOBIN=$GOPATH/bin

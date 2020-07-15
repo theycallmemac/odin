@@ -63,7 +63,7 @@ func main() {
 			errorCheck(errOut)
 			if respOut.StatusCode == 200 {
 				links[count] = out
-				count += 1
+				count ++
 			}
 		}
 	}
