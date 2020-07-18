@@ -2,11 +2,12 @@ package api
 
 import (
 	"context"
-        "fmt"
+	"fmt"
 	"strings"
 
 	"github.com/theycallmemac/odin/odin-engine/pkg/jobs"
-        "github.com/valyala/fasthttp"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
+	"github.com/valyala/fasthttp"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -29,9 +30,9 @@ func AddJobStats(ctx *fasthttp.RequestCtx) {
 		fmt.Fprintf(ctx, "MongoDB cannot be accessed at the moment\n")
 	} else {
 		if InsertIntoMongo(client, typeOfValue, desc, value, id, timestamp) {
-			fmt.Fprintf(ctx,"200")
+			fmt.Fprintf(ctx, "200")
 		} else {
-			fmt.Fprintf(ctx,"500")
+			fmt.Fprintf(ctx, "500")
 		}
 	}
 }
@@ -56,13 +57,11 @@ func InsertIntoMongo(client *mongo.Client, typeOfValue string, desc string, valu
 }
 
 // GetJobStats is used to show stats collected by a specified job
-func GetJobStats(ctx *fasthttp.RequestCtx) {
-	client, err := jobs.SetupClient()
+func GetJobStats(repo repository.Repository, ctx *fasthttp.RequestCtx) {
+	statsList, err := repo.GetJobStats(ctx, string(ctx.PostBody()))
 	if err != nil {
-		fmt.Fprintf(ctx, "MongoDB cannot be accessed at the moment\n")
+		fmt.Fprintf(ctx, "[ERROR] Cannot get job stats: %v", err)
 	} else {
-		statsList := jobs.GetJobStats(client, string(ctx.PostBody()))
-		fmt.Fprintf(ctx, jobs.Format("ID", "DESCRIPTION", "TYPE", "VALUE"))
 		for _, stat := range statsList {
 			fmt.Fprintf(ctx, jobs.Format(stat.ID, stat.Description, stat.Type, stat.Value))
 		}

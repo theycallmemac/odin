@@ -9,6 +9,10 @@ type EngineConfig struct {
 	Mongo struct {
 		Address string `yaml:"address"`
 	} `yaml:"mongo"`
+	Storage struct {
+		Name    string `yaml:"name"`
+		Address string `yaml:"address"`
+	} `yaml:"storage"`
 }
 
 // JobConfig is a type to be used for accessing job configuration file information
