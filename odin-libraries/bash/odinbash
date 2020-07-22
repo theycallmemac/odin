@@ -9,24 +9,24 @@ init() {
         for file in /etc/odin/jobs/*; do
             if [[ -f $file/$CONFIG ]];then
                 CONFIG=$file/$CONFIG
-                ID=$(grep 'id:' $CONFIG | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
-                echo $ID > $HOME/.bash_odin_id.txt
+                ID=$(grep "id: $CONFIG" | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
+                echo "$ID" > "$HOME/.bash_odin_id.txt"
                 TIME=$(date +%s)
-                echo $TIME > $HOME/.bash_odin_time.txt
+                echo "$TIME" > "$HOME/.bash_odin_time.txt"
             fi
         done
     else
-        ID=$(grep 'id:' $CONFIG | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
-        echo $ID > $HOME/.bash_odin_id.txt
+        ID=$(grep "id: $CONFIG" | tail -n1 | awk '{ print $2}' |  sed 's/^.\(.*\).$/\1/')
+        echo "$ID" > "$HOME/.bash_odin_id.txt"
         TIME=$(date +%s)
-        echo $TIME > $HOME/.bash_odin_time.txt
+        echo "$TIME" > "$HOME/.bash_odin_time.txt"
     fi
     if [[ "$ODIN_EXEC_ENV" == "True" || "$TEST" != "false" ]];then
         BASH_ODIN_ENV_CONFIG=true
     else
         BASH_ODIN_ENV_CONFIG=false
     fi
-    echo $BASH_ODIN_ENV_CONFIG > $HOME/.bash_odin_env.txt
+    echo "$BASH_ODIN_ENV_CONFIG" > "$HOME/.bash_odin_env.txt"
 }
 
 operation() {
@@ -40,23 +40,23 @@ operation() {
 }
 
 clean() {
-    rm $HOME/.bash_odin*
+    rm "$HOME/.bash_odin*"
 }
 
 watchOp() {
-    if [[ $(cat $HOME/.bash_odin_env.txt) == true ]];then
+    if [[ $(cat "$HOME/.bash_odin_env.txt") == true ]];then
         log
     fi
 }
 
 conditionOp() {
-    if [[ $(cat $HOME/.bash_odin_env.txt) == true ]];then
+    if [[ $(cat "$HOME/.bash_odin_env.txt") == true ]];then
         log
     fi
 }
 
 resultOp() {
-    if [[ $(cat $HOME/.bash_odin_env.txt) == true ]];then
+    if [[ $(cat "$HOME/.bash_odin_env.txt") == true ]];then
         log
         clean
         exit 0
@@ -65,7 +65,7 @@ resultOp() {
 }
 
 log() {
-    curl --silent --data "$TYPE,$DESC,$VALUE,$(cat $HOME/.bash_odin_id.txt),$(cat $HOME/.bash_odin_time.txt)" localhost:3939/stats/add > /dev/null
+    curl --silent --data "$TYPE,$DESC,$VALUE,$(cat "$HOME/.bash_odin_id.txt"),$(cat "$HOME/.bash_odin_time.txt")" localhost:3939/stats/add > /dev/null
 }
 
 
@@ -99,9 +99,10 @@ while getopts ":ti:d:w:c:r:p:" opt; do
         t)
             TEST="true"
             ;;
+        *)
+            echo "Invalid arguments provided."
     esac
 done
 
 main || exit 1
 exit 0
-
