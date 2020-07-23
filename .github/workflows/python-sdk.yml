@@ -20,12 +20,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Run PyLint
-      run: |
-        sudo apt install pylint
-        pylint odin-libraries/python/*.py
-        pylint odin-libraries/python/pyodin/*.py
-
     - name: Set up Go 1.13
       uses: actions/setup-go@v2
       with:
@@ -49,6 +43,12 @@ jobs:
         python -m pip install --upgrade pip
         cd odin-libraries/python
         pip install -r requirements.txt
+
+    - name: Run PyLint
+      run: |
+        sudo apt install pylint
+        pylint odin-libraries/python/*.py
+        pylint odin-libraries/python/pyodin/*.py
 
     - name: Test Odin SDK
       run: |
