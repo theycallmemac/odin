@@ -1,10 +1,13 @@
+""" Docstring """
 from os import environ, listdir, path
-from sys import exit
+import sys
+from time import time
 from ruamel.yaml import YAML
 from pyodin.odin_logger import OdinLogger as logger
-from time import time
+
 
 class Odin:
+    """ Odin class used for Configuration File to persist in a job """
     def __init__(self, config="job.yml", test=False, pathType="absolute"):
         if pathType == "absolute":
             for file in listdir("/etc/odin/jobs"):
@@ -13,30 +16,33 @@ class Odin:
                     break
         else:
             self.config = config
-        try: 
-            with open(self.config,"r") as config:
-                configR = config.read()
-            data = YAML().load(configR)
-            self.id = data["job"]["id"]
+        try:
+            with open(self.config, "r") as yaml_config:
+                config_r = yaml_config.read()
+            data = YAML().load(config_r)
+            self.job_id = data["job"]["id"]
             self.timestamp = time()
-        except Exception as e:
-            print(e)
+        except FileNotFoundError as fnf_error:
+            print(fnf_error)
 
-        if 'ODIN_EXEC_ENV' in environ or test != False:
-            self.ENV_CONFIG = True
+        if 'ODIN_EXEC_ENV' in environ or test:
+            self.env_config = True
         else:
-            self.ENV_CONFIG = False
+            self.env_config = False
 
     def condition(self, desc, expr):
-        if self.ENV_CONFIG:
-            logger.log("condition", desc, expr, self.id, self.timestamp)
+        """ Function condition takes a description and an expression """
+        if self.env_config:
+            logger.log("condition", desc, expr, (self.job_id, self.timestamp))
         return expr
-    
+
     def watch(self, desc, value):
-        if self.ENV_CONFIG:
-            logger.log("watch", desc, value, self.id, self.timestamp)
+        """ Function watch takes a description and a value """
+        if self.env_config:
+            logger.log("watch", desc, value, (self.job_id, self.timestamp))
 
     def result(self, desc, status):
-        if self.ENV_CONFIG:
-            logger.log("result", desc, status, self.id, self.timestamp)
-        exit(0)
+        """ Function result takes a description and a status"""
+        if self.env_config:
+            logger.log("result", desc, status, (self.job_id, self.timestamp))
+        sys.exit(0)

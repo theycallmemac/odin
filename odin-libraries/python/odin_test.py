@@ -1,12 +1,14 @@
-import pyodin as odin
+""" Runs tests for Ptyhon Odin SDK """
+
 import unittest
-from pymongo import MongoClient
-import json
 from os import environ
 import random
+from pymongo import MongoClient
+import pyodin as odin
 
+class OdinSdkTest(unittest.TestCase):
+    """ Establish OdinSdkTest object """
 
-class odinSdkTest(unittest.TestCase):
     def setUp(self):
         client = MongoClient(environ.get('ODIN_MONGODB'))
         mongodb = client['odin']
@@ -15,54 +17,57 @@ class odinSdkTest(unittest.TestCase):
     def tearDown(self):
         self.collection.delete_many({"id" : "test_id"})
 
-    def testConditionNotOdinEnv(self):
-        r = random.randint(100000, 999999)
-        test_desc = 'test_desc' + str(r)
-        
-        o = odin.Odin(config="job.yml", pathType="relative")
+    def test_condition_not_odin_env(self):
+        """ Run condition operation outside of Odin Env """
+        random_int = random.randint(100000, 999999)
+        test_desc = 'test_desc' + str(random_int)
 
-        cond = o.condition(test_desc, True)       
+        odin_test = odin.Odin(config="job.yml", pathType="relative")
+
+        cond = odin_test.condition(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
-    
-        self.assertEqual(cond, True) 
+
+        self.assertEqual(cond, True)
         self.assertEqual(None, result)
 
-    def testWatchNotOdinEnv(self):
-        r = random.randint(100000, 999999)
-        test_desc = 'test_desc' + str(r)
-        
-        o = odin.Odin(config="job.yml", pathType="relative")
+    def test_watch_not_odin_env(self):
+        """ Run watch operation outside of Odin Env """
+        random_int = random.randint(100000, 999999)
+        test_desc = 'test_desc' + str(random_int)
 
-        o.watch(test_desc, True)
+        odin_test = odin.Odin(config="job.yml", pathType="relative")
+
+        odin_test.watch(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
 
         self.assertEqual(None, result)
 
-    def testCondition(self):
-        r = random.randint(100000, 999999)
-        test_desc = 'test_desc' + str(r)
-        
-        # test True sets odin exc env to true and in turn enables logging everything to the DB
-        o = odin.Odin(test=True, config="job.yml", pathType="relative")
+    def test_condition(self):
+        """ Run condition operation inside Odin Env """
+        random_int = random.randint(100000, 999999)
+        test_desc = 'test_desc' + str(random_int)
 
-        cond = o.condition(test_desc, True)
+        # test True sets odin exc env to true and in turn enables logging everything to the DB
+        odin_test = odin.Odin(test=True, config="job.yml", pathType="relative")
+
+        cond = odin_test.condition(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
 
-        self.assertEqual(cond, True)    
+        self.assertEqual(cond, True)
         self.assertEqual(test_desc, result['description'])
 
-    def testWatch(self):
-        r = random.randint(100000, 999999)
-        test_desc = 'test_desc' + str(r)
-        
+    def test_watch(self):
+        """ Run watch operation inside Odin Env """
+        random_int = random.randint(100000, 999999)
+        test_desc = 'test_desc' + str(random_int)
+
         # test True sets odin exc env to true and in turn enables logging everything to the DB
-        o = odin.Odin(test=True, config="job.yml", pathType="relative")
+        odin_test = odin.Odin(test=True, config="job.yml", pathType="relative")
 
-        o.watch(test_desc, True)       
+        odin_test.watch(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
-        
-        self.assertEqual(test_desc, result['description'])
 
+        self.assertEqual(test_desc, result['description'])
 
 if __name__ == "__main__":
     unittest.main() # run all tests
