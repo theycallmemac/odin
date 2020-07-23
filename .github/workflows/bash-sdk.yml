@@ -22,7 +22,7 @@ jobs:
 
     - name: Run ShellCheck
       run: |
-        apt install -y shellcheck
+        sudo apt install -y shellcheck
         shellcheck odin-libraries/bash/odinbash
 
     - name: Set up Go 1.13

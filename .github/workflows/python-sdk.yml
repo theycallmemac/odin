@@ -22,7 +22,7 @@ jobs:
 
     - name: Run PyLint
       run: |
-        apt install pylint
+        sudo apt install pylint
         pylint odin-libraries/python/*.py
         pylint odin-libraries/python/pyodin/*.py
 
