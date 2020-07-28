@@ -15,7 +15,10 @@ import (
 
 	"github.com/theycallmemac/odin/odin-engine/api"
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
+	_ "github.com/theycallmemac/odin/odin-engine/pkg/repository/all"
 	"github.com/theycallmemac/odin/odin-engine/pkg/resources"
+	"github.com/theycallmemac/odin/odin-engine/pkg/types"
 )
 
 // define constsant default values to be used by the engine
@@ -32,6 +35,7 @@ var (
 	raftAddr string
 	joinAddr string
 	nodeID   string
+	config   types.EngineConfig
 )
 
 // init is used to define options to be used when running the engine
@@ -42,6 +46,12 @@ func init() {
 	flag.StringVar(&raftAddr, "raft", DefaultRaftAddr, "Set Raft bind address")
 	flag.StringVar(&joinAddr, "join", "", "Set join address, if any")
 	flag.StringVar(&nodeID, "id", "", "Node ID")
+
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	config = resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
 }
 
 // main is used to setup the odin-engine as a single node cluster, as well as allowing for further nodes to joining it. This is all done with the use of flags when initially running the engine.
@@ -67,15 +77,25 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
+	reg, err := repository.GetRegistration(config.Storage.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// TODO: options is nil for now. Pass proper storage options
+	repo, err := reg.OpenFunc(config.Storage.Address, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if httpAddr == "" {
 		usr, _ := user.Current()
 		config := resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
 		api.SetOdinEnv(config.Mongo.Address)
 		httpAddr = config.OdinVars.Master + ":" + config.OdinVars.Port
 	}
-	service := api.NewService(httpAddr, *s)
+	service := api.NewService(httpAddr, *s, repo)
 	go service.Start()
-        fmt.Println("ADDR:",httpAddr,"JOIN:",joinAddr, "RAFT:", raftAddr)
+	fmt.Println("ADDR:", httpAddr, "JOIN:", joinAddr, "RAFT:", raftAddr)
 	if joinAddr != "" {
 		if err := join(joinAddr, raftAddr, nodeID); err != nil {
 			log.Fatalf("failed to join node at %s: %s", joinAddr, err.Error())

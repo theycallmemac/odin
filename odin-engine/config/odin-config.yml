@@ -4,3 +4,6 @@ odin:
   port: "3939"
 mongo:
   address: "mongodb://localhost:27017"
+storage:
+  name: "mongodb"
+  address: "localhost:27017"
