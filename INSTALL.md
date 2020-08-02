@@ -74,7 +74,7 @@ In the `odin-dashboard/server` directory just run:
 npm start
 ```
 
-This will start up the backend server for the dashabord. This server will start listing on port 3000 and will be accessible at http://localhost:3000. 
+This will start up the backend server for the dashboard. This server will start listening on port 3000 and will be accessible at http://localhost:3000. 
 
 
 ## 3. Odin Software Development Kits
