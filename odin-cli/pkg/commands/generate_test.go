@@ -11,7 +11,10 @@ func TestGenerateFiles(t *testing.T) {
 		A, B, C, D, E string
 		Expected      error
 	}{
+	    // -l python3
 		{"test generate flags -f and -l", "generate", "-f", "test-job.yml", "-l", "python3", nil},
+		// -l python
+		{"test generate flags -f and -l", "generate", "-f", "test-job.yml", "-l", "python", nil},
 	}
 	for i, testCase := range cases {
 		t.Run(fmt.Sprintf("%v ", testCase.Name), func(t *testing.T) {
