@@ -7,6 +7,11 @@ There are two steps to installing Odin:
 
 After completing these steps you will be ready to consult [the documentation](https://github.com/theycallmemac/odin/blob/final-year-project/docs/documentation/Odin-User-Manual.pdf) to start using Odin!
 
+## 0. Requirements
+
+- Ubuntu Linux
+- [Go Tools](https://golang.org/doc/install#install)
+
 
 ## 1. Odin Engine, MongoDB and Odin CLI
 
@@ -16,7 +21,26 @@ First off, before building the project, we must first clone the repository via H
 git clone https://github.com/theycallmemac/odin.git 
 ```
 
-To build the project, we can consult the Makefile in this directory. This file will automate the installation of the:
+Then we build and install (as the root user):
+
+```
+cd odin
+
+sudo make
+```
+
+We can verify all components were successfully install with the following series of commands:
+```
+systemctl status odin
+
+systemctl status mongod
+
+odin --help
+```
+
+### The Makefile
+
+To build the project, we can consult the Makefile in the project root directory. This file will automate the installation of the:
 - Odin Engine
 - Odin CLI
 - MongoDB instance
@@ -31,17 +55,6 @@ To utilise this automation we must run the makefile as the root user as so with 
 - move the `odin-engine/init/odin.service` file to `/lib/systemd/system` so it can be run as a systemd service
 - install a locally accessible MongoDB
 - creates the odin group, which users must be a member of to use the system.
-
-We can verify all components were successfully install with the following series of commands:
-```
-systemctl status odin
-
-systemctl status mongod
-
-odin --help
-```
-
-It is advised the first two commands are run through root or with sudo. These commands will allow systemd to report the current status of the Odin Engine and the local MongoDB instance. The final command will verify you have a working install of the Odin CLI tool.
 
 It’s also advisable to set the following two environment variables for the Odin Engine to use:
 
