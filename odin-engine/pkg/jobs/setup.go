@@ -7,9 +7,11 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
+
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 )
 
-var job NewJob
+var job repository.Job
 
 // GID is used to store the group id associated with a specific group
 var GID int

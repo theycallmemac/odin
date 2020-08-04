@@ -7,11 +7,12 @@ import (
 	"time"
 
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 )
 
 var unsorted Queue
 var sorted Queue
-var jobs []NewJob
+var jobs []repository.Job
 
 func TestSortQueue(t *testing.T) {
 	node1 := Node{Schedule: []int{80}}

@@ -2,6 +2,8 @@ module github.com/theycallmemac/odin/odin-engine
 
 go 1.13
 
+replace github.com/hidal-go/hidalgo => github.com/hiepd/hidalgo v0.0.0-20200806161247-e4a84db22d06
+
 require (
 	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75
 	github.com/hashicorp/raft v1.1.2
