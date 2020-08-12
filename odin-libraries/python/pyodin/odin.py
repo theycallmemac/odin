@@ -24,8 +24,9 @@ class Odin(object):
             self.timestamp = time()
         except FileNotFoundError as fnf_error:
             print(fnf_error)
-
-        if 'ODIN_EXEC_ENV' in environ or test:
+        if test:
+            self.env_config = True
+        elif 'ODIN_EXEC_ENV' in environ:
             self.env_config = True
         else:
             self.env_config = False
