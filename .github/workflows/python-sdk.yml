@@ -47,7 +47,7 @@ jobs:
     - name: Run PyLint
       run: |
         sudo apt install pylint3
-        pip install -r odin-libraries/python/requirements.txt; pylint3 odin-libraries/python/pyodin/*.py
+        sudo pip3 install -r odin-libraries/python/requirements.txt; pylint3 odin-libraries/python/pyodin/*.py
 
     - name: Test Odin SDK
       run: |
