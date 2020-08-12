@@ -1,7 +1,7 @@
 """ Logs stats to Engine """
 from requests import post
 
-class OdinLogger: # pylint: disable=too-few-public-methods 
+class OdinLogger: # pylint: disable=too-few-public-methods
     """ OdinLogger is used to access the Engine stats endpoint """
 
     @classmethod

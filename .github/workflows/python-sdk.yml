@@ -44,11 +44,10 @@ jobs:
         cd odin-libraries/python
         pip install -r requirements.txt
 
-    - uses: actions/checkout@master
     - name: Run PyLint
-      uses: cclauss/GitHub-Action-for-pylint@master
-      with:
-        args: pip install -r odin-libraries/python/requirements.txt; pylint odin-libraries/python/pyodin/*.py
+      run: |
+        sudo apt install pylint3
+        pip install -r odin-libraries/python/requirements.txt; pylint3 odin-libraries/python/pyodin/*.py
 
     - name: Test Odin SDK
       run: |

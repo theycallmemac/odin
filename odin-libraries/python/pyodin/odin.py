@@ -6,13 +6,13 @@ from ruamel.yaml import YAML
 from pyodin.odin_logger import OdinLogger as logger
 
 
-class Odin:
+class Odin(object):
     """ Odin class used for Configuration File to persist in a job """
-    def __init__(self, config="job.yml", test=False, pathType="absolute"):
-        if pathType == "absolute":
-            for file in listdir("/etc/odin/jobs"):
-                if path.exists("/etc/odin/jobs/" + file + "/" + config):
-                    self.config = "/etc/odin/jobs/" + file + "/" + config
+    def __init__(self, config="job.yml", test=False, path_type="absolute"):
+        if path_type == "absolute":
+            for job_id in listdir("/etc/odin/jobs"):
+                if path.exists("/etc/odin/jobs/" + job_id + "/" + config):
+                    self.config = "/etc/odin/jobs/" + job_id + "/" + config
                     break
         else:
             self.config = config

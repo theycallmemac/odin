@@ -22,7 +22,7 @@ class OdinSdkTest(unittest.TestCase):
         random_int = random.randint(100000, 999999)
         test_desc = 'test_desc' + str(random_int)
 
-        odin_test = odin.Odin(config="job.yml", pathType="relative")
+        odin_test = odin.Odin(config="job.yml", path_type="relative")
 
         cond = odin_test.condition(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
@@ -35,7 +35,7 @@ class OdinSdkTest(unittest.TestCase):
         random_int = random.randint(100000, 999999)
         test_desc = 'test_desc' + str(random_int)
 
-        odin_test = odin.Odin(config="job.yml", pathType="relative")
+        odin_test = odin.Odin(config="job.yml", path_type="relative")
 
         odin_test.watch(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
@@ -48,7 +48,7 @@ class OdinSdkTest(unittest.TestCase):
         test_desc = 'test_desc' + str(random_int)
 
         # test True sets odin exc env to true and in turn enables logging everything to the DB
-        odin_test = odin.Odin(test=True, config="job.yml", pathType="relative")
+        odin_test = odin.Odin(test=True, config="job.yml", path_type="relative")
 
         cond = odin_test.condition(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
@@ -62,7 +62,7 @@ class OdinSdkTest(unittest.TestCase):
         test_desc = 'test_desc' + str(random_int)
 
         # test True sets odin exc env to true and in turn enables logging everything to the DB
-        odin_test = odin.Odin(test=True, config="job.yml", pathType="relative")
+        odin_test = odin.Odin(test=True, config="job.yml", path_type="relative")
 
         odin_test.watch(test_desc, True)
         result = self.collection.find_one({"description" : test_desc})
