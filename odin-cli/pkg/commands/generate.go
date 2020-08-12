@@ -50,7 +50,10 @@ func generateJob(cmd *cobra.Command, args []string) {
 		data := []byte("provider:\n  name: 'odin'\n  version: '2.0.0'\njob:\n  id: '" + id + "'\n  name: ''\n  description: ''\n  language: '" + lang + "'\n  file: '" + languageFile + "'\n  schedule: ''\n\n")
 		ioutil.WriteFile(name, data, 0644)
 		fmt.Println("Config and language files generated!")
-	}
+	} else {
+		fmt.Println("Please provide a '.yml' extension to " + name)
+		os.Exit(2)
+    }
 }
 
 // this function is used to generate a unqiue id
