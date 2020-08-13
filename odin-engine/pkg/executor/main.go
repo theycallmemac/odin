@@ -11,12 +11,12 @@ import (
 	"strings"
 
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 	"github.com/theycallmemac/odin/odin-engine/pkg/resources"
 )
 
 // Queue is a type used to contain an array of JobNode's
 type Queue []JobNode
-
 
 // JobNode is a type used to define a job as a node in a Queue
 type JobNode struct {
@@ -30,7 +30,7 @@ type JobNode struct {
 	Links    string
 }
 
-// Data is a type used to define channels for execution 
+// Data is a type used to define channels for execution
 type Data struct {
 	output []byte
 	error  error
@@ -54,7 +54,7 @@ func makePutRequest(link string, data *bytes.Buffer) string {
 // executeYaml is used to run a job like straight from the command line tool
 // parameters: filename (a string containing the path to the local file to execute), done (a boolean channel), store (a store of node information)
 // returns: nil
-func executeYaml(filename string, done chan bool, httpAddr string, store fsm.Store) {
+func executeYaml(repo repository.Repository, filename string, done chan bool, httpAddr string, store fsm.Store) {
 	if exists(filename) {
 		var job JobNode
 		singleChannel := make(chan Data)
@@ -67,7 +67,7 @@ func executeYaml(filename string, done chan bool, httpAddr string, store fsm.Sto
 		gid, _ := strconv.Atoi(group.Gid)
 		job.UID = uint32(uid)
 		job.GID = uint32(gid)
-		go job.runCommand(singleChannel, httpAddr, store)
+		go job.runCommand(repo, singleChannel, httpAddr, store)
 		res := <-singleChannel
 		ReviewError(res.error, "bool")
 		done <- true
@@ -80,10 +80,10 @@ func executeYaml(filename string, done chan bool, httpAddr string, store fsm.Sto
 // executeLang is used to execute a file in /etc/odin/$id
 // parameters: contentsJSON (byte array containing uid, gid, language and file information), store (a store of node information)
 // returns: boolean (returns true if the file exists and is executed)
-func executeLang(contentsJSON []byte, done chan bool, httpAddr string, store fsm.Store) {
+func executeLang(repo repository.Repository, contentsJSON []byte, done chan bool, httpAddr string, store fsm.Store) {
 	var queue Queue
 	json.Unmarshal(contentsJSON, &queue)
-	go queue.BatchRun(httpAddr, store)
+	go queue.BatchRun(repo, httpAddr, store)
 	go queue.UpdateRuns(httpAddr)
 	done <- true
 	return
@@ -92,13 +92,13 @@ func executeLang(contentsJSON []byte, done chan bool, httpAddr string, store fsm
 // Execute is used to decide which of the executeLang and exectureYaml functions to use
 // parameters: contents (byte array containing uid, gid, language and file information), process (int used to decide the function to use in the code), httpAddr (an address string for the engine), store (a store of node information)
 // returns: boolean (returns true if one of the functions executes successfully, false otherwise)
-func Execute(contents []byte, process int, httpAddr string, store fsm.Store) bool {
+func Execute(repo repository.Repository, contents []byte, process int, httpAddr string, store fsm.Store) bool {
 	done := make(chan bool)
 	switch process {
 	case 0:
-		go executeLang(contents, done, httpAddr, store)
+		go executeLang(repo, contents, done, httpAddr, store)
 	case 1:
-		go executeYaml(string(contents), done, httpAddr, store)
+		go executeYaml(repo, string(contents), done, httpAddr, store)
 	}
 	return <-done
 }

@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/gorhill/cronexpr"
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 )
 
 // Queue is a type used to access an array of Nodes
@@ -40,7 +42,7 @@ type ExecNode struct {
 
 // storage is a var used store the last known Queue
 var storage struct {
-	Items []NewJob
+	Items []repository.Job
 }
 
 // dead is a var used to check MongoDB
@@ -149,7 +151,7 @@ func cronToSeconds(cronTime string) []int {
 // fillQueue is used to fill the queue, calling sorting and grouping methods before checking the head// parameters: t (the time interval between each execution of the fillQueue function)
 // parameters: jobs (an unsorted array of Jobs), httpAddr (an address string from the server), store (a fsm containing node information)
 // returns: []Node the sorted array of jobs
-func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
+func fillQueue(jobs []repository.Job, httpAddr string, store fsm.Store) []Node {
 	var queue Queue
 	var node Node
 	for count, j := range jobs {
@@ -176,16 +178,15 @@ func fillQueue(jobs []NewJob, httpAddr string, store fsm.Store) []Node {
 // startQueuing is used to start the queueing process
 // parameters: t (the time interval between each execution of the fillQueue function), httpAddr (an address string from the server), store (a fsm containing node information)
 // returns: nil
-func startQueuing(t time.Time, httpAddr string, store fsm.Store) {
+func startQueuing(repo repository.Repository, t time.Time, httpAddr string, store fsm.Store) {
 	if dead {
 		fillQueue(storage.Items, httpAddr, store)
 	} else {
-		client, err := SetupClient()
+		jobs, err := repo.GetAll(context.Background())
 		if err != nil {
 			dead = true
 		} else {
 			dead = false
-			jobs := GetAll(client)
 			fillQueue(jobs, httpAddr, store)
 			storage.Items = jobs
 		}
@@ -195,15 +196,21 @@ func startQueuing(t time.Time, httpAddr string, store fsm.Store) {
 // doEvery is used to execute the fillQueue function every second
 // parameters: d (the duration between execution of fillQueue), f (the function to execute - in this case it's startingQueue), store (a fsm containing node information), httpAddr (an address string from the server)
 // returns: nil
-func doEvery(d time.Duration, f func(time.Time, string, fsm.Store), store fsm.Store, httpAddr string) {
+func doEvery(
+	d time.Duration,
+	f func(repository.Repository, time.Time, string, fsm.Store),
+	repo repository.Repository,
+	store fsm.Store,
+	httpAddr string) {
+
 	for x := range time.Tick(d) {
-		go f(x, httpAddr, store)
+		go f(repo, x, httpAddr, store)
 	}
 }
 
 // StartTicker starts the countdown process, specifying the parameters of execution for doEvery
 // parameters: store (a fsm containing node information), httpAddr (an address string from the server)
 // returns: nil
-func StartTicker(store fsm.Store, httpAddr string) {
-	go doEvery(1000*time.Millisecond, startQueuing, store, httpAddr)
+func StartTicker(repo repository.Repository, store fsm.Store, httpAddr string) {
+	go doEvery(1000*time.Millisecond, startQueuing, repo, store, httpAddr)
 }

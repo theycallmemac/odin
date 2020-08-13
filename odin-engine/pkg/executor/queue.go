@@ -6,16 +6,17 @@ import (
 	"strconv"
 
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 )
 
 // BatchRun is called on a queue type and is used to run the batch loop to run all executions
 // parameters:  store (a store of node information)
 // returns: nil
-func (queue Queue) BatchRun(httpAddr string, store fsm.Store) {
+func (queue Queue) BatchRun(repo repository.Repository, httpAddr string, store fsm.Store) {
 	for _, job := range queue {
 		go func(job JobNode) {
 			channel := make(chan Data)
-			go job.runCommand(channel, httpAddr, store)
+			go job.runCommand(repo, channel, httpAddr, store)
 		}(job)
 	}
 }

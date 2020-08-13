@@ -1,15 +1,12 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"strings"
 
 	"github.com/theycallmemac/odin/odin-engine/pkg/jobs"
 	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 	"github.com/valyala/fasthttp"
-
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // JobStats is a type to be used for accessing and storing job stats information
@@ -22,45 +19,28 @@ type JobStats struct {
 }
 
 // AddJobStats is used to parse collected metrics
-func AddJobStats(ctx *fasthttp.RequestCtx) {
+func AddJobStats(repo repository.Repository, ctx *fasthttp.RequestCtx) {
 	args := strings.Split(string(ctx.PostBody()), ",")
 	typeOfValue, desc, value, id, timestamp := args[0], args[1], args[2], args[3], args[4]
-	client, err := jobs.SetupClient()
-	if err != nil {
-		fmt.Fprintf(ctx, "MongoDB cannot be accessed at the moment\n")
+	js := &repository.JobStats{
+		ID:          id,
+		Description: desc,
+		Type:        typeOfValue,
+		Value:       value,
+		Timestamp:   timestamp,
+	}
+	if err := repo.CreateJobStats(ctx, js); err != nil {
+		fmt.Fprintf(ctx, "500")
 	} else {
-		if InsertIntoMongo(client, typeOfValue, desc, value, id, timestamp) {
-			fmt.Fprintf(ctx, "200")
-		} else {
-			fmt.Fprintf(ctx, "500")
-		}
+		fmt.Fprintf(ctx, "200")
 	}
-}
-
-// InsertIntoMongo is used to add collected metrics to the observability collection
-// parameters: client (a *mongo.Client), typeOfValue (a string of the type of value being stored), desc (a string describing the value being stored), value (a string of the value being stored), id (a string of the associated Job ID), timestamp (a string of the unix time at which the operation took place)
-// returns: bool (true is successful, false if otherwise)
-func InsertIntoMongo(client *mongo.Client, typeOfValue string, desc string, value string, id string, timestamp string) bool {
-	var js JobStats
-	js.ID = id
-	js.Description = desc
-	js.Type = typeOfValue
-	js.Value = value
-	js.Timestamp = timestamp
-	collection := client.Database("odin").Collection("observability")
-	_, err := collection.InsertOne(context.TODO(), js)
-	client.Disconnect(context.TODO())
-	if err != nil {
-		return false
-	}
-	return true
 }
 
 // GetJobStats is used to show stats collected by a specified job
 func GetJobStats(repo repository.Repository, ctx *fasthttp.RequestCtx) {
 	statsList, err := repo.GetJobStats(ctx, string(ctx.PostBody()))
 	if err != nil {
-		fmt.Fprintf(ctx, "[ERROR] Cannot get job stats: %v", err)
+		fmt.Fprintf(ctx, "[FAILED] Cannot get job stats: %v\n", err)
 	} else {
 		for _, stat := range statsList {
 			fmt.Fprintf(ctx, jobs.Format(stat.ID, stat.Description, stat.Type, stat.Value))

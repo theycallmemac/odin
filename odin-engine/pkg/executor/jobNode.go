@@ -11,6 +11,7 @@ import (
 
 	"github.com/theycallmemac/odin/odin-engine/pkg/fsm"
 	"github.com/theycallmemac/odin/odin-engine/pkg/jobs"
+	"github.com/theycallmemac/odin/odin-engine/pkg/repository"
 	"github.com/theycallmemac/odin/odin-engine/pkg/resources"
 )
 
@@ -32,12 +33,12 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Stor
 			logStatus = "[FAILED]"
 		}
 		t := time.Now()
-		f, _ := os.OpenFile("/etc/odin/logs/" + job.ID, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-                _, err := f.WriteString(t.Format("Jan 2 15:04:05") + " " + logStatus + ": " + job.ID + " on " + store.ServerID + "\n")
-                if err != nil {
-                    fmt.Println(err)
-                    f.Close()
-                }
+		f, _ := os.OpenFile("/etc/odin/logs/"+job.ID, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		_, err := f.WriteString(t.Format("Jan 2 15:04:05") + " " + logStatus + ": " + job.ID + " on " + store.ServerID + "\n")
+		if err != nil {
+			fmt.Println(err)
+			f.Close()
+		}
 		ch <- Data{
 			error:  err,
 			output: data,
@@ -48,7 +49,7 @@ func (job JobNode) logger(ch chan<- Data, data []byte, err error, store fsm.Stor
 // runCommand is called on a JobNode type and is used to run a job like a shell would run a command
 // parameters: ch (channel used to return data), store (a store of node information)
 // returns: nil
-func (job JobNode) runCommand(ch chan<- Data, httpAddr string, store fsm.Store) {
+func (job JobNode) runCommand(repo repository.Repository, ch chan<- Data, httpAddr string, store fsm.Store) {
 	URI := resources.UnmarsharlYaml(resources.ReadFileBytes(getHome() + "/odin-config.yml")).Mongo.Address
 	os.Setenv("ODIN_EXEC_ENV", "True")
 	os.Setenv("ODIN_MONGODB", URI)
@@ -66,7 +67,7 @@ func (job JobNode) runCommand(ch chan<- Data, httpAddr string, store fsm.Store) 
 	}
 	if job.Links != "" {
 		links := strings.Split(job.Links, ",")
-		jobs.RunLinks(links, job.UID, httpAddr, store)
+		jobs.RunLinks(repo, links, job.UID, httpAddr, store)
 	}
 	job.logger(ch, data, err, store)
 }

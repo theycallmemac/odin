@@ -56,38 +56,38 @@ func (service *Service) Start() {
 		case "/cluster/leave":
 			service.LeaveCluster(ctx)
 		case "/execute":
-			Executor(ctx)
+			Executor(service.repo, ctx)
 		case "/execute/yaml":
-			ExecuteYaml(ctx)
+			ExecuteYaml(service.repo, ctx)
 		case "/jobs/add":
-			AddJob(ctx)
+			AddJob(service.repo, ctx)
 		case "/jobs/delete":
-			DeleteJob(ctx)
+			DeleteJob(service.repo, ctx)
 		case "/jobs/info/update":
-			UpdateJob(ctx)
+			UpdateJob(service.repo, ctx)
 		case "/jobs/info/description":
-			GetJobDescription(ctx)
+			GetJobDescription(service.repo, ctx)
 		case "/jobs/info/runs":
-			UpdateJobRuns(ctx)
+			UpdateJobRuns(service.repo, ctx)
 		case "/jobs/list":
-			ListJobs(ctx)
+			ListJobs(service.repo, ctx)
 		case "/jobs/logs":
 			GetJobLogs(ctx)
 		case "/links/add":
-			LinkJobs(ctx)
+			LinkJobs(service.repo, ctx)
 		case "/links/delete":
-			UnlinkJobs(ctx)
+			UnlinkJobs(service.repo, ctx)
 		case "/schedule":
 			GetJobSchedule(ctx)
 		case "/stats/add":
-			AddJobStats(ctx)
+			AddJobStats(service.repo, ctx)
 		case "/stats/get":
 			GetJobStats(service.repo, ctx)
 		}
 	}
 
 	// start the countdown timer for the execution until the first job
-	go jobs.StartTicker(service.store, service.addr)
+	go jobs.StartTicker(service.repo, service.store, service.addr)
 
 	HTTPAddr = service.addr
 	fasthttp.ListenAndServe(HTTPAddr, routes)
