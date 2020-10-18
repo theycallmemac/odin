@@ -125,7 +125,7 @@ func groupItems(items []Node) map[int][]Node {
 	output := make(map[int][]Node)
 	for _, item := range items {
 		for i := 0; i < len(item.Schedule); i++ {
-			if len(string(item.Schedule[i])) != 0 {
+			if len(fmt.Sprint(item.Schedule[i])) != 0 {
 				output[item.Schedule[i]] = append(output[item.Schedule[i]], item)
 			}
 		}
