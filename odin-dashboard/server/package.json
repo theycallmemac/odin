@@ -22,7 +22,7 @@
     "morgan": "~1.9.0",
     "openpgp": "^4.4.6",
     "randomstring": "^1.1.5",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
