@@ -33,9 +33,9 @@ RUN /bin/bash -c 'if grep -q "odin" /etc/group; then echo "odin group already ex
 
 # Env variables
 ENV ODIN_EXEC_ENV True
-ENV ODIN_MONGODB "mongodb://CHANGE_IP:27017/"
+ENV ODIN_MONGODB "mongodb://192.168.2.19:27017/"
 
 
 
 VOLUME ["/home/kyle/odin/"]
-CMD ["/bin/odin"]
+CMD ["/bin/odin-engine", "-id", "master-node", "raft0"]
