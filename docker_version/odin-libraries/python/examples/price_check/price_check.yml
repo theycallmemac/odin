@@ -1,0 +1,10 @@
+provider:
+  name: 'odin'
+  version: '1.0.0'
+job:
+  id: '35ea7e4bbda3'
+  name: 'price_check'
+  description: 'monitor prices of a snowball microphone'
+  language: 'python3'
+  file: 'price_check.py'
+  schedule: 'every hour'

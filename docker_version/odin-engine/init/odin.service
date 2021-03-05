@@ -1,0 +1,19 @@
+[Unit]
+Description=odin
+ConditionPathExists=/bin/odin-engine
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+RestartPreventExitStatus=0
+TimeoutStopSec=10
+ExecStart=/bin/odin-engine -id master-node raft0
+PermissionsStartOnly=true
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=odin
+
+[Install]
+WantedBy=multi-user.target

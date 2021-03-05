@@ -1,0 +1,24 @@
+{
+  "name": "odinlib",
+  "version": "0.2.0",
+  "description": "A nodejs package for gathering information in odin jobs",
+  "license": "MIT",
+  "repository": "github.com/theycallmemac/odin",
+  "main": "odin/odin.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "odin",
+    "odinlib"
+  ],
+  "dependencies": {
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "eslint-config-google": "^0.14.0",
+    "mocha": "^7.2.0",
+    "mongodb": "^3.5.8"
+  }
+}
