@@ -71,7 +71,6 @@ func main() {
 		usr, _ := user.Current()
 		config := resources.UnmarsharlYaml(resources.ReadFileBytes(usr.HomeDir + "/odin-config.yml"))
 		api.SetOdinEnv(config.Mongo.Address)
-		fmt.Println(config.Mongo.Address)
 		httpAddr = config.OdinVars.Master + ":" + config.OdinVars.Port
 	}
 	service := api.NewService(httpAddr, *s)
