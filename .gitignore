@@ -1,0 +1,3 @@
+#Ignore certificate dir (Temp for running up a mongo instance)
+
+cert/
