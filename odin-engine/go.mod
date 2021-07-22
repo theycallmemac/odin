@@ -7,6 +7,6 @@ require (
 	github.com/hashicorp/raft v1.1.2
 	github.com/lnquy/cron v1.0.1
 	github.com/valyala/fasthttp v1.14.0
-	go.mongodb.org/mongo-driver v1.3.4
+	go.mongodb.org/mongo-driver v1.5.1
 	gopkg.in/yaml.v2 v2.3.0
 )
