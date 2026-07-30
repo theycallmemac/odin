@@ -31,7 +31,7 @@ You can check out the documentation for using Odin [here](https://github.com/the
 
 - Email: <james.mcdermott7@mail.dcu.ie>
 - Twitter: [@theycallmemac_](https://twitter.com/theycallmemac_)
-- Github: [@theycallmemac](https://github.com/theycallmemac)
+- GitHub: [@theycallmemac](https://github.com/theycallmemac)
 
 ## ⭐️ Show your support
 

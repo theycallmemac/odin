@@ -10,7 +10,7 @@ If you do want to contribute by enhancing Odin's feature set, please consult the
 	- Commit Message Format
 	- Code Linting
 	- Code Formatting
-	- Running Github Actions Locally
+	- Running GitHub Actions Locally
 
 #### Commit Message Format
 
@@ -47,9 +47,9 @@ The following tools are used for code formatting:
 	- Python - [black](https://github.com/psf/black)
 	- Bash - [beautysh](https://github.com/papampi/beautysh)
 
-#### Running Github Actions Locally
+#### Running GitHub Actions Locally
 
-We strongly recommend running your code through our Github Actions before opening a Pull Request. Running our Github Actions locally can be accomplished by using [act](https://github.com/nektos/act).
+We strongly recommend running your code through our GitHub Actions before opening a Pull Request. Running our GitHub Actions locally can be accomplished by using [act](https://github.com/nektos/act).
 
 
 ------------
