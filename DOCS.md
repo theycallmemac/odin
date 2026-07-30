@@ -436,7 +436,7 @@ Let’s look at the `watch` operation with respect to the following code snippet
 
 This snippet fetches a random url from wikipedia on each execution. The watch operation stores this url along with a string “url fetched” to annotate the variable being stored.
 
-This allows us to better debug our jobs for when they don’t work as intended. If this job failed, we could immediately diagnose whether or not it was because a url wasn’t generated from the block begining on line 5.
+This allows us to better debug our jobs for when they don’t work as intended. If this job failed, we could immediately diagnose whether or not it was because a url wasn’t generated from the block beginning on line 5.
 
 Let’s now look at this code again, but with the `condition` operation added:
 
